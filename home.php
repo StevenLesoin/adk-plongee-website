@@ -13,8 +13,6 @@
 
 <body>
 
-  <?php include("tools/navbar.php"); ?>
-
 	<?php 
 	try
 	{
@@ -37,6 +35,7 @@
 
 	if (!$resultat)
 	{
+		include("tools/navbar.php"); 
 		include("tools/login_failure.php");
 	}
 	else
@@ -46,10 +45,11 @@
 	        $_SESSION['id'] = $resultat['id'];
 	        $_SESSION['pseudo'] = $pseudo;
 	        $_SESSION['privilege'] = $resultat['privilege'];
+	        include("tools/navbar.php"); 
 			include("tools/login_success.php");
 	    }
 	    else {
-	        echo 'Mauvais identifiant ou mot de passe !';
+	    	include("tools/navbar.php"); 
 	        include("tools/login_failure.php");
 	    }
 	}
