@@ -13,10 +13,9 @@
 
 <body>
 
-  <?php include("navbar.php"); ?>
+  <?php include("tools/navbar.php"); ?>
 
 	<?php 
-
 	try
 	{
 		$bdd = new PDO('mysql:host=localhost;dbname=adk_plongee_website;charset=utf8', 'root', '', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
@@ -26,9 +25,9 @@
 	    die('Erreur : ' . $e->getMessage());
 	}
 
-	$pseudo = $_POST['login'];
+	$pseudo = htmlspecialchars($_POST['login']);
 	//  Récupération de l'utilisateur et de son pass hashé
-	$req = $bdd->prepare('SELECT id, mdp FROM membres WHERE pseudo = :pseudo');
+	$req = $bdd->prepare('SELECT id, mdp, privilege FROM membres WHERE pseudo = :pseudo');
 	$req->execute(array(
 	    'pseudo' => $pseudo));
 	$resultat = $req->fetch();
@@ -38,7 +37,7 @@
 
 	if (!$resultat)
 	{
-	    echo 'Mauvais identifiant ou mot de passe !';
+		include("tools/login_failure.php");
 	}
 	else
 	{
@@ -46,16 +45,19 @@
 	        session_start();
 	        $_SESSION['id'] = $resultat['id'];
 	        $_SESSION['pseudo'] = $pseudo;
-	        echo 'Vous êtes connecté !';
+	        $_SESSION['privilege'] = $resultat['privilege'];
+			include("tools/login_success.php");
 	    }
 	    else {
 	        echo 'Mauvais identifiant ou mot de passe !';
+	        include("tools/login_failure.php");
 	    }
 	}
 
+	$req->closeCursor(); //requête terminée
 	?>
 
-  <?php include("footer.php"); ?>
+  <?php include("tools/footer.php"); ?>
 
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>

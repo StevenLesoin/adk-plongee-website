@@ -13,9 +13,7 @@
 
 <body>
 
-
-
-<?php include("navbar.php"); ?>
+<?php include("tools/navbar.php"); ?>
 
 <?php
 /*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
@@ -45,13 +43,16 @@ echo $pass_hache; */
                     <div class="row center">
                         <button class="btn waves-effect waves-light blue darken-4" type="submit" name="submit">Se connecter</button> 
                     </div>
+                    <div class="row center">
+                        <a class="waves-effect waves-light btn blue darken-4" href="registration.php">Créer un compte</a>
+                    </div>
                 </form>
             </div>
         </div>
   	</div>
   </div>
 
-  <?php include("footer.php"); ?>
+  <?php include("tools/footer.php"); ?>
 
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>

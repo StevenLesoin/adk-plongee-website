@@ -14,9 +14,9 @@
 
 <body>
 
-  <?php include("navbar.php"); ?>
+  <?php include("tools/navbar.php"); ?>
 
-  <?php include("footer.php"); ?>
+  <?php include("tools/footer.php"); ?>
 
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
