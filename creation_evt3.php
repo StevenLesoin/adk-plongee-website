@@ -9,6 +9,13 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  
+	<script>
+	 $(document).ready(function() {
+		$('select').material_select();
+	 });
+  </script>
+  
 </head>
 
 <body>
@@ -28,13 +35,13 @@ echo $pass_hache; */
         </div>
 		
 		
-		<?php	if(isset($_POST['type']) AND $_POST['type']!='' AND isset($_POST['titre']) AND $_POST['titre']!='' AND isset($_POST['date_evt']) AND $_POST['date_evt']!='' AND isset($_POST['heure_evt']) AND $_POST['heure_evt']=!'' AND isset($_POST['date_lim']) AND $_POST['date_lim']!='' AND isset($_POST['heure_lim']) AND $_POST['heure_lim']!='')
+		<?php	if(isset($_POST['type']) AND $_POST['type']!='' AND isset($_POST['titre']) AND $_POST['titre']!='' AND isset($_POST['date_evt']) AND $_POST['date_evt']!='' AND isset($_POST['heure_evt']) AND $_POST['heure_evt']!='' AND isset($_POST['date_lim']) AND $_POST['date_lim']!='' AND isset($_POST['heure_lim']) AND $_POST['heure_lim']!='')
 				{	// Formulaire déjà rempli avec les champs obligatoires, on le traite
 					
 					
 					include("tools/data_base_connection.php");
-						
-						$req2= $bdd->prepare('INSERT INTO evenements(type, titre, date_evt, heure_evt, date_lim, heure_lim, niveau_min, lieu, remarques, pseudo, date_publi) VALUES(:type, :titre, :date_evt, :heure_evt, :date_lim, :heure_lim, :niveau_min, :lieu, :remarques, \'Vide\', \'Vide\')');
+						$date_d = date('y-m-d');
+						$req2= $bdd->prepare('INSERT INTO evenements(type, titre, date_evt, heure_evt, date_lim, heure_lim, niveau_min, lieu, remarques, pseudo, date_publi) VALUES(:type, :titre, :date_evt, :heure_evt, :date_lim, :heure_lim, :niveau_min, :lieu, :remarques, \'Vide\',\'Vide\')');
 						$req2->execute(array(
 						  'type' => $_POST['type'],
 						  'titre' => $_POST['titre'],
@@ -72,24 +79,23 @@ echo $pass_hache; */
 					?> 
 					<div class="row center">
 						<form class="col s12" action="creation_evt3.php" method="post">
-							<div class="row center">
-								<div class="input-field col s12">
-									<i class="material-icons prefix">title</i>
-									<input id="titre" type="text" class="validate" name="type">
-										<label for="titre">Type *</label>					
-									
-								</div>
-								  <div class="input-field col s12">
-									<select>
-									  <option value="" disabled selected>Choisir le type</option>
-										<option value="Plongée">Plongée</option>
-										<option value="Piscine">Piscine</option>
-										<option value="Théorie">Théorie</option>
-										<option value="Vie Sociale">Vie Sociale</option>
-										<option value="Autre">Autre</option>
-									</select>
-									<label>Type de Sortie</label>
-								  </div>
+							<div class="row center">									
+									<div class="col">
+										<i class="material-icons prefix">add_circle</i>
+									</div> 
+									<div class="col s2">
+										<label>Type d'évènement *</label>
+									</div> 
+									<div class="col s11">
+										<select class = "browser-default" name="type">
+										  <option value = "Plongée">Plongée</option>
+										  <option value = "Piscine">Piscine</option>
+										  <option value = "Théorie">Théorie</option>
+										  <option value = "Vie du Club">Vie du club</option>
+										  <option value = "Autre">Autre</option>
+									   </select>
+									</div> 
+															
 							</div>
 							<div class="row center">
 								<div class="input-field col s12">
@@ -123,15 +129,30 @@ echo $pass_hache; */
 								</div>
 							</div>
 							<div class="row center">
-								<div class="input-field col s6">
-									<i class="material-icons prefix">flare</i>
-									<input id="niveau_min" type="text" class="validate" name='niveau_min'>
-									<label for="niveau_min">Niveau Mini</label>	
+								<div class="input-field col s1">
+									<i class="material-icons prefix">flare</i>										
+								</div> 
+								<div class="input-field col s5">
+										<select class = "browser-default" name="niveau_min">
+										  <option value = "N1">Ouvert à tous</option>
+										  <option value = "N1">N1</option>
+										  <option value = "N2">N2</option>
+										  <option value = "N3">N3</option>
+										  <option value = "Trimix">Trimix</option>
+										  <option value = "Autre">Autre</option>
+									   </select>										
 								</div>
-								<div class="input-field col s6">
-									<i class="material-icons prefix">toys</i>
-									<input id="lieu" type="text" class="validate" name='lieu'>
-									<label for="lieu">Lieu </label>
+								<div class="input-field col s1">
+									<i class="material-icons prefix">toys</i>									
+								</div> 
+								<div class="input-field col s5">
+										<select class = "browser-default" name="lieu">
+										  <option value = "Mer">Mer</option>
+										  <option value = "Piscine">Piscine</option>
+										  <option value = "Club">Club</option>
+										  <option value = "Locaux_sociaux">Locaux Sociaux</option>
+										  <option value = "Autre">Autre</option>
+									   </select>										
 								</div>
 							</div>
 							<div class="row center">
@@ -155,10 +176,12 @@ echo $pass_hache; */
 
   <?php include("tools/footer.php"); ?>
 
-  <!--  Scripts-->
+  <!--  Scripts  
+
+  -->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="js/materialize.js"></script>
-  <script src="js/init.js"></script>
+  <script src="js/initi.js"></script>
 
 </body>
 

@@ -33,7 +33,6 @@ echo $pass_hache; */
 							
 			$req1= $bdd->prepare('SELECT * FROM evenements'); // WHERE date_evt>NOW() ORDER BY date_evt');
 			$req1->execute(array());
-			$resultat = $req1->fetch();
 			
 			// Mise ne place de la trame du tableau
 			?>
@@ -77,7 +76,12 @@ echo $pass_hache; */
 						<label><?php echo $resultat['type']?></label>							
 					</div>
 					<div class="input-field col s3">
-						<label><?php echo $resultat['titre']?></label>							
+						<label><?php 
+							if(strlen($resultat['titre'])>40)
+							{echo substr($resultat['titre'],0,37).'...';}
+							else 
+								echo $resultat['titre'];
+						?></label>							
 					</div>
 					<div class="input-field col s1">
 						<label><?php echo $resultat['date_evt']?></label>							
@@ -98,7 +102,12 @@ echo $pass_hache; */
 						<label><?php echo $resultat['lieu']?></label>						
 					</div>
 					<div class="input-field col s2">
-						<label><?php echo $resultat['remarques']?></label>						
+						<label><?php 
+							if(strlen($resultat['remarques'])>20)
+							{echo substr($resultat['remarques'],0,17).'...';}
+							else 
+								echo $resultat['remarques'];
+						?></label>						
 					</div>
 				</div>
 			<?php
@@ -117,7 +126,7 @@ echo $pass_hache; */
   <!--  Scripts-->
   <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script src="js/materialize.js"></script>
-  <script src="js/initt.js"></script>
+  <script src="js/initi.js"></script>
 
 </body>
 
