@@ -55,11 +55,6 @@
 
             include("tools/registration_success.php"); 
             $req2->closeCursor(); //requête terminée
-            ?>
-            <div class="row center">
-              <a class="waves-effect waves-light btn blue darken-4" href="login.php">Se connecter</a>
-            </div>
-            <?php
           }
           else // L'email n'a pas une forme valide
           {

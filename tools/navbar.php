@@ -27,7 +27,7 @@
             }
             ?>
             <li><a href="logout.php">Déconnexion</a></li>
-            <li><a href="#"><?php echo $_SESSION['pseudo']; ?></a></li>
+            <li><a href="home.php"><?php echo $_SESSION['pseudo']; ?></a></li>
             <?php   
           }
           else // Si non membre
