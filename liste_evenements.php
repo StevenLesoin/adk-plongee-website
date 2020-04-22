@@ -20,6 +20,11 @@
 echo $pass_hache; */
 ?>
 
+<?php
+		// Traitement des inscriptions, désinscriptions (Les liens vers les plongées sont faites dans le formulaire)
+?>
+
+<!--	Affichage des plongées  -->
   <div class="section no-pad-bot" id="index-banner">
   	<div class="container">
     	<br><br>
@@ -40,8 +45,8 @@ echo $pass_hache; */
 				<div class="input-field col s1">
 					<label>Type</label>							
 				</div>
-				<div class="input-field col s3">
-					<label>Titre</label>
+				<div class="input-field col s2">
+					<label>Titre <u>(Lien vers sortie)</u></label>
 				</div>
 				<div class="input-field col s1">
 					<label>Date</label>							
@@ -64,6 +69,9 @@ echo $pass_hache; */
 				<div class="input-field col s2">
 					<label>Remarques</label>
 				</div>
+				<div class="input-field col s1">
+					<label>Inscription</label>
+				</div>
 			</div>
 			
 			<?php
@@ -75,22 +83,22 @@ echo $pass_hache; */
 					<div class="input-field col s1">
 						<label><?php echo $resultat['type']?></label>							
 					</div>
-					<div class="input-field col s3">
-						<label><?php 
-							if(strlen($resultat['titre'])>40)
-							{echo substr($resultat['titre'],0,37).'...';}
+					<div class="input-field col s2">
+						<label><u><?php 
+							if(strlen($resultat['titre'])>20)
+							{echo substr($resultat['titre'],0,17).'...';}
 							else 
 								echo $resultat['titre'];
-						?></label>							
+						?></u></label>							
 					</div>
 					<div class="input-field col s1">
-						<label><?php echo $resultat['date_evt']?></label>							
+						<label><?php echo date("D", strtotime($resultat['date_evt']))."<br>".$resultat['date_evt']?></label>							
 					</div>
 					<div class="input-field col s1">
 						<label><?php echo $resultat['heure_evt']?></label>							
 					</div>
 					<div class="input-field col s1">
-						<label><?php echo $resultat['date_lim']?></label>							
+						<label><?php echo date("D", strtotime($resultat['date_lim']))."<br>".$resultat['date_lim']?></label>							
 					</div>
 					<div class="input-field col s1">
 						<label><?php echo $resultat['heure_lim']?></label>							
@@ -108,6 +116,29 @@ echo $pass_hache; */
 							else 
 								echo $resultat['remarques'];
 						?></label>						
+					</div>
+					<div class="input-field col s1">
+					<?php	
+							// On va lire si des inscriptions sont enregistrées dans la table "inscription" pour pouvoir afficher si le membre est inscrit ou non
+							$req2= $bdd->prepare('SELECT * FROM inscriptions WHERE id_evt="'.$resultat['id'].'"'); // ### 1 a remplacer par l'ID du mec Loggé
+							$req2->execute(array());
+							$deja_inscrit=0;
+							while ($inscrit = $req2->fetch())
+							{
+								if($inscrit[1]==1)	// ### 1 à remplacer par l'ID du mec connecté
+								{
+									$deja_inscrit=1;
+								}
+							}
+							if($deja_inscrit==1)  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+							{	// ### Mettre une popup pour valider la désincription sur action de clic
+								?>
+								<a href="https://www.facebook.com/"><i class="material-icons prefix">cancel</i></a>
+								
+								
+							<?php }		// Sinon de s'inscrire
+								// ### Mettre une pop up pour valider l'inscription sur action de clic
+							else{?> <a href="https://www.facebook.com/"><i class="material-icons prefix">check_circle</i></a><?php } ?>
 					</div>
 				</div>
 			<?php

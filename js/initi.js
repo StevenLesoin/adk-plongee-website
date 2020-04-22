@@ -9,7 +9,9 @@
 	$('select').formSelect();
   }); // end of document ready
   
+  
 	 document.write("2");
 })(jQuery); // end of jQuery name space
 
-	 document.write("3");
+
+document.write("3");

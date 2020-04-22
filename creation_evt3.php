@@ -4,17 +4,23 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
   <title>Nouvel évènement</title>
-
+   
+      <script type = "text/javascript"
+         src = "https://code.jquery.com/jquery-2.1.1.min.js"></script>           
+		<script>
+		 $(document).ready(function() {
+			$('select').material_select();
+		 });
+		 
+	  </script>
+  
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
-  
-	<script>
-	 $(document).ready(function() {
-		$('select').material_select();
-	 });
-  </script>
+    
+	<!-- Fonctions de la feuille -->
+
   
 </head>
 
@@ -39,10 +45,15 @@ echo $pass_hache; */
 				{	// Formulaire déjà rempli avec les champs obligatoires, on le traite
 					
 					
-					include("tools/data_base_connection.php");
-						$date_d = date('y-m-d');
-						$req2= $bdd->prepare('INSERT INTO evenements(type, titre, date_evt, heure_evt, date_lim, heure_lim, niveau_min, lieu, remarques, pseudo, date_publi) VALUES(:type, :titre, :date_evt, :heure_evt, :date_lim, :heure_lim, :niveau_min, :lieu, :remarques, \'Vide\',\'Vide\')');
+					include("tools/data_base_connection.php");						
+						$result = $bdd->query("SELECT MAX(id) FROM evenements");
+						$row = $result->fetch();
+						$req1 = $row[0];
+						$id = ++$req1;
+						
+						$req2= $bdd->prepare('INSERT INTO evenements(id, type, titre, date_evt, heure_evt, date_lim, heure_lim, niveau_min, lieu, remarques, pseudo, date_publi) VALUES(:id, :type, :titre, :date_evt, :heure_evt, :date_lim, :heure_lim, :niveau_min, :lieu, :remarques, \'Vide\',\'Vide\')');
 						$req2->execute(array(
+						  'id' => $id,
 						  'type' => $_POST['type'],
 						  'titre' => $_POST['titre'],
 						  'date_evt' => $_POST['date_evt'],
