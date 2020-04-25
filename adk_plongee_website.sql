@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le :  jeu. 23 avr. 2020 à 21:46
+-- Généré le :  sam. 25 avr. 2020 à 19:09
 -- Version du serveur :  10.4.10-MariaDB
 -- Version de PHP :  7.3.12
 
@@ -51,12 +51,9 @@ CREATE TABLE IF NOT EXISTS `evenements` (
 --
 
 INSERT INTO `evenements` (`id`, `type`, `titre`, `date_evt`, `heure_evt`, `date_lim`, `heure_lim`, `niveau_min`, `lieu`, `max_part`, `remarques`, `pseudo`, `date_publi`) VALUES
-(1, 'Plongée', 'Sortie de nuit !', '2020-04-25', '00:00:01', '2020-04-24', '19:00:00', 'N1', 'Mer', 12, 'Lampe obligatoire', 'Vide', 'Vide'),
-(2, 'Plongée', 'Plongée 2', '2020-04-26', '00:00:01', '2020-04-25', '17:00:00', 'N2', 'Mer', 99, 'Du bord :-(', 'Vide', 'Vide'),
-(3, 'Plongée', 'Test 20:00', '2020-05-12', '00:00:01', '2020-05-12', '19:00:00', 'N1', 'Mer', 12, '', 'Vide', 'Vide'),
-(4, 'Plongée', 'Plongée journée Kleber', '2020-07-01', '08:15:00', '2020-06-30', '21:00:00', 'N3', 'Mer', 7, 'Pour ceux préparés aux profondes avant', 'Vide', 'Vide'),
-(6, 'Plongée', 'Plongée de reprise', '2020-05-11', '08:15:00', '2020-05-10', '21:00:00', 'N1', 'Mer', 12, 'N\'oubliez pas votre combi !', 'Vide', 'Vide'),
-(7, 'Plongée', 'Pot de reprise', '2020-05-11', '08:15:00', '2020-05-10', '22:00:00', 'N1', 'Club', 7, 'A l\'heure', 'Vide', 'Vide'),
+(12, 'Théorie', 'Séance Nitrox Confirmé', '2020-05-15', '20:00:00', '2020-05-15', '18:00:00', 'N0', 'Club', 12, 'Apporter de quoi noter', 'MAHE Clément', 'Sat-25/04/2020 18:58:15'),
+(13, 'Plongée', 'Dellec', '2020-05-11', '15:00:00', '2020-05-11', '15:00:00', 'N0', 'Mer', 12, 'Pour remettre la tête sous l\'eau après le confinement', 'MAHE Clément', 'Sat-25/04/2020 18:58:55'),
+(11, 'Plongée', 'Katingo Baby', '2020-05-20', '08:15:00', '2020-05-19', '21:00:00', 'N3', 'Mer', 12, 'Ca va envoyer ! ', 'MAHE Clément', '25-04-2020 14:57:24'),
 (10, 'Vie du Club', 'AG 2021', '2021-02-02', '19:00:00', '2021-02-02', '19:00:00', 'N1', 'Locaux_sociaux', 99, 'Pot à l\'issue de l\'AG', 'Vide', 'Vide');
 
 -- --------------------------------------------------------
@@ -68,24 +65,46 @@ INSERT INTO `evenements` (`id`, `type`, `titre`, `date_evt`, `heure_evt`, `date_
 DROP TABLE IF EXISTS `inscriptions`;
 CREATE TABLE IF NOT EXISTS `inscriptions` (
   `id_evt` int(11) NOT NULL,
-  `id_membre` int(11) NOT NULL
+  `id_membre` int(11) NOT NULL,
+  `time_inscr` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `commentaire` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `inscriptions`
 --
 
-INSERT INTO `inscriptions` (`id_evt`, `id_membre`) VALUES
-(6, 1),
-(1, 2),
-(2, 1),
-(1, 3),
-(1, 1),
-(4, 1),
-(7, 1),
-(10, 1),
-(4, 2),
-(3, 3);
+INSERT INTO `inscriptions` (`id_evt`, `id_membre`, `time_inscr`, `commentaire`) VALUES
+(10, 4, '2020-04-25 19:01:04', ' '),
+(12, 4, '2020-04-25 18:59:47', ' '),
+(12, 2, '2020-04-25 19:06:00', 'Attention aux oreilles'),
+(10, 2, '2020-04-25 19:06:00', 'Yo'),
+(13, 1, '2020-04-25 19:05:22', ''),
+(13, 4, '2020-04-25 19:08:11', 'C\'est une plongée qui vaut le coup quand même'),
+(11, 4, '2020-04-25 19:08:48', ' ');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `invites`
+--
+
+DROP TABLE IF EXISTS `invites`;
+CREATE TABLE IF NOT EXISTS `invites` (
+  `id_evt` int(11) NOT NULL,
+  `nom` text NOT NULL,
+  `prenom` text NOT NULL,
+  `niveau` text NOT NULL,
+  `commentaire` text NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `invites`
+--
+
+INSERT INTO `invites` (`id_evt`, `nom`, `prenom`, `niveau`, `commentaire`) VALUES
+(13, 'Capitaine', 'Michel', 'E2', 'Invité par MAHE Clément à 25-04-2020 19:07:22 : Il n\'a pas pris sa licence cette année'),
+(11, 'Marteau', 'Jean Paul', 'E4', 'Invité par MAHE Clément à 25-04-2020 19:00:15 : Pour faire DP Trimix');
 
 -- --------------------------------------------------------
 
@@ -102,6 +121,7 @@ CREATE TABLE IF NOT EXISTS `membres` (
   `prenom` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `privilege` varchar(255) DEFAULT NULL,
+  `oubli_mdp` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
@@ -109,11 +129,10 @@ CREATE TABLE IF NOT EXISTS `membres` (
 -- Déchargement des données de la table `membres`
 --
 
-INSERT INTO `membres` (`id`, `pseudo`, `mdp`, `nom`, `prenom`, `email`, `privilege`) VALUES
-(1, 'sle', '$2y$10$V8bLw1HtqNcr8GJiBJwZIeQcT9SRqAm1QXbrJhrPpzPikhz9h/1BW', 'Lesoin', 'Steven', 'steven.lesoin@gmail.com', 'administrateur'),
-(2, 'luc', '$2y$10$MZfLQpeF4261c5dxrGqqOeXcwYrdZZJKBhcmMpJ3iDDeoT0SNYCeO', 'Carof', 'Lucie', 'lucie.carof@yahoo.fr', 'membre'),
-(3, 'Clem', 'test', 'MAHE', 'Clément', 'clement.mahe@gmail.com', 'Administrateur'),
-(4, 'tra_ma_sea_rider', '$2y$10$n8lRKzHMTEc9wvRQ1OOteuZoBD2zYn9lS0GkgPzo0oQYdcNPAaB4.', 'MAHE', 'Clément', 'clement.mahe@gmail.com', 'membre');
+INSERT INTO `membres` (`id`, `pseudo`, `mdp`, `nom`, `prenom`, `email`, `privilege`, `oubli_mdp`) VALUES
+(1, 'sle', '$2y$10$V8bLw1HtqNcr8GJiBJwZIeQcT9SRqAm1QXbrJhrPpzPikhz9h/1BW', 'Lesoin', 'Steven', 'steven.lesoin@gmail.com', 'administrateur', 0),
+(2, 'luc', '$2y$10$MZfLQpeF4261c5dxrGqqOeXcwYrdZZJKBhcmMpJ3iDDeoT0SNYCeO', 'Carof', 'Lucie', 'lucie.carof@yahoo.fr', 'membre', 0),
+(4, 'Clément', '$2y$10$QiPrwqnh73aEAkZHrISrYewMdGZIWxIv6JfQHK2lEIlrgF3sCv1Iu', 'MAHE', 'Clément', 'clement.mahe@gmail.com', 'administrateur', 0);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

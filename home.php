@@ -1,3 +1,8 @@
+<?php
+// On démarre la session AVANT d'écrire du code HTML
+session_start()
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,47 +19,68 @@
 <body>
 
 	<?php 
-	try
+	if(isset($_SESSION['pseudo']) AND isset($_SESSION['privilege'])) // Si déjà connecté
+    {
+    	if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
+		{
+			header('location: edit_password.php');
+		}
+    	include("tools/navbar.php"); 
+    	include("tools/account_info.php"); 
+    }
+	else if(isset($_POST['login']) AND isset($_POST['password'])) // Si tentative de connexion
 	{
-		$bdd = new PDO('mysql:host=localhost;dbname=adk_plongee_website;charset=utf8', 'root', '', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-	}
-	catch (Exception $e)
-	{
-	    die('Erreur : ' . $e->getMessage());
-	}
+		include("tools/data_base_connection.php");
 
-	$pseudo = htmlspecialchars($_POST['login']);
-	//  Récupération de l'utilisateur et de son pass hashé
-	$req = $bdd->prepare('SELECT id, mdp, privilege FROM membres WHERE pseudo = :pseudo');
-	$req->execute(array(
-	    'pseudo' => $pseudo));
-	$resultat = $req->fetch();
+		$pseudo = htmlspecialchars($_POST['login']);
+		//  Récupération de l'utilisateur et de son pass hashé
+		$req = $bdd->prepare('SELECT id, mdp, email, nom, prenom, privilege, oubli_mdp FROM membres WHERE pseudo = :pseudo');
+		$req->execute(array(
+		    'pseudo' => $pseudo));
+		$resultat = $req->fetch();
 
-	// Comparaison du mdp envoyé via le formulaire avec la base
-	$isPasswordCorrect = password_verify($_POST['password'], $resultat['mdp']);
+		// Comparaison du mdp envoyé via le formulaire avec la base
+		$isPasswordCorrect = password_verify($_POST['password'], $resultat['mdp']);
 
-	if (!$resultat)
-	{
-		include("tools/navbar.php"); 
-		include("tools/login_failure.php");
+		if (!$resultat) // Pseudo inconnu 
+		{
+			include("tools/navbar.php"); 
+			include("tools/login_failure.php");
+		}
+		else
+		{
+		    if ($isPasswordCorrect) {
+		        $_SESSION['id'] = $resultat['id'];
+		        $_SESSION['pseudo'] = $pseudo;
+		        $_SESSION['email'] = $resultat['email'];
+		        $_SESSION['prenom'] = $resultat['prenom'];
+		        $_SESSION['nom'] = $resultat['nom'];
+		        $_SESSION['privilege'] = $resultat['privilege'];	
+		        $_SESSION['oubli_mdp'] = $resultat['oubli_mdp'];	      
+				
+				if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
+				{
+					header('location: edit_password.php');
+				}
+				else
+				{
+					include("tools/navbar.php"); 
+					include("tools/login_success.php");
+					include("tools/account_info.php"); 
+				}
+		    }
+		    else { // Erreur de mot de passe
+		    	include("tools/navbar.php"); 
+		        include("tools/login_failure.php");
+		    }
+		}
+
+		$req->closeCursor(); //requête terminée
 	}
 	else
 	{
-	    if ($isPasswordCorrect) {
-	        session_start();
-	        $_SESSION['id'] = $resultat['id'];
-	        $_SESSION['pseudo'] = $pseudo;
-	        $_SESSION['privilege'] = $resultat['privilege'];
-	        include("tools/navbar.php"); 
-			include("tools/login_success.php");
-	    }
-	    else {
-	    	include("tools/navbar.php"); 
-	        include("tools/login_failure.php");
-	    }
+		header('location: login.php');
 	}
-
-	$req->closeCursor(); //requête terminée
 	?>
 
   <?php include("tools/footer.php"); ?>

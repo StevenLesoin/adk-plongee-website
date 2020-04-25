@@ -1,3 +1,8 @@
+<?php
+// On démarre la session AVANT d'écrire du code HTML
+session_start()
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,11 +33,6 @@
 
 <?php include("tools/navbar.php"); ?>
 
-<?php
-/*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
-echo $pass_hache; */
-?>
-
   <div class="section no-pad-bot" id="index-banner">
   	<div class="container">
     	<br><br>
@@ -40,43 +40,60 @@ echo $pass_hache; */
             <span class="flow-text" col s12">Création d'un nouvel évènement ADK :</span>
         </div>
 		
-		
-		<?php	if(isset($_POST['type']) AND $_POST['type']!='' AND isset($_POST['titre']) AND $_POST['titre']!='' AND isset($_POST['date_evt']) AND $_POST['date_evt']!='' AND isset($_POST['heure_evt']) AND $_POST['heure_evt']!='' AND isset($_POST['date_lim']) AND $_POST['date_lim']!='' AND isset($_POST['heure_lim']) AND $_POST['heure_lim']!='')
+		<?php	if(isset($_POST['type']) AND htmlspecialchars($_POST['type'])!='' AND isset($_POST['titre']) AND htmlspecialchars($_POST['titre'])!='' AND isset($_POST['date_evt']) AND htmlspecialchars($_POST['date_evt'])!='' AND isset($_POST['heure_evt']) AND htmlspecialchars($_POST['heure_evt'])!='' AND isset($_POST['date_lim']) AND htmlspecialchars($_POST['date_lim'])!='' AND isset($_POST['heure_lim']) AND htmlspecialchars($_POST['heure_lim'])!=''
+					AND ((htmlspecialchars($_POST['date_evt'])>htmlspecialchars($_POST['date_lim'])) OR (htmlspecialchars($_POST['date_evt'])==htmlspecialchars($_POST['date_lim']))AND(htmlspecialchars($_POST['heure_evt'])>=htmlspecialchars($_POST['heure_lim']))))
 				{	// Formulaire déjà rempli avec les champs obligatoires, on le traite
-					
-					
-					include("tools/data_base_connection.php");						
-						$result = $bdd->query("SELECT MAX(id) FROM evenements");
-						$row = $result->fetch();
-						$req1 = $row[0];
-						$id = ++$req1;
-						
-						$req2= $bdd->prepare('INSERT INTO evenements(id, type, titre, date_evt, heure_evt, date_lim, heure_lim, niveau_min, lieu,max_part, remarques, pseudo, date_publi) VALUES(:id, :type, :titre, :date_evt, :heure_evt, :date_lim, :heure_lim, :niveau_min, :lieu, :max_part, :remarques, \'Vide\',\'Vide\')');
-						$req2->execute(array(
-						  'id' => $id,
-						  'type' => $_POST['type'],
-						  'titre' => $_POST['titre'],
-						  'date_evt' => $_POST['date_evt'],
-						  'heure_evt' => $_POST['heure_evt'],
-						  'date_lim' => $_POST['date_lim'],
-						  'heure_lim' => $_POST['heure_lim'],
-						  'niveau_min' => $_POST['niveau_min'],
-						  'lieu' => $_POST['lieu'],
-						  'max_part' => $_POST['max_part'],
-						  'remarques' => $_POST['remarques']));
+					$type = htmlspecialchars($_POST['type']);
+					$titre = htmlspecialchars($_POST['titre']);
+					$date_evt = htmlspecialchars($_POST['date_evt']);
+					$heure_evt = htmlspecialchars($_POST['heure_evt']);
+					$date_lim = htmlspecialchars($_POST['date_lim']);
+					$heure_lim = htmlspecialchars($_POST['heure_lim']);
+					if(empty($_POST['niveau_min'])){$niveau_min="N0";}else{$niveau_min=htmlspecialchars($_POST['niveau_min']);}
+					if(empty($_POST['lieu'])){$lieu="Mer";}else{$lieu=htmlspecialchars($_POST['lieu']);}
+					if(empty($_POST['max_part'])){$max_part="12";}else{$max_part=htmlspecialchars($_POST['max_part']);}
+					if(empty($_POST['remarques'])){$remarques=" ";}else{$remarques=htmlspecialchars($_POST['remarques']);}
 
-						$result->closeCursor(); //requête terminée
-						$req2->closeCursor(); //requête terminée
-						
-						// Message pour dire que le formulaire à été est pris en compte
-						?>
-						<div class="row center">
-							<span class="flow-text" col s12">L'évènement à bien été créé</span>
-						</div>
-						<div class="row center">
-							<p><a href="liste_evenements.php">Lien vers la liste des sorties</a></p>
-						</div>
-						<?php
+					include("tools/data_base_connection.php");						
+					// Recherche du numéro d'index à affecter
+					$result = $bdd->query("SELECT MAX(id) FROM evenements");
+					$row = $result->fetch();
+					$req1 = $row[0];
+					$id = ++$req1;
+					
+					// Date courante
+					$datecourante = date_create();
+					$datecourantes = (string)date_format($datecourante, 'D-d/m/Y H:i:s');
+					
+					$req2= $bdd->prepare('INSERT INTO evenements(id, type, titre, date_evt, heure_evt, date_lim, heure_lim, niveau_min, lieu,max_part, remarques, pseudo, date_publi) VALUES(:id, :type, :titre, :date_evt, :heure_evt, :date_lim, :heure_lim, :niveau_min, :lieu, :max_part, :remarques, :pseudo, :date_publi)');
+					$req2->execute(array(
+					  'id' => $id,
+					  'type' => $type,
+					  'titre' => $titre,
+					  'date_evt' => $date_evt,
+					  'heure_evt' => $heure_evt,
+					  'date_lim' => $date_lim,
+					  'heure_lim' => $heure_lim,
+					  'niveau_min' => $niveau_min,
+					  'lieu' => $lieu,
+					  'max_part' => $max_part,
+					  'remarques' => $remarques,
+					  'pseudo' => ($_SESSION['nom']." ".$_SESSION['prenom']),
+					  'date_publi' => $datecourantes));
+
+					$result->closeCursor(); //requête terminée
+					$req2->closeCursor(); //requête terminée
+					
+					// Message pour dire que le formulaire à été est pris en compte
+					?>
+					<div class="row center">
+						<span class="flow-text" col s12">L'évènement à bien été créé</span>
+					</div>
+					<div class="row center">
+						<p><a href="liste_evenements.php">Lien vers la liste des sorties</a></p>
+					</div>
+					<?php
+
 						
 				}
 				else
@@ -87,6 +104,16 @@ echo $pass_hache; */
 						?>
 						<div class="row center">
 							<span class="flow-text" col s12"> <b style='color: red;'>Formulaire incomplet, remplissez tous les champs avec un * </b></span>
+						</div>
+						<?php
+					}
+					if(isset($_POST['date_evt']) AND htmlspecialchars($_POST['date_evt'])!='' AND isset($_POST['heure_evt']) AND htmlspecialchars($_POST['heure_evt'])!='' AND isset($_POST['date_lim']) AND htmlspecialchars($_POST['date_lim'])!='' AND isset($_POST['heure_lim']) AND htmlspecialchars($_POST['heure_lim'])!=''
+					AND((htmlspecialchars($_POST['date_evt'])<htmlspecialchars($_POST['date_lim']))OR((htmlspecialchars($_POST['date_evt'])==htmlspecialchars($_POST['date_lim']))AND(htmlspecialchars($_POST['heure_evt'])<=htmlspecialchars($_POST['heure_lim'])))))
+					{
+						// Message pour dire que la date d'inscription doit être inférieure à la date de l'événement
+						?>
+						<div class="row center">
+							<span class="flow-text" col s12"> <b style='color: red;'>La date / heure limite d'inscription limite doit être antiéreure à la date / heure de l'événement</b></span>
 						</div>
 						<?php
 					}
@@ -135,6 +162,7 @@ echo $pass_hache; */
 							<div class="row center">
 								<div class="input-field col s6">
 									<i class="material-icons prefix">timer_off</i>
+									<?php				?>
 									<input id="date_lim" type="date" class="validate" name='date_lim'>
 									<label for="date_lim">Date limite d'inscription *</label>
 								</div>
@@ -150,7 +178,7 @@ echo $pass_hache; */
 								</div> 
 								<div class="input-field col s4">
 										<select class = "browser-default" name="niveau_min">
-										  <option value = "N1">Ouvert à tous</option>
+										  <option value = "N0">Ouvert à tous</option>
 										  <option value = "N1">N1</option>
 										  <option value = "N2">N2</option>
 										  <option value = "N3">N3</option>
