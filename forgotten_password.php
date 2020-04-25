@@ -102,7 +102,7 @@ session_start()
 
 			include("tools/navbar.php"); 
 		    include("tools/print_msg.php"); // Define printMsg function 
-		  	printMsg('Un email avec un mot de passe provisoir vient de vous être envoyé à l\'adresse suivante : '.$email.'. Veuillez changer ce mot de passe après l\'avoir utilisé pour vous connecter','','');  
+		  	printMsg('Un email avec un mot de passe provisoir vient de vous être envoyé à l\'adresse suivante : '.$email.'. Veuillez changer ce mot de passe après l\'avoir utilisé pour vous connecter.','','');  
 
 		    $req2->closeCursor(); //requête terminée	      
 	  	  }

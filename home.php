@@ -19,14 +19,23 @@ session_start()
 <body>
 
 	<?php 
-	if(isset($_SESSION['pseudo']) AND isset($_SESSION['privilege'])) // Si déjà connecté
+	if(isset($_SESSION['pseudo'])) // Si déjà connecté
     {
     	if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
 		{
 			header('location: edit_password.php');
 		}
-    	include("tools/navbar.php"); 
-    	include("tools/account_info.php"); 
+		else if($_SESSION['inscription_valide']==0) // Inscription non validé
+		{
+			include("tools/navbar.php"); 
+			include("tools/print_msg.php"); // Define printMsg function 
+			$email = $_SESSION['email'];
+  			printMsg('Votre demande d\'inscription n\'a pas encore été validé par l\'administateur. Vous recevrez un email à l\'adresse '. $email.' lorsque celle-ci aura été traité.','',''); 
+		}
+		else{
+	    	include("tools/navbar.php"); 
+	    	include("tools/account_info.php"); 
+    	}
     }
 	else if(isset($_POST['login']) AND isset($_POST['password'])) // Si tentative de connexion
 	{
@@ -34,13 +43,10 @@ session_start()
 
 		$pseudo = htmlspecialchars($_POST['login']);
 		//  Récupération de l'utilisateur et de son pass hashé
-		$req = $bdd->prepare('SELECT id, mdp, email, nom, prenom, privilege, oubli_mdp FROM membres WHERE pseudo = :pseudo');
+		$req = $bdd->prepare('SELECT id, mdp, email, nom, prenom, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE pseudo = :pseudo');
 		$req->execute(array(
 		    'pseudo' => $pseudo));
 		$resultat = $req->fetch();
-
-		// Comparaison du mdp envoyé via le formulaire avec la base
-		$isPasswordCorrect = password_verify($_POST['password'], $resultat['mdp']);
 
 		if (!$resultat) // Pseudo inconnu 
 		{
@@ -50,6 +56,9 @@ session_start()
 		}
 		else
 		{
+			// Comparaison du mdp envoyé via le formulaire avec la base
+			$isPasswordCorrect = password_verify($_POST['password'], $resultat['mdp']);
+
 		    if ($isPasswordCorrect) {
 		        $_SESSION['id'] = $resultat['id'];
 		        $_SESSION['pseudo'] = $pseudo;
@@ -57,7 +66,12 @@ session_start()
 		        $_SESSION['prenom'] = $resultat['prenom'];
 		        $_SESSION['nom'] = $resultat['nom'];
 		        $_SESSION['privilege'] = $resultat['privilege'];	
-		        $_SESSION['oubli_mdp'] = $resultat['oubli_mdp'];	      
+		        $_SESSION['oubli_mdp'] = $resultat['oubli_mdp'];
+		        $_SESSION['niv_plongeur'] = $resultat['niv_plongeur'];	
+		        $_SESSION['niv_encadrant'] = $resultat['niv_encadrant'];	
+		        $_SESSION['actif_saison'] = $resultat['actif_saison'];	
+		        $_SESSION['certif_med'] = $resultat['certif_med'];	
+		        $_SESSION['inscription_valide'] = $resultat['inscription_valide'];		      
 				
 				if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
 				{
@@ -75,6 +89,7 @@ session_start()
 		    	include("tools/navbar.php"); 
 		        include("tools/print_msg.php"); // Define printMsg function 
   				printMsg('Mot de passe incorrect','Réessayer','login.php'); 
+  				printMsg('','Mot de passe oublié','forgotten_password.php'); 
 		    }
 		}
 
