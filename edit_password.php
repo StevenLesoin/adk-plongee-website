@@ -26,14 +26,17 @@ session_start()
 	      include("tools/navbar.php"); 
 	      if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
 		  {
-			include("tools/login_success.php");
+			include("tools/print_msg.php"); // Define printMsg function 
+  			printMsg('Bienvenu !','',''); 
 		  }
 	      include("tools/edit_password_form.php");
 	    }
 	    else if(empty($_POST['password']) OR empty($_POST['new_password1']) OR empty($_POST['new_password2'])) // Un ou plusieurs champs du formulaire sont vides
 	    {
 	      include("tools/navbar.php"); 
-	      include("tools/edit_password_failure.php"); 
+	      include("tools/print_msg.php"); // Define printMsg function 
+	      printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+  		  printMsg('Tous les champs n\'ont pas été remplis','',''); 
 	      include("tools/edit_password_form.php"); 
 	    }
 	    else // Tous les champs du formulaire sont remplis 
@@ -63,15 +66,17 @@ session_start()
 		        $_SESSION['oubli_mdp'] = 0;
 
 				include("tools/navbar.php"); 
-		        include("tools/edit_password_success.php"); 
+		        include("tools/print_msg.php"); // Define printMsg function 
+  		  		printMsg('Mot de passe modifié avec succès !','Mon compte','home.php'); 
 
 		        $req2->closeCursor(); //requête terminée
 		    }
 		    else
 		    {
-		    include("tools/edit_password_failure.php"); 
-		    include("tools/edit_password_new_password_failure.php");
-		    include("tools/edit_password_form.php");  
+			    include("tools/print_msg.php"); // Define printMsg function 
+		      	printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+	  		  	printMsg('Les deux nouveaux mots de passe sont différents','',''); 
+			    include("tools/edit_password_form.php");  
 		    }
 
 		      $req1->closeCursor(); //requête terminée
@@ -79,7 +84,9 @@ session_start()
 	  	  else // Mdp incorrect 
 	  	  {
 	  	      include("tools/navbar.php"); 
-		      include("tools/edit_password_password_failure.php");
+		      include("tools/print_msg.php"); // Define printMsg function 
+	      	  printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+  		      printMsg('Mot de passe incorrect','',''); 
 		      include("tools/edit_password_form.php");  
 	  	  }
 		}

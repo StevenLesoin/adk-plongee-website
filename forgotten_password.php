@@ -27,7 +27,9 @@ session_start()
 	    else if(empty($_POST['pseudo']) OR empty($_POST['email'])) // Tous les champs du formulaire ne sont pas remplis 
 	    {
 	      include("tools/navbar.php"); 
-		  include("tools/forgotten_password_failure.php");
+		  include("tools/print_msg.php"); // Define printMsg function 
+		  printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+		  printMsg('Tous les champs n\'ont pas été remplis','',''); 
 	      include("tools/forgotten_password_form.php");
 	    }
 	    else if(!empty($_POST['pseudo']) AND !empty($_POST['email'])) // Tous les champs du formulaire sont remplis 
@@ -43,7 +45,9 @@ session_start()
 		  if(!$resultat) // Email inconnu 
 		  {
 		  	include("tools/navbar.php"); 
-		  	include("tools/forgotten_password_failure.php");
+		  	include("tools/print_msg.php"); // Define printMsg function 
+		  	printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+		  	printMsg('Email inconnu','',''); 
 	      	include("tools/forgotten_password_form.php");
 		  }
 		  else
@@ -97,7 +101,8 @@ session_start()
 		        'email' => $email));
 
 			include("tools/navbar.php"); 
-		    include("tools/forgotten_password_success.php"); 
+		    include("tools/print_msg.php"); // Define printMsg function 
+		  	printMsg('Un email avec un mot de passe provisoir vient de vous être envoyé à l\'adresse suivante : '.$email.'. Veuillez changer ce mot de passe après l\'avoir utilisé pour vous connecter','','');  
 
 		    $req2->closeCursor(); //requête terminée	      
 	  	  }

@@ -45,7 +45,8 @@ session_start()
 		if (!$resultat) // Pseudo inconnu 
 		{
 			include("tools/navbar.php"); 
-			include("tools/login_failure.php");
+			include("tools/print_msg.php"); // Define printMsg function 
+  			printMsg('Pseudo inconnu','Réessayer','login.php'); 
 		}
 		else
 		{
@@ -65,13 +66,15 @@ session_start()
 				else
 				{
 					include("tools/navbar.php"); 
-					include("tools/login_success.php");
+					include("tools/print_msg.php"); // Define printMsg function 
+  					printMsg('Bienvenu !','',''); 
 					include("tools/account_info.php"); 
 				}
 		    }
 		    else { // Erreur de mot de passe
 		    	include("tools/navbar.php"); 
-		        include("tools/login_failure.php");
+		        include("tools/print_msg.php"); // Define printMsg function 
+  				printMsg('Mot de passe incorrect','Réessayer','login.php'); 
 		    }
 		}
 

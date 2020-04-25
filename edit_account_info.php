@@ -33,7 +33,9 @@ session_start()
 	    else if(empty($_POST['login']) OR empty($_POST['email']) OR empty($_POST['name']) OR empty($_POST['surname']) OR empty($_POST['password'])) // Un ou plusieurs champs du formulaire sont vides
 	    {
 	      include("tools/navbar.php"); 
-	      include("tools/edit_account_info_failure.php"); 
+	      include("tools/print_msg.php"); // Define printMsg function 
+	      printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+  		  printMsg('Tous les champs n\'ont pas été remplis','',''); 
 	      include("tools/edit_account_info_form.php"); 
 	    }
 	    else // Tous les champs du formulaire sont remplis 
@@ -56,8 +58,6 @@ session_start()
 		      $resultat = $req1->fetch();
 		      if( ($pseudo==$_SESSION['pseudo']) OR !$resultat) // Si le pseudo est inchangé ou le noueau pseudo est  disponible
 		      {
-		        // if($_POST['password1']==$_POST['password2']) 
-		        // {
 		          if (preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#", $_POST['email'])) // L'email a une forme valide
 		          {
 		            // Insertion
@@ -76,29 +76,26 @@ session_start()
 			        $_SESSION['nom'] = $_POST['name'];
 
 					include("tools/navbar.php"); 
-		            include("tools/edit_account_info_success.php"); 
+		            include("tools/print_msg.php"); // Define printMsg function 
+		         	printMsg('Informations modifiées avec succès !','Mon compte','home.php'); 
 
 		            $req2->closeCursor(); //requête terminée
 		          }
 		          else // L'email n'a pas une forme valide
 		          {
 		          	include("tools/navbar.php"); 
-		            include("tools/edit_account_info_failure.php"); 
+		          	include("tools/print_msg.php"); // Define printMsg function 
+		         	printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+  		  		  	printMsg('Email invalide','',''); 
 		            include("tools/edit_account_info_form.php");        
 		          }
-		        // }
-		        // else
-		        // {
-		        //   include("tools/edit_account_info_failure.php"); 
-		        //   include("tools/edit_account_info_password_failure.php");
-		        //   include("tools/edit_account_info_form.php");  
-		        // }
 		      }
 		      else // Le pseudo est déjà pris
 		      {
 		      	  include("tools/navbar.php"); 
-		          include("tools/edit_account_info_failure.php"); 
-		          include("tools/edit_account_info_login_failure.php");
+		      	  include("tools/print_msg.php"); // Define printMsg function 
+		          printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+  		  		  printMsg('Ce pseudo n\'est pas disponible','',''); 
 		          include("tools/edit_account_info_form.php");  
 		      }
 
@@ -107,8 +104,9 @@ session_start()
 	  	  else // Mdp incorrect 
 	  	  {
 	  	      include("tools/navbar.php"); 
-		      include("tools/edit_account_info_failure.php"); 
-		      include("tools/edit_account_info_password_failure.php");
+	  	      include("tools/print_msg.php"); // Define printMsg function 
+		      printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+  		  	  printMsg('Mot de passe incorrect','',''); 
 		      include("tools/edit_account_info_form.php");  
 	  	  }
 	  	  $req0->closeCursor(); //requête terminée
