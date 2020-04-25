@@ -21,6 +21,10 @@ session_start()
 	<?php 
 	if(isset($_SESSION['pseudo']) AND isset($_SESSION['privilege'])) // Si déjà connecté
     {
+    	if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
+		{
+			header('location: edit_password.php');
+		}
     	include("tools/navbar.php"); 
     	include("tools/account_info.php"); 
     }
@@ -30,7 +34,7 @@ session_start()
 
 		$pseudo = htmlspecialchars($_POST['login']);
 		//  Récupération de l'utilisateur et de son pass hashé
-		$req = $bdd->prepare('SELECT id, mdp, email, nom, prenom, privilege FROM membres WHERE pseudo = :pseudo');
+		$req = $bdd->prepare('SELECT id, mdp, email, nom, prenom, privilege, oubli_mdp FROM membres WHERE pseudo = :pseudo');
 		$req->execute(array(
 		    'pseudo' => $pseudo));
 		$resultat = $req->fetch();
@@ -38,7 +42,7 @@ session_start()
 		// Comparaison du mdp envoyé via le formulaire avec la base
 		$isPasswordCorrect = password_verify($_POST['password'], $resultat['mdp']);
 
-		if (!$resultat)
+		if (!$resultat) // Pseudo inconnu 
 		{
 			include("tools/navbar.php"); 
 			include("tools/login_failure.php");
@@ -51,12 +55,21 @@ session_start()
 		        $_SESSION['email'] = $resultat['email'];
 		        $_SESSION['prenom'] = $resultat['prenom'];
 		        $_SESSION['nom'] = $resultat['nom'];
-		        $_SESSION['privilege'] = $resultat['privilege'];
-		        include("tools/navbar.php"); 
-				include("tools/login_success.php");
-				include("tools/account_info.php"); 
+		        $_SESSION['privilege'] = $resultat['privilege'];	
+		        $_SESSION['oubli_mdp'] = $resultat['oubli_mdp'];	      
+				
+				if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
+				{
+					header('location: edit_password.php');
+				}
+				else
+				{
+					include("tools/navbar.php"); 
+					include("tools/login_success.php");
+					include("tools/account_info.php"); 
+				}
 		    }
-		    else {
+		    else { // Erreur de mot de passe
 		    	include("tools/navbar.php"); 
 		        include("tools/login_failure.php");
 		    }

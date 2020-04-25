@@ -46,6 +46,9 @@ echo $pass_hache; */
                     <div class="row center">
                         <a class="waves-effect waves-light btn blue darken-4" href="registration.php">Créer un compte</a>
                     </div>
+                    <div class="row center">
+                        <a class="waves-effect waves-light btn blue darken-4" href="forgotten_password.php">Mot de passe oublié</a>
+                    </div>
                 </form>
             </div>
         </div>

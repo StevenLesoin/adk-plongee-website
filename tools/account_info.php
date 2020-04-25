@@ -35,6 +35,9 @@
                 <div class="row center">
                     <a class="waves-effect waves-light btn blue darken-4" href="edit_account_info.php">Modifier ces informations</a>
                 </div>
+                <div class="row center">
+                    <a class="waves-effect waves-light btn blue darken-4" href="edit_password.php">Modifier le mot de passe</a>
+                </div>
             </form>
         </div>
     </div>
