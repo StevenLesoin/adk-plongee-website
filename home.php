@@ -77,6 +77,13 @@ session_start()
 				{
 					header('location: edit_password.php');
 				}
+				else if($_SESSION['inscription_valide']==0) // Inscription non validé
+				{
+					include("tools/navbar.php"); 
+					include("tools/print_msg.php"); // Define printMsg function 
+					$email = $_SESSION['email'];
+  					printMsg('Votre demande d\'inscription n\'a pas encore été validé par l\'administateur. Vous recevrez un email à l\'adresse '. $email.' lorsque celle-ci aura été traité.','',''); 
+				}
 				else
 				{
 					include("tools/navbar.php"); 

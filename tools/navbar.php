@@ -22,7 +22,7 @@
             if($_SESSION['privilege']=='administrateur') // Si admin
             {
               ?>
-              <li><a href="#">Autres</a></li>
+              <li><a href="admin.php">Infos membres</a></li>
               <?php 
             }
             ?>
