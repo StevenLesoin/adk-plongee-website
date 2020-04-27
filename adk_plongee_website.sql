@@ -1,4 +1,5 @@
 -- phpMyAdmin SQL Dump
+<<<<<<< HEAD
 -- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
@@ -8,6 +9,18 @@
 -- Version de PHP : 7.4.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+=======
+-- version 4.9.2
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1:3306
+-- Généré le :  lun. 27 avr. 2020 à 11:37
+-- Version du serveur :  10.4.10-MariaDB
+-- Version de PHP :  7.3.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+>>>>>>> origin/adkPlongeeWebsite_Int
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -18,7 +31,11 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
+<<<<<<< HEAD
 -- Base de données : `adk_plongee_website`
+=======
+-- Base de données :  `adk_plongee_website`
+>>>>>>> origin/adkPlongeeWebsite_Int
 --
 
 -- --------------------------------------------------------
@@ -27,7 +44,12 @@ SET time_zone = "+00:00";
 -- Structure de la table `evenements`
 --
 
+<<<<<<< HEAD
 CREATE TABLE `evenements` (
+=======
+DROP TABLE IF EXISTS `evenements`;
+CREATE TABLE IF NOT EXISTS `evenements` (
+>>>>>>> origin/adkPlongeeWebsite_Int
   `id` int(11) NOT NULL,
   `type` text NOT NULL,
   `titre` text NOT NULL,
@@ -37,21 +59,37 @@ CREATE TABLE `evenements` (
   `heure_lim` time NOT NULL,
   `niveau_min` text NOT NULL,
   `lieu` text NOT NULL,
+<<<<<<< HEAD
   `remarques` text NOT NULL,
   `pseudo` text NOT NULL,
   `date_publi` text NOT NULL
+=======
+  `max_part` int(11) NOT NULL,
+  `remarques` text NOT NULL,
+  `pseudo` text NOT NULL,
+  `date_publi` text NOT NULL,
+  PRIMARY KEY (`id`)
+>>>>>>> origin/adkPlongeeWebsite_Int
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `evenements`
 --
 
+<<<<<<< HEAD
 INSERT INTO `evenements` (`id`, `type`, `titre`, `date_evt`, `heure_evt`, `date_lim`, `heure_lim`, `niveau_min`, `lieu`, `remarques`, `pseudo`, `date_publi`) VALUES
 (1, 'Plongée', 'Sortie de nuit !', '2020-04-25', '00:00:01', '2020-04-24', '19:00:00', 'N1', 'Mer', 'Lampe obligatoire', 'Vide', 'Vide'),
 (2, 'Plongée', 'Plongée 2', '2020-04-26', '00:00:01', '2020-04-25', '17:00:00', 'N2', 'Mer', 'Du bord :-(', 'Vide', 'Vide'),
 (3, 'Plongée', 'Test 20:00', '2020-05-12', '00:00:01', '2020-05-12', '19:00:00', 'N1', 'Mer', '', 'Vide', 'Vide'),
 (4, 'Plongée', 'Plongée de l\'année sur le Kleber', '2020-07-01', '08:15:00', '2020-06-30', '21:00:00', 'N3', 'Mer', 'Pour ceux préparés aux profondes avant', 'Vide', 'Vide'),
 (5, 'Plongée', 'er', '2020-02-02', '20:00:00', '2020-02-02', '20:20:00', 'N1', 'Mer', '', 'Vide', 'Vide');
+=======
+INSERT INTO `evenements` (`id`, `type`, `titre`, `date_evt`, `heure_evt`, `date_lim`, `heure_lim`, `niveau_min`, `lieu`, `max_part`, `remarques`, `pseudo`, `date_publi`) VALUES
+(12, 'Théorie', 'Séance Nitrox Confirmé', '2020-05-15', '20:00:00', '2020-05-15', '18:00:00', 'N0', 'Club', 12, 'Apporter de quoi noter', 'MAHE Clément', 'Sat-25/04/2020 18:58:15'),
+(13, 'Plongée', 'Dellec', '2020-05-11', '15:00:00', '2020-05-11', '15:00:00', 'N0', 'Mer', 12, 'Pour remettre la tête sous l\'eau après le confinement', 'MAHE Clément', 'Sat-25/04/2020 18:58:55'),
+(11, 'Plongée', 'Katingo Baby', '2020-05-20', '08:15:00', '2020-05-19', '21:00:00', 'N3', 'Mer', 12, 'Ca va envoyer ! ', 'MAHE Clément', '25-04-2020 14:57:24'),
+(10, 'Vie du Club', 'AG 2021', '2021-02-02', '19:00:00', '2021-02-02', '19:00:00', 'N1', 'Locaux_sociaux', 99, 'Pot à l\'issue de l\'AG', 'Vide', 'Vide');
+>>>>>>> origin/adkPlongeeWebsite_Int
 
 -- --------------------------------------------------------
 
@@ -59,21 +97,63 @@ INSERT INTO `evenements` (`id`, `type`, `titre`, `date_evt`, `heure_evt`, `date_
 -- Structure de la table `inscriptions`
 --
 
+<<<<<<< HEAD
 CREATE TABLE `inscriptions` (
   `id_evt` int(11) NOT NULL,
   `id_adhérent` int(11) NOT NULL
+=======
+DROP TABLE IF EXISTS `inscriptions`;
+CREATE TABLE IF NOT EXISTS `inscriptions` (
+  `id_evt` int(11) NOT NULL,
+  `id_membre` int(11) NOT NULL,
+  `time_inscr` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `commentaire` text NOT NULL
+>>>>>>> origin/adkPlongeeWebsite_Int
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Déchargement des données de la table `inscriptions`
 --
 
+<<<<<<< HEAD
 INSERT INTO `inscriptions` (`id_evt`, `id_adhérent`) VALUES
 (1, 1),
 (1, 2),
 (2, 1),
 (1, 3),
 (3, 1);
+=======
+INSERT INTO `inscriptions` (`id_evt`, `id_membre`, `time_inscr`, `commentaire`) VALUES
+(12, 4, '2020-04-25 18:59:47', ' '),
+(12, 2, '2020-04-25 19:06:00', 'Attention aux oreilles'),
+(10, 2, '2020-04-25 19:06:00', 'Yo'),
+(13, 1, '2020-04-25 19:05:22', ''),
+(13, 4, '2020-04-25 19:08:11', 'C\'est une plongée qui vaut le coup quand même'),
+(11, 4, '2020-04-25 19:08:48', ' ');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `invites`
+--
+
+DROP TABLE IF EXISTS `invites`;
+CREATE TABLE IF NOT EXISTS `invites` (
+  `id_evt` int(11) NOT NULL,
+  `nom` text NOT NULL,
+  `prenom` text NOT NULL,
+  `niveau` text NOT NULL,
+  `commentaire` text NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Déchargement des données de la table `invites`
+--
+
+INSERT INTO `invites` (`id_evt`, `nom`, `prenom`, `niveau`, `commentaire`) VALUES
+(13, 'Capitaine', 'Michel', 'E2', 'Invité par MAHE Clément à 25-04-2020 19:07:22 : Il n\'a pas pris sa licence cette année'),
+(11, 'Marteau', 'Jean Paul', 'E4', 'Invité par MAHE Clément à 25-04-2020 19:00:15 : Pour faire DP Trimix');
+>>>>>>> origin/adkPlongeeWebsite_Int
 
 -- --------------------------------------------------------
 
@@ -81,27 +161,44 @@ INSERT INTO `inscriptions` (`id_evt`, `id_adhérent`) VALUES
 -- Structure de la table `membres`
 --
 
+<<<<<<< HEAD
 CREATE TABLE `membres` (
   `id` int(11) NOT NULL,
+=======
+DROP TABLE IF EXISTS `membres`;
+CREATE TABLE IF NOT EXISTS `membres` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+>>>>>>> origin/adkPlongeeWebsite_Int
   `pseudo` varchar(255) DEFAULT NULL,
   `mdp` varchar(255) DEFAULT NULL,
   `nom` varchar(255) DEFAULT NULL,
   `prenom` varchar(255) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `privilege` varchar(255) DEFAULT NULL,
+<<<<<<< HEAD
   `oubli_mdp` int(11) NOT NULL DEFAULT 0,
+=======
+  `oubli_mdp` int(11) NOT NULL,
+>>>>>>> origin/adkPlongeeWebsite_Int
   `niv_plongeur` int(11) NOT NULL DEFAULT 0,
   `niv_encadrant` int(11) NOT NULL DEFAULT 0,
   `actif_saison` int(11) NOT NULL DEFAULT 0,
   `certif_med` date NOT NULL,
+<<<<<<< HEAD
   `inscription_valide` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+=======
+  `inscription_valide` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+>>>>>>> origin/adkPlongeeWebsite_Int
 
 --
 -- Déchargement des données de la table `membres`
 --
 
 INSERT INTO `membres` (`id`, `pseudo`, `mdp`, `nom`, `prenom`, `email`, `privilege`, `oubli_mdp`, `niv_plongeur`, `niv_encadrant`, `actif_saison`, `certif_med`, `inscription_valide`) VALUES
+<<<<<<< HEAD
 (1, 'sle', '$2y$10$V8bLw1HtqNcr8GJiBJwZIeQcT9SRqAm1QXbrJhrPpzPikhz9h/1BW', 'Lesoin', 'Steven', 'steven.lesoin@gmail.com', 'administrateur', 0, 3, 0, 1, '2020-01-21', 1),
 (2, 'luc', '$2y$10$MZfLQpeF4261c5dxrGqqOeXcwYrdZZJKBhcmMpJ3iDDeoT0SNYCeO', 'Carof', 'Lucie', 'lucie.carof@yahoo.fr', 'membre', 0, 0, 0, 0, '0000-00-00', 0),
 (5, 'test', '$2y$10$b2FHz2Zy7KRPePdtrRmdruy/Ei.Em7erH2sczhu1EvT9rX7HEafKa', 'tutu', 'toto', 'test@test.com', 'membre', 0, 0, 0, 0, '2019-04-01', 1);
@@ -131,6 +228,12 @@ ALTER TABLE `membres`
 --
 ALTER TABLE `membres`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+=======
+(1, 'sle', '$2y$10$V8bLw1HtqNcr8GJiBJwZIeQcT9SRqAm1QXbrJhrPpzPikhz9h/1BW', 'Lesoin', 'Steven', 'steven.lesoin@gmail.com', 'administrateur', 0, 3, 1, 1, '0000-00-00', 1),
+(2, 'luc', '$2y$10$MZfLQpeF4261c5dxrGqqOeXcwYrdZZJKBhcmMpJ3iDDeoT0SNYCeO', 'Carof', 'Lucie', 'lucie.carof@yahoo.fr', 'membre', 0, 1, 0, 0, '0000-00-00', 0),
+(4, 'Clément', '$2y$10$KuJlFd.wMHJ98HXvKPYOuOcAnsULTcELjdeXkCh/ctRjrAzUqmmQu', 'MAHE', 'Clément', 'clement.mahe@gmail.com', 'administrateur', 0, 5, 3, 0, '0000-00-00', 1),
+(5, 'test', '$2y$10$b2FHz2Zy7KRPePdtrRmdruy/Ei.Em7erH2sczhu1EvT9rX7HEafKa', 'tutu', 'toto', 'test@test.com', 'membre', 0, 1, 0, 0, '2019-04-01', 1);
+>>>>>>> origin/adkPlongeeWebsite_Int
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
