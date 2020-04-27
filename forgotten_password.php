@@ -77,7 +77,8 @@ session_start()
                             "</body>".
                             "</html>";
                         //===== Envoi du mail
-                        mail($to, $objet, $contenu, $header);
+						
+						//mail($to, $objet, $contenu, $header);
 
 						// echo ini_get('SMTP') . ":" . ini_get('smtp_port');
 						// // The message

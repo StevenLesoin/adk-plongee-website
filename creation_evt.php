@@ -47,7 +47,6 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 	}
 	else{
 		include("tools/navbar.php"); 
-		include("tools/account_info.php"); 
 		?>
 
   <div class="section no-pad-bot" id="index-banner">
