@@ -40,7 +40,7 @@
                         </div>
                     </div>
                     <div class="row center">
-                        <button class="btn waves-effect waves-light blue darken-4" type="submit" name="submit">Se connecter</button> 
+                        <button class="btn waves-effect waves-light blue darken-4" type="submit" name="submit">Créer un compte</button> 
                     </div>
                 </form>
             </div>

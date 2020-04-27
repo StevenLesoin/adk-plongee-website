@@ -36,8 +36,10 @@ session_start()
 <?php
 /*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
 echo $pass_hache; */
-?>
 
+if(isset($_SESSION['pseudo'])) // Si déjà connecté
+{
+?>
   <div class="section no-pad-bot" id="index-banner">
   	<div class="container">
     	<br><br>
@@ -213,9 +215,11 @@ echo $pass_hache; */
 				</div>
 				<?php
 				$test_passage=0;
+				$yaunan = strtotime('-1 year -1 day');		// timestamp d'il y a un an	
 				//Affichage de la liste des inscrits membres: 
 				$req2= $bdd->prepare('SELECT * FROM inscriptions WHERE id_evt="'.$id_evt.'" ORDER BY time_inscr'); // On va chercher dans la liste d'inscription, les id des personnes inscrites
 				$req2->execute(array());
+				
 				while ($inscrit = $req2->fetch())		// Tant qu'il y a des inscrits, on les affiche
 				{
 					$test_passage=1;
@@ -226,10 +230,22 @@ echo $pass_hache; */
 					$id_membre = $donnees_membre[0];
 					$nom_membre = $donnees_membre[3];
 					$prenom_nembre = $donnees_membre[4];
-					$niv_membre = $donnees_membre[6];
+					$certif_membre = $donnees_membre[11];
+					$niv_membre = $donnees_membre[8];
+					$niv_encad = $donnees_membre[9];
 					$comm_membre = $inscrit[3];
 					
-					echo("<div class='row center'>");	// Nouvelle ligne
+					if(strtotime($certif_membre)<$yaunan)		// Si le gars est pas à jour de certif médical, on affiche sa ligne en rouge -> Gaulé Capi on t'a vu !! 
+					{?>
+						<div class='row center' style='color: red'>
+					<?php
+					}
+					else{
+						echo("<div class='row center'>");	// Nouvelle ligne
+					}
+					
+					
+
 					// Afficher le nom du membres 
 					echo("<div class='col s2' align='left'>");
 					echo $nom_membre;
@@ -240,7 +256,8 @@ echo $pass_hache; */
 					echo("</div>");
 					// Afficher le niveau du memebre
 					echo("<div class='col s2' align='left'>");
-					echo $niv_membre;						// ## Champ à recadrer avec le bon champ du niveaux des gars dans l'évolution de la table membre
+					if($niv_encad!=0){echo "N".$niv_membre."/E".$niv_encad;}
+					else{echo "N".$niv_membre;}
 					echo("</div>");
 					if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
 					{
@@ -400,6 +417,18 @@ echo $pass_hache; */
 		
   	</div>
   </div>
+
+<?php
+}
+else	// Pas loggé
+{
+	?>
+	<div class="row center">
+	<span class="flow-text" col s12"> <b style='color: red;'>Vous n'avez pas accès à cette page, il vaut avoir un compte validé pour y avoir accès</b></span>
+	</div>
+	<?php
+}
+?>
 
   <?php include("tools/footer.php"); ?>
 

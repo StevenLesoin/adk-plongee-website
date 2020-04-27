@@ -53,31 +53,31 @@
               'nom' => $_POST['name'],
               'prenom' => $_POST['surname']));
 
-            include("tools/registration_success.php"); 
+            include("tools/print_msg.php"); // Define printMsg function 
+            printMsg('Inscription réussie !','Se connecter','login.php'); 
             $req2->closeCursor(); //requête terminée
-            ?>
-            <div class="row center">
-              <a class="waves-effect waves-light btn blue darken-4" href="login.php">Se connecter</a>
-            </div>
-            <?php
           }
           else // L'email n'a pas une forme valide
           {
-            include("tools/registration_failure.php"); 
+            include("tools/print_msg.php"); // Define printMsg function 
+            printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+            printMsg('Email invalide','',''); 
             include("tools/registration_form.php");        
           }
         }
         else
         {
-          include("tools/registration_failure.php"); 
-          include("tools/registration_password_failure.php");
+          include("tools/print_msg.php"); // Define printMsg function 
+          printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+          printMsg('Les deux mot de passe sont différents','',''); 
           include("tools/registration_form.php");  
         }
       }
       else // Le pseudo est déjà pris
       {
-        include("tools/registration_failure.php"); 
-        include("tools/registration_login_failure.php");
+        include("tools/print_msg.php"); // Define printMsg function 
+        printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+        printMsg('Ce pseudo n\'est pas dipsonible','',''); 
         include("tools/registration_form.php");  
       }
 

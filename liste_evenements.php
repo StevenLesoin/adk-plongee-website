@@ -26,28 +26,31 @@ echo $pass_hache; */
 ?>
 
 <?php
-		// Traitement des inscriptions, désinscriptions (Les liens vers les plongées sont faites dans le formulaire)
-		if(isset($_POST['id_evt']) AND $_POST['id_evt']!='')
-		{	// Clic sur un des boutons, on va récupérer le numéro ID de l'événement pour inscrire le mec dont la session est active
-			include("tools/data_base_connection.php");						
-			if($_POST['act']=="D")
-			{
-				$req2= $bdd->prepare('DELETE FROM inscriptions WHERE id_evt=:id_evt AND id_membre=:id_membre');	// On supprime l'inscription du gus
-				$req2->execute(array(
-				  'id_evt' => $_POST['id_evt'],
-				  'id_membre' => $_SESSION['id']));				// ### A changer par l'ID de la session active   
-			}
-			else
-			{
-				$time_inscr = new DateTime();
-				$req2= $bdd->prepare('INSERT INTO inscriptions(id_evt, id_membre, commentaire) VALUES(:id_evt, :id_membre, :commentaire)');
-				$req2->execute(array(
-				  'id_evt' => $_POST['id_evt'],
-				  'id_membre' => $_SESSION['id'],
-				  'commentaire' => " "));				// ### A changer par l'ID de la session active				  
-			}  
-			$req2->closeCursor(); //requête terminée
-		}	
+		if(isset($_SESSION['pseudo'])) // Si déjà connecté
+		{
+			// Traitement des inscriptions, désinscriptions (Les liens vers les plongées sont faites dans le formulaire)
+			if(isset($_POST['id_evt']) AND $_POST['id_evt']!='')
+			{	// Clic sur un des boutons, on va récupérer le numéro ID de l'événement pour inscrire le mec dont la session est active
+				include("tools/data_base_connection.php");						
+				if($_POST['act']=="D")
+				{
+					$req2= $bdd->prepare('DELETE FROM inscriptions WHERE id_evt=:id_evt AND id_membre=:id_membre');	// On supprime l'inscription du gus
+					$req2->execute(array(
+					  'id_evt' => $_POST['id_evt'],
+					  'id_membre' => $_SESSION['id']));				// ### A changer par l'ID de la session active   
+				}
+				else
+				{
+					$time_inscr = new DateTime();
+					$req2= $bdd->prepare('INSERT INTO inscriptions(id_evt, id_membre, commentaire) VALUES(:id_evt, :id_membre, :commentaire)');
+					$req2->execute(array(
+					  'id_evt' => $_POST['id_evt'],
+					  'id_membre' => $_SESSION['id'],
+					  'commentaire' => " "));				// ### A changer par l'ID de la session active				  
+				}  
+				$req2->closeCursor(); //requête terminée
+			}	
+		}
 ?>
 
 <!--	Affichage des plongées  -->
@@ -57,9 +60,30 @@ echo $pass_hache; */
         <div class="row center">
             <span class="flow-text" col s12">Liste des évènements ADK :</span>
         </div>
+		<?php if(isset($_SESSION['pseudo'])) // Si connecté, on propose d'ajouter une plongée, sinon, on ne montre pas le lien
+		{?>
 		<div class="row center">
             <p><a href="creation_evt.php">Lien pour créer un événement</a></p>
         </div>
+			<?php
+			// Determination de la date d'il y a un an
+			$yaunan = strtotime('-1 year -1 day');		// timestamp d'il y a un an	
+			$yaunanmoinsunmois = strtotime('-1 month');
+			if(strtotime($_SESSION['certif_med'])<$yaunan)		// Si le gars est pas à jour de certif médical, on lui affiche une message énorme en rouge sur les inscriptions
+			{?>
+				<div class="row center">
+					<span class="flow-text" col s12"><b style='color: red;'>Attention, votre certificat médical n'est pas à jour !!</b></span>
+				</div>
+			<?php
+			}
+			else if(strtotime($_SESSION['certif_med'])<$yaunanmoinsunmois)
+			{?>
+				<div class="row center">
+					<span class="flow-text" col s12"><b style='color: orange;'>Attention, votre certificat médical expire le <?php echo date("D-d/m/Y",strtotime($_SESSION['certif_med']))?></b></span>
+				</div>
+			<?php
+			}
+		}?>
 		<div class="row center">
 		<?php
 			// Consultation de la base de données pour affichage
@@ -108,10 +132,23 @@ echo $pass_hache; */
 						<label><?php echo $resultat['type']?></label>							
 					</div>
 					<div class="input-field col s2">
-						<form action="affichage_evt.php" method="post">
-							<input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'>
-							<label><input name="submit" type="submit" style="border: none ; background-color: transparent;" value="<?php if(strlen($resultat['titre'])>20){echo substr($resultat['titre'],0,17).'...';} else {echo $resultat['titre'];}?>"/></label>
-						</form>
+						<?php
+						if(isset($_SESSION['pseudo'])) // Si connecté, on affiche les boutons d'ajout et de suppression d'inscription
+						{?>
+							<form action="affichage_evt.php" method="post">
+								<input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'>
+								<label><input name="submit" type="submit" style="border: none ; background-color: transparent;" value="<?php if(strlen($resultat['titre'])>20){echo substr($resultat['titre'],0,17).'...';} else {echo $resultat['titre'];}?>"/></label>
+							</form>
+						<?php
+						}
+						else
+						{ 
+							
+							if(strlen($resultat['titre'])>20)
+							{echo '<label>'.substr($resultat['titre'],0,17).'...</label>';} 
+							else {echo '<label>'.$resultat['titre'].'</label>';}
+						}		// Affichage du titre de la sortie sans lien pour consulter en détail 
+						?>
 					</div>
 					<div class="input-field col s2">
 						<label><?php echo date("D-d/m/Y", strtotime($resultat['date_evt']))."<br>".$resultat['heure_evt']?></label>							
@@ -146,9 +183,12 @@ echo $pass_hache; */
 							$nb_part=0;
 							while ($inscrit = $req2->fetch())		// Dans la table des membres
 							{
-								if($inscrit[1]==$_SESSION['id'])	// ### 1 à remplacer par l'ID du mec connecté
+								if(isset($_SESSION['pseudo'])) // Si connecté, on propose d'afficher une possibilité d'inscription, sinon, on ne montre pas le lien
 								{
-									$deja_inscrit=1;
+									if($inscrit[1]==$_SESSION['id'])	// Est ce que la ligne récupéré correspond à l'inscription du membre connecté
+									{
+										$deja_inscrit=1;
+									}
 								}
 								$nb_part++;
 							}
@@ -157,20 +197,24 @@ echo $pass_hache; */
 							// On affiche le nombre de participants
 							echo "<label>".($nb_part."/".$resultat['max_part']."</label>");
 							// On rentre la valeur de l'ID de la plongée en cours d'affichage pour le formulaire de la ligne
-							?><input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'> <?php
-							if($deja_inscrit==1)  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+							
+							if(isset($_SESSION['pseudo'])) // Si connecté, on affiche les boutons d'ajout et de suppression d'inscription
 							{
-								?>
-								<input type="hidden" name="act" value = "D">
-								<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">cancel</i></a></button>
-							<?php }		// Sinon de s'inscrire
-							else{
-								?> 
-								<input type="hidden" name="act" value = "I">
-								<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">check_circle</i></a></button>
-								<?php } 
-								$req2->closeCursor(); //requête terminée
-								?>
+								?><input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'> <?php
+								if($deja_inscrit==1)  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+								{
+									?>
+									<input type="hidden" name="act" value = "D">
+									<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">cancel</i></a></button>
+								<?php }		// Sinon de s'inscrire
+								else{
+									?> 
+									<input type="hidden" name="act" value = "I">
+									<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">check_circle</i></a></button>
+									<?php } 
+							}
+							$req2->closeCursor(); //requête terminée
+							?>
 						</form>
 					</div>
 				</div>

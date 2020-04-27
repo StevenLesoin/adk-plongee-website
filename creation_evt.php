@@ -31,7 +31,23 @@ session_start()
 
 <body>
 
-<?php include("tools/navbar.php"); ?>
+<?php
+if(isset($_SESSION['pseudo'])) // Si déjà connecté
+{
+	if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
+	{
+		header('location: edit_password.php');
+	}
+	else if($_SESSION['inscription_valide']==0) // Inscription non validé
+	{
+		include("tools/navbar.php"); 
+		include("tools/print_msg.php"); // Define printMsg function 
+		$email = $_SESSION['email'];
+		printMsg('Votre demande d\'inscription n\'a pas encore été validé par l\'administateur. Vous recevrez un email à l\'adresse '. $email.' lorsque celle-ci aura été traité.','',''); 
+	}
+	else{
+		include("tools/navbar.php"); 
+		?>
 
   <div class="section no-pad-bot" id="index-banner">
   	<div class="container">
@@ -163,12 +179,12 @@ session_start()
 								<div class="input-field col s6">
 									<i class="material-icons prefix">timer_off</i>
 									<?php				?>
-									<input id="date_lim" type="date" class="validate" name='date_lim'>
+									<input id="date_lim" type="date" class="validate" name='date_lim' value="">
 									<label for="date_lim">Date limite d'inscription *</label>
 								</div>
 								<div class="input-field col s6">
 									<i class="material-icons prefix">timer_off</i>
-									<input id="heure_lim" type="time" class="validate" name='heure_lim'>
+									<input id="heure_lim" type="time" class="validate" name='heure_lim' value="21:00">
 									<label for="heure_lim">Heure limite d'inscription *</label>
 								</div>
 							</div>
@@ -239,7 +255,20 @@ session_start()
         </div>
   	</div>
   </div>
+  <?php		// Fin de la partie acessible aux membres en règle
+	}
+}
+else	// Pas loggé
+{
+	include("tools/navbar.php"); 
 
+	?>
+	<div class="row center">
+	<span class="flow-text" col s12"> <b style='color: red;'>Vous n'avez pas accès à cette page, il vaut avoir un compte validé pour y avoir accès</b></span>
+	</div>
+	<?php
+}
+?>
   <?php include("tools/footer.php"); ?>
 
   <!--  Scripts  
