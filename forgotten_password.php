@@ -79,7 +79,6 @@ session_start()
                         //===== Envoi du mail
 						
 						//mail($to, $objet, $contenu, $header);
-
 						// echo ini_get('SMTP') . ":" . ini_get('smtp_port');
 						// // The message
 						// $message = "Line 1\r\nLine 2\r\nLine 3";

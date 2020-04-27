@@ -22,7 +22,6 @@
       <ul class="right hide-on-med-and-down">
                 <!-- Dropdown Trigger -->
         <li><a class="dropdown-button" href="#!" data-activates="club_navBar">Le club<i class="material-icons right">arrow_drop_down</i></a></li>
-
         <li><a href="#">Contact</a></li>
 
         <?php  
@@ -43,7 +42,6 @@
               <?php 
             }
           }
-
           else // Si non membre
           {
             ?>
