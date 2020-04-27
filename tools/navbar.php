@@ -1,14 +1,13 @@
   <ul id="club_navBar" class="dropdown-content">
     <li><a href="#">Historique</a></li>
     <li><a href="#">Le club en chiffres</a></li>
-	<li><a href="liste_evenements.php">Liste des événements</a></li>
-	<li><a href="fonctionnement_site.php">FAQ / Fonctionnement du site</a></li>
-	
+	  <li><a href="liste_evenements.php">Liste des événements</a></li>
+	  <li><a href="fonctionnement_site.php">FAQ / Fonctionnement du site</a></li>
   </ul>
   
   <ul id="outils_navBar" class="dropdown-content">
-	<li><a href="liste_evenements.php">Liste des événements</a></li>
-	<li><a href="creation_evt.php">Ajout d'événement</a></li>
+	 <li><a href="liste_evenements.php">Liste des événements</a></li>
+	 <li><a href="creation_evt.php">Ajout d'événement</a></li>
   </ul>
   
 	<ul id="outils_admin_navBar" class="dropdown-content">
@@ -29,18 +28,19 @@
           if(isset($_SESSION['pseudo']) AND isset($_SESSION['privilege'])) // Si membre
           {
             ?>
-			  <li><a class="dropdown-button" href="#!" data-activates="outils_navBar">Outils<i class="material-icons right">arrow_drop_down</i></a></li>
-			  
-            <li><a href="logout.php">Déconnexion</a></li>
-            <li><a href="home.php"><?php echo $_SESSION['pseudo']; ?></a></li>
+			      <li><a class="dropdown-button" href="#!" data-activates="outils_navBar">Outils<i class="material-icons right">arrow_drop_down</i></a></li>
             <?php   
 			// Affichage pour les Admins en plus des membres
             if($_SESSION['privilege']='administrateur') // Si admin
             {
-              ?>
-				<li><a class="dropdown-button" href="#!" data-activates="outils_admin_navBar">Outils Admin<i class="material-icons right">arrow_drop_down</i></a></li>
-              <?php 
+            ?>
+				      <li><a class="dropdown-button" href="#!" data-activates="outils_admin_navBar">Outils Admin<i class="material-icons right">arrow_drop_down</i></a></li>
+            <?php 
             }
+            ?>
+            <li><a href="logout.php">Déconnexion</a></li>
+            <li><a href="home.php"><?php echo $_SESSION['pseudo']; ?></a></li>
+          <?php 
           }
           else // Si non membre
           {
