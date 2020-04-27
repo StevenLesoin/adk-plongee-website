@@ -1,18 +1,19 @@
-
-
   <ul id="club_navBar" class="dropdown-content">
     <li><a href="#">Historique</a></li>
     <li><a href="#">Le club en chiffres</a></li>
+	<li><a href="liste_evenements.php">Liste des événements</a></li>
+	<li><a href="fonctionnement_site.php">FAQ / Fonctionnement du site</a></li>
+	
   </ul>
   
   <ul id="outils_navBar" class="dropdown-content">
 	<li><a href="liste_evenements.php">Liste des événements</a></li>
 	<li><a href="creation_evt.php">Ajout d'événement</a></li>
-	<li><a href="fonctionnement_site.php">Fonctionnement du site</a></li>
   </ul>
   
 	<ul id="outils_admin_navBar" class="dropdown-content">
 		<li><a href="suppr_evt.php">Suppression d'événements</a></li>
+		<li><a href="admin.php">Infos membres</a></li>
 	</ul>
   
   

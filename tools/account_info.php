@@ -49,7 +49,7 @@
                     </div>
                     <div class="input-field col s6">
                         <i class="material-icons prefix">account_circle</i>
-                        <input id="login" type="text" class="validate center" name="login" disabled value="<?php echo $_SESSION['privilege']; ?>">
+                        <input id="privilege" type="text" class="validate center" name="privilege" disabled value="<?php echo $_SESSION['privilege']; ?>">
                         <span class="helper-text" data-error="wrong" data-success="right">Type de compte</span>
                     </div>
                 </div>
