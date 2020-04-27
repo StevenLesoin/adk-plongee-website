@@ -19,7 +19,6 @@ session_start()
 <body>
 
 	<?php 
-	// test
 	if(isset($_SESSION['pseudo']) AND isset($_SESSION['privilege'])) // Si déjà connecté
     {
     	if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
