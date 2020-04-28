@@ -194,12 +194,12 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 								</div> 
 								<div class="input-field col s4">
 										<select class = "browser-default" name="niveau_min">
-										  <option value = "N0">Ouvert à tous</option>
-										  <option value = "N1">N1</option>
-										  <option value = "N2">N2</option>
-										  <option value = "N3">N3</option>
-										  <option value = "Trimix">Trimix</option>
-										  <option value = "Autre">Autre</option>
+										  <option value = "0">Ouvert à tous</option>
+										  <option value = "1">N1</option>
+										  <option value = "2">N2</option>
+										  <option value = "3">N3</option>
+										  <!--<option value = "trimix">Trimix</option>
+										  <option value = "Autre">Autre</option>     On supprime cette option car elle ne permet pas de trier sur un chiffre) -->
 									   </select>										
 								</div>
 								<div class="input-field col s1">

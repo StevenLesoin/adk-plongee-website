@@ -49,12 +49,12 @@ echo $pass_hache; */
 		</div>
 		<div class="row center">
 		    <div class="input-field col s12">
-            <label>En tant que <u>membre</u>, vous pourrez vous inscrire à tous les événements, inviter un participant (Non prioritaire), et ajouter un événement. </label>
+            <label>En tant que <u>membre</u>, vous pourrez vous inscrire à tous les événements (Accessibles à votre niveau), inviter un participant (Non prioritaire), et ajouter un événement. </label>
 			</div>
 		</div>
 		<div class="row center">
 		    <div class="input-field col s12">
-            <label>Si votre certificat medical est daté de plus d'un an, il est toujours possible de s'inscrire à des événements, mais votre nom apparaitra en rouge sur la liste des inscrits. Cela vous permet de vous inscrire à des événements hors plongée et d'attirer l'attention du DP si vous vous inscrivez à un événement de plongée. </label>
+            <label>Si votre certificat medical est daté de plus d'un an, il est toujours possible de s'inscrire à des événements, mais votre nom apparaitra en rouge sur la liste des inscrits. Cela vous permet de vous inscrire à des événements hors plongée et d'attirer l'attention du DP si vous vous inscrivez à un événement de plongée. Vous apparaitrez également en rouge sur la page d'inscription si l'événement est de type "Plongée" ou "Piscine" </label>
 			</div>
 		</div>
 		<div class="row center"><div class="input-field col s12"></div></div>		<!-- Ligne vide pour créer de l'espace car les </br> ne sont pas gérés par materialyze -->
@@ -67,9 +67,11 @@ echo $pass_hache; */
 		    <div class="input-field col s12">
             <label>Si vous ne réusssisez pas à vous inscrire sur la page listant les différents événements ou à obtenir les détails d'un événement: </br>
 			- Vérifiez la connexion à votre esace membre</br>
+			- Assurez vous que vous avez le niveau nécessaire pour vous inscire à la sortie</br>
 			</label>
 			</div>
         </div>
+		<div class="row center"><div class="input-field col s12"></div></div>		<!-- Ligne vide pour créer de l'espace car les </br> ne sont pas gérés par materialyze -->
 		<div class="row center">
 		    <div class="input-field col s12">
             <label>En cas niveau de plongée non à jour ou de date de certificat médical périmé, veuillez contacter le secrétaire pour une mise à jour</br>

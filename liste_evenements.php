@@ -157,7 +157,7 @@ echo $pass_hache; */
 						<label><?php echo date("D-d/m/Y", strtotime($resultat['date_lim']))."<br>".$resultat['heure_lim']?></label>							
 					</div>
 					<div class="input-field col s1">
-						<label><?php echo $resultat['niveau_min']?></label>							
+						<label><?php echo "N".$resultat['niveau_min']?></label>							
 					</div>
 					<div class="input-field col s1">
 						<label><?php echo $resultat['lieu']?></label>						
@@ -200,18 +200,25 @@ echo $pass_hache; */
 							
 							if(isset($_SESSION['pseudo'])) // Si connecté, on affiche les boutons d'ajout et de suppression d'inscription
 							{
-								?><input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'> <?php
-								if($deja_inscrit==1)  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+								if($_SESSION['niv_plongeur']>=$resultat['niveau_min']) // Si le mec à le niveau nécessaire, on lui propose de s'incrire, sinon, non
 								{
-									?>
-									<input type="hidden" name="act" value = "D">
-									<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">cancel</i></a></button>
-								<?php }		// Sinon de s'inscrire
-								else{
-									?> 
-									<input type="hidden" name="act" value = "I">
-									<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">check_circle</i></a></button>
-									<?php } 
+									?><input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'> <?php
+									if($deja_inscrit==1)  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+									{
+										?>
+										<input type="hidden" name="act" value = "D">
+										<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">cancel</i></a></button>
+									<?php }		// Sinon de s'inscrire
+									else{
+										?> 
+										<input type="hidden" name="act" value = "I">
+										<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">check_circle</i></a></button>
+										<?php } 
+								}
+								else
+								{
+									echo "<br><label><b style='color: red;'>N".$resultat['niveau_min']." mini</b></label>";
+								}
 							}
 							$req2->closeCursor(); //requête terminée
 							?>
