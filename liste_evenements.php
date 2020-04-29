@@ -19,13 +19,10 @@ session_start()
 <body>
 
 <?php include("tools/navbar.php"); ?>
+<?php include("tools/data_evts.php"); ?>
 
 <?php
-/*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
-echo $pass_hache; */
-?>
 
-<?php
 		if(isset($_SESSION['pseudo'])) // Si déjà connecté
 		{
 			// Traitement des inscriptions, désinscriptions (Les liens vers les plongées sont faites dans le formulaire)
@@ -79,7 +76,7 @@ echo $pass_hache; */
 			else if(strtotime($_SESSION['certif_med'])<$yaunanmoinsunmois)
 			{?>
 				<div class="row center">
-					<span class="flow-text" col s12"><b style='color: orange;'>Attention, votre certificat médical expire le <?php echo date("D-d/m/Y",strtotime($_SESSION['certif_med']))?></b></span>
+					<span class="flow-text" col s12"><b style='color: orange;'>Attention, votre certificat médical expire le <?php echo date("D-d/m/Y",strtotime('+1 year',strtotime($_SESSION['certif_med'])))?></b></span>
 				</div>
 			<?php
 			}
@@ -129,7 +126,26 @@ echo $pass_hache; */
 				?>
 				<div class="row center">
 					<div class="input-field col s1">
-						<label><?php echo $resultat['type']?></label>							
+						<?php
+						// Pour une plongée, on vérifie qu'il y ait un DP et un minimum d'inscrits
+						// ### Faire un différence entre plongée du bord (pas de mini) et plongée bateau
+						if($resultat['type']=="Plongée")
+						{
+							if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==0){echo ("<label style='color: brown'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==1){echo ("<label style='color: purple'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==0){echo ("<label style='color: blue'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==0){echo ("<label style='color: green'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==1){echo ("<label style='color: orange'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==0 AND isFull($resultat['id'],$resultat['max_part'])==1){echo ("<label style='color: red'>".$resultat['type']."</label>");}
+							else{echo ("<label style='color: grey'>".$resultat['type']."</label>");}
+						}
+						// Pour une plongée piscine, on vérifie qu'il y ait un DP piscine
+						else if($resultat['type']=="Piscine")
+						{
+							if(isDP_piscine($resultat['id'])==0){echo ("<label style='color: purple'>".$resultat['type']."</label>");}
+							else{echo ("<label style='color: green'>".$resultat['type']."</label>");}
+						}
+						else{?>	<label> <?php echo $resultat['type']?></label>	<?php } ?>
 					</div>
 					<div class="input-field col s2">
 						<?php
@@ -237,6 +253,9 @@ echo $pass_hache; */
 			}
 			$req1->closeCursor(); //requête terminée
 		?>	
+		<div class="row center">
+            <span> Legende des couleurs : </span> <span style='color: grey;'>Pas d'exigences</span> / <span style='color: brown;'>Pas de DP et pas assez de monde</span> / <span style='color: purple;'>Pas de DP mais assez de monde</span> / <span style='color: blue;'>Un DP, pas assez de monde</span> / <span style='color: green;'>Un DP et assez de monde</span> / <span style='color: orange;'>Sortie complète</span> / <span style='color: red;'>Sortie complète mais sans DP</span>
+        </div>
 
 
 		
@@ -253,3 +272,4 @@ echo $pass_hache; */
 
 </body>
 
+</html>

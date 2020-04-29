@@ -234,7 +234,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					
 					$id_membre = $donnees_membre[0];
 					$nom_membre = $donnees_membre[3];
-					$prenom_nembre = $donnees_membre[4];
+					$prenom_membre = $donnees_membre[4];
 					$certif_membre = $donnees_membre[11];
 					$niv_membre = $donnees_membre[8];
 					$niv_encad = $donnees_membre[9];
@@ -257,7 +257,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					echo("</div>");
 					// Afficher le prénom du membre
 					echo("<div class='col s2' align='left'>");
-					echo $prenom_nembre;
+					echo $prenom_membre;
 					echo("</div>");
 					// Afficher le niveau du memebre
 					echo("<div class='col s1' align='left'>");
