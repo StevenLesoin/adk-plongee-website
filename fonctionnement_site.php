@@ -94,4 +94,3 @@ echo $pass_hache; */
   <script src="js/initi.js"></script>
 
 </body>
-

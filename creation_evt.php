@@ -33,6 +33,7 @@ session_start()
 
 <?php
 include("tools/fonctions_unitaires.php"); 
+
 if(isset($_SESSION['pseudo'])) // Si déjà connecté
 {
 	if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
@@ -134,6 +135,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					}
 					
 
+
 						
 				}
 				else
@@ -204,6 +206,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 									<i class="material-icons prefix">timer_off</i>
 									<?php				?>
 									<input id="date_lim" type="date" class="validate" name='date_lim' value="">
+
 									<label for="date_lim">Date limite d'inscription *</label>
 								</div>
 								<div class="input-field col s6">

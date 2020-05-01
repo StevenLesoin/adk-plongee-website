@@ -236,6 +236,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					$nom_membre = $donnees_membre[3];
 					$prenom_membre = $donnees_membre[4];
 					$certif_membre = $donnees_membre[11];
+
 					$niv_membre = $donnees_membre[8];
 					$niv_encad = $donnees_membre[9];
 					$comm_membre = $inscrit[3];
@@ -249,8 +250,6 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						echo("<div class='row center'>");	// Nouvelle ligne
 					}
 					
-					
-
 					// Afficher le nom du membres 
 					echo("<div class='col s2' align='left'>");
 					echo $nom_membre;
@@ -272,6 +271,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						$DP_present=1;
 					}
 					echo("</div>");
+
 					if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
 					{
 						// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre
