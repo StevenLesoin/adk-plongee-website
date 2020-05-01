@@ -27,35 +27,96 @@
                             <input value="<?php echo $resultat['nom']; ?>" id="name" type="text" class="validate" name='name'>
                             <span class="helper-text">Nom</span>
                         </div>
-                        <div class="input-field col s6">
-                            <i class="material-icons prefix">school</i>
-                            <input value="<?php echo $resultat['niv_plongeur']; ?>" id="niv_plongeur" type="text" class="validate" name='niv_plongeur'>
-                            <span class="helper-text">Niveau de plongée</span>
-                        </div>
-                        <div class="input-field col s6">
-                            <i class="material-icons prefix">supervisor_account</i>
-                            <input value="<?php echo $resultat['niv_encadrant']; ?>" id="niv_encadrant" type="text" class="validate" name='niv_encadrant'>
-                            <span class="helper-text">Niveau d'encadrement</span>
-                        </div>
-                        <div class="input-field col s6">
+                        <div class="input-field col s6 offset-s3">
                             <i class="material-icons prefix">local_pharmacy</i>
-                            <input value="<?php echo $resultat['certif_med']; ?>" id="certif_med" type="text" class="validate" name='certif_med'>
+                            <input value="<?php echo $resultat['certif_med']; ?>" id="certif_med" type="date" class="validate" name='certif_med'> 
                             <span class="helper-text">Date du certificat médical</span>
                         </div>
-                        <div class="input-field col s6">
-                            <i class="material-icons prefix">account_circle</i>
-                            <input value="<?php echo $resultat['actif_saison']; ?>" id="actif_saison" type="text" class="validate" name='actif_saison'>
-                            <span class="helper-text">Etat d'activité</span>
+                        <div class="input-field col s6 offset-s3">
+                            <select name="privilege">
+                                <?php
+                                if($resultat['privilege']=='membre'){
+                                ?> 
+                                    <option value="membre">Membre</option>
+                                    <option value="bureau">Bureau</option>
+                                    <option value="administrateur">Administrateur</option>
+                                <?php
+                                }else if($resultat['privilege']=='bureau'){
+                                ?> 
+                                    <option value="bureau">Bureau</option>
+                                    <option value="membre">Membre</option>
+                                    <option value="administrateur">Administrateur</option>
+                                <?php
+                                }else if($resultat['privilege']=='administrateur'){
+                                ?> 
+                                    <option value="administrateur">Administrateur</option>
+                                    <option value="membre">Membre</option>
+                                    <option value="bureau">Bureau</option>
+                                <?php
+                                }
+                                ?>
+                            </select>
+                            <label>Type de compte</label>
                         </div>
                         <div class="input-field col s6">
-                            <i class="material-icons prefix">account_circle</i>
-                            <input value="<?php echo $resultat['privilege']; ?>" id="privilege" type="text" class="validate" name='privilege'>
-                            <span class="helper-text">Type de compte</span>
+                            <!-- <i class="material-icons prefix">school</i> -->
+                            <select name="niv_plongeur">
+                                <option value="<?php echo $resultat['niv_plongeur']; ?>">N<?php echo $resultat['niv_plongeur']; ?></option>
+                                <option value="1">N1</option>
+                                <option value="2">N2</option>
+                                <option value="3">N3</option>
+                                <option value="3">N4</option>
+                                <option value="3">N5</option>
+                            </select>
+                            <label>Niveau de plongée</label>
+                            <i class="material-icons prefix">school</i>
                         </div>
                         <div class="input-field col s6">
-                            <i class="material-icons prefix">account_circle</i>
-                            <input value="<?php echo $resultat['inscription_valide']; ?>" id="inscription_valide" type="text" class="validate" name='inscription_valide'>
-                            <span class="helper-text">Statut de l'inscription</span>
+                            <select name="niv_encadrant">
+                                <option value="<?php echo $resultat['niv_encadrant']; ?>">E<?php echo $resultat['niv_encadrant']; ?></option>
+                                <option value="0">E0</option>
+                                <option value="1">E1</option>
+                                <option value="2">E2</option>
+                                <option value="3">E3</option>
+                            </select>
+                            <label>Niveau d'encadrement</label>
+                            <i class="material-icons prefix">supervisor_account</i>
+                        </div>
+                        <div class="input-field col s6">
+                            <select name="actif_saison">
+                                <?php
+                                if($resultat['actif_saison'] == 1){
+                                ?> 
+                                    <option value="1">Actif</option>
+                                    <option value="0">Inactif</option>
+                                <?php
+                                }else if($resultat['actif_saison'] == 0){
+                                ?> 
+                                    <option value="0">Inactif</option>
+                                    <option value="1">Actif</option>
+                                <?php
+                                }
+                            ?>                                      
+                            </select>
+                            <label>Etat d'activité</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <select name="inscription_valide">
+                                <?php
+                                if($resultat['inscription_valide'] == 1){
+                                ?> 
+                                    <option value="1">Validé</option>
+                                    <option value="0">En attente</option>
+                                <?php
+                                }else if($resultat['actif_saison'] == 0){
+                                ?> 
+                                    <option value="0">En attente</option>
+                                    <option value="1">Validé</option>
+                                <?php
+                                }
+                                ?> 
+                            </select>
+                            <label>Statut de l'inscription</label>
                         </div>
                     </div>
                     <div class="row center">
