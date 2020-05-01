@@ -206,8 +206,11 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					<div class="col s2" align="left">
 						<u><b>Prénom</b></u>
 					</div> 
-					<div class="col s2" align="left" >
+					<div class="col s1" align="left" >
 						<u><b>Niveau</b></u>
+					</div> 
+					<div class="col s1" align="left" >
+						<u><b></b></u>				<!-- Colonne pour afficher qui est DP ou autres infos -->
 					</div> 
 					<div class="col s6" align="left" >
 						<u><b>Commentaire</b></u>
@@ -215,9 +218,13 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				</div>
 				<?php
 				$test_passage=0;
+				//$yaunan = strtotime('-1 year -1 day');		// timestamp d'il y a un an	
+				$unanavantsortie = strtotime('-1 year -1 day',(strtotime($row[3])));
 				//Affichage de la liste des inscrits membres: 
-				$req2= $bdd->prepare('SELECT * FROM inscriptions WHERE id_evt="'.$id_evt.'" ORDER BY time_inscr'); // On va chercher dans la liste d'inscription, les id des personnes inscrites
+				$req2= $bdd->prepare('SELECT * FROM inscriptions WHERE id_evt="'.$id_evt.'" ORDER BY time_inscr'); // On va chercher dans la liste d'inscription, les id des personnes inscrites dans l'ordre d'inscription
 				$req2->execute(array());
+				
+				$DP_present=0;
 				while ($inscrit = $req2->fetch())		// Tant qu'il y a des inscrits, on les affiche
 				{
 					$test_passage=1;
@@ -227,25 +234,44 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					
 					$id_membre = $donnees_membre[0];
 					$nom_membre = $donnees_membre[3];
-					$prenom_nembre = $donnees_membre[4];
+					$prenom_membre = $donnees_membre[4];
+					$certif_membre = $donnees_membre[11];
+
 					$niv_membre = $donnees_membre[8];
 					$niv_encad = $donnees_membre[9];
 					$comm_membre = $inscrit[3];
 					
-					echo("<div class='row center'>");	// Nouvelle ligne
+					if(strtotime($certif_membre)<$unanavantsortie AND ($row[1]=="Plongée" OR $row[1]=="Piscine"))		// Si le gars est pas à jour de certif médical, on affiche sa ligne en rouge -> Gaulé Capi on t'a vu !! 
+					{?>
+						<div class='row center' style='color: red'>
+					<?php
+					}
+					else{
+						echo("<div class='row center'>");	// Nouvelle ligne
+					}
+					
 					// Afficher le nom du membres 
 					echo("<div class='col s2' align='left'>");
 					echo $nom_membre;
 					echo("</div>");
 					// Afficher le prénom du membre
 					echo("<div class='col s2' align='left'>");
-					echo $prenom_nembre;
+					echo $prenom_membre;
 					echo("</div>");
 					// Afficher le niveau du memebre
-					echo("<div class='col s2' align='left'>");
+					echo("<div class='col s1' align='left'>");
 					if($niv_encad!=0){echo "N".$niv_membre."/E".$niv_encad;}
 					else{echo "N".$niv_membre;}
 					echo("</div>");
+					// Affichage du DP 
+					echo("<div class='col s1' align='left'>");
+					if($DP_present==0 AND ($niv_membre==5 OR $niv_encad>=3))		// Si pas encore de DP et que le plus ancien inscrit est N5 ou E3 -> Il est DP
+					{
+						echo "<b>DP</b>";
+						$DP_present=1;
+					}
+					echo("</div>");
+
 					if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
 					{
 						// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre

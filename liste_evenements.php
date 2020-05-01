@@ -19,11 +19,7 @@ session_start()
 <body>
 
 <?php include("tools/navbar.php"); ?>
-
-<?php
-/*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
-echo $pass_hache; */
-?>
+<?php include("tools/data_evts.php"); ?>
 
 <?php
 		if(isset($_SESSION['pseudo'])) // Si déjà connecté
@@ -65,7 +61,24 @@ echo $pass_hache; */
 		<div class="row center">
             <p><a href="creation_evt.php">Lien pour créer un événement</a></p>
         </div>
-		<?php
+			<?php
+			// Determination de la date d'il y a un an
+			$yaunan = strtotime('-1 year -1 day');		// timestamp d'il y a un an	
+			$yaunanmoinsunmois = strtotime('-1 month');
+			if(strtotime($_SESSION['certif_med'])<$yaunan)		// Si le gars est pas à jour de certif médical, on lui affiche une message énorme en rouge sur les inscriptions
+			{?>
+				<div class="row center">
+					<span class="flow-text" col s12"><b style='color: red;'>Attention, votre certificat médical n'est pas à jour !!</b></span>
+				</div>
+			<?php
+			}
+			else if(strtotime($_SESSION['certif_med'])<$yaunanmoinsunmois)
+			{?>
+				<div class="row center">
+					<span class="flow-text" col s12"><b style='color: orange;'>Attention, votre certificat médical expire le <?php echo date("D-d/m/Y",strtotime('+1 year',strtotime($_SESSION['certif_med'])))?></b></span>
+				</div>
+			<?php
+			}
 		}?>
 		<div class="row center">
 		<?php
@@ -112,7 +125,26 @@ echo $pass_hache; */
 				?>
 				<div class="row center">
 					<div class="input-field col s1">
-						<label><?php echo $resultat['type']?></label>							
+						<?php
+						// Pour une plongée, on vérifie qu'il y ait un DP et un minimum d'inscrits
+						// ### Faire un différence entre plongée du bord (pas de mini) et plongée bateau
+						if($resultat['type']=="Plongée")
+						{
+							if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==0){echo ("<label style='color: brown'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==1){echo ("<label style='color: purple'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==0){echo ("<label style='color: blue'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==0){echo ("<label style='color: green'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==1){echo ("<label style='color: orange'>".$resultat['type']."</label>");}
+							else if(isDP($resultat['id'])==0 AND isFull($resultat['id'],$resultat['max_part'])==1){echo ("<label style='color: red'>".$resultat['type']."</label>");}
+							else{echo ("<label style='color: grey'>".$resultat['type']."</label>");}
+						}
+						// Pour une plongée piscine, on vérifie qu'il y ait un DP piscine
+						else if($resultat['type']=="Piscine")
+						{
+							if(isDP_piscine($resultat['id'])==0){echo ("<label style='color: purple'>".$resultat['type']."</label>");}
+							else{echo ("<label style='color: green'>".$resultat['type']."</label>");}
+						}
+						else{?>	<label> <?php echo $resultat['type']?></label>	<?php } ?>
 					</div>
 					<div class="input-field col s2">
 						<?php
@@ -140,7 +172,7 @@ echo $pass_hache; */
 						<label><?php echo date("D-d/m/Y", strtotime($resultat['date_lim']))."<br>".$resultat['heure_lim']?></label>							
 					</div>
 					<div class="input-field col s1">
-						<label><?php echo $resultat['niveau_min']?></label>							
+						<label><?php echo "N".$resultat['niveau_min']?></label>							
 					</div>
 					<div class="input-field col s1">
 						<label><?php echo $resultat['lieu']?></label>						
@@ -183,18 +215,25 @@ echo $pass_hache; */
 							
 							if(isset($_SESSION['pseudo'])) // Si connecté, on affiche les boutons d'ajout et de suppression d'inscription
 							{
-								?><input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'> <?php
-								if($deja_inscrit==1)  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+								if($_SESSION['niv_plongeur']>=$resultat['niveau_min']) // Si le mec à le niveau nécessaire, on lui propose de s'incrire, sinon, non
 								{
-									?>
-									<input type="hidden" name="act" value = "D">
-									<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">cancel</i></a></button>
-								<?php }		// Sinon de s'inscrire
-								else{
-									?> 
-									<input type="hidden" name="act" value = "I">
-									<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">check_circle</i></a></button>
-									<?php } 
+									?><input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'> <?php
+									if($deja_inscrit==1)  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+									{
+										?>
+										<input type="hidden" name="act" value = "D">
+										<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">cancel</i></a></button>
+									<?php }		// Sinon de s'inscrire
+									else{
+										?> 
+										<input type="hidden" name="act" value = "I">
+										<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">check_circle</i></a></button>
+										<?php } 
+								}
+								else
+								{
+									echo "<br><label><b style='color: red;'>N".$resultat['niveau_min']." mini</b></label>";
+								}
 							}
 							$req2->closeCursor(); //requête terminée
 							?>
@@ -213,8 +252,9 @@ echo $pass_hache; */
 			}
 			$req1->closeCursor(); //requête terminée
 		?>	
-
-
+		<div class="row center">
+            <span> Legende des couleurs : </span> <span style='color: grey;'>Pas d'exigences</span> / <span style='color: brown;'>Pas de DP et pas assez de monde</span> / <span style='color: purple;'>Pas de DP mais assez de monde</span> / <span style='color: blue;'>Un DP, pas assez de monde</span> / <span style='color: green;'>Un DP et assez de monde</span> / <span style='color: orange;'>Sortie complète</span> / <span style='color: red;'>Sortie complète mais sans DP</span>
+        </div>
 		
 		</div>
     </div>
@@ -228,4 +268,4 @@ echo $pass_hache; */
   <script src="js/initi.js"></script>
 
 </body>
-
+</html>
