@@ -62,6 +62,7 @@
                             <!-- <i class="material-icons prefix">school</i> -->
                             <select name="niv_plongeur">
                                 <option value="<?php echo $resultat['niv_plongeur']; ?>">N<?php echo $resultat['niv_plongeur']; ?></option>
+                                <option value="0">N0</option>
                                 <option value="1">N1</option>
                                 <option value="2">N2</option>
                                 <option value="3">N3</option>
@@ -108,7 +109,7 @@
                                     <option value="1">Validé</option>
                                     <option value="0">En attente</option>
                                 <?php
-                                }else if($resultat['actif_saison'] == 0){
+                                }else if($resultat['inscription_valide'] == 0){
                                 ?> 
                                     <option value="0">En attente</option>
                                     <option value="1">Validé</option>
