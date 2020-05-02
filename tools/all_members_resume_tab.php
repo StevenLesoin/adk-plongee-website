@@ -37,16 +37,26 @@
                     }
                   ?>
               </td>
-              <td><?php echo $resultat['certif_med'] ?></td>
-              <td><?php
-                    if($resultat['inscription_valide'] == 1)
-                    {
+              <td>
+                  <?php 
+                    if(strtotime("now") <= strtotime($resultat['certif_med'].' + 1 YEAR')){ // Si certificat pas dépassé de plus d'un an
+                    ?>
+                      <p class="center green-text"><?php echo date('d-m-Y', strtotime($resultat['certif_med'])); ?></p> 
+                    <?php
+                    }else{
+                    ?>
+                      <p class="center red-text"><?php echo date('d-m-Y', strtotime($resultat['certif_med'])); ?></p> 
+                    <?php
+                    }
+                  ?>                
+              </td>
+              <td>
+                    <?php
+                    if($resultat['inscription_valide'] == 1){
                     ?>
                       <p class="center green-text">OK</p>
                     <?
-                    }
-                    else if($resultat['inscription_valide'] == 0)
-                    {
+                    }else if($resultat['inscription_valide'] == 0){
                     ?>
                       <form action="admin.php" method="post">
                         <input type="hidden" name="validate_registration" value="1" />
