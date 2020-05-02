@@ -1,7 +1,9 @@
 $(document).ready(function() {
 			$('select').formSelect();
-			$(".datepicker").pickadate({
+			$(".datepicker").datepicker({
     			format: "dd/mm/yyyy"
   			});
   			$(".button-collapse").sideNav();
+			$(".dropdown-trigger").dropdown();
+        
 });
