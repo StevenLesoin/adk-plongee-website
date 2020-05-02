@@ -29,7 +29,7 @@
                         </div>
                         <div class="input-field col s6 offset-s3">
                             <i class="material-icons prefix">local_pharmacy</i>
-                            <input value="<?php echo $resultat['certif_med']; ?>" id="certif_med" type="date" class="validate" name='certif_med'> 
+                            <input value="<?php echo date('d-m-Y', strtotime($resultat['certif_med'])); ?>" id="certif_med" class="datepicker" name='certif_med'> 
                             <span class="helper-text">Date du certificat médical</span>
                         </div>
                         <div class="input-field col s6 offset-s3">

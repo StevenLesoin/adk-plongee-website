@@ -44,7 +44,7 @@
                     </div>
                     <div class="input-field col s6">
                         <i class="material-icons prefix">local_pharmacy</i>
-                        <input id="certif_med" type="text" class="validate center" name='certif_med' disabled value="<?php echo $_SESSION['certif_med']; ?>">
+                        <input id="certif_med" type="text" class="validate center" name='certif_med' disabled value="<?php echo date('d-m-Y', strtotime($_SESSION['certif_med'])); ?>">
                         <span class="helper-text" data-error="wrong" data-success="right">Date du certificat médical</span>
                     </div>
                     <div class="input-field col s6">
