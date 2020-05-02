@@ -121,12 +121,7 @@ session_start()
 	<?php include("tools/footer.php"); ?>
 
 	<!--  Scripts-->
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-	<script src="js/materialize.js"></script>
-	<script src="js/init.js"></script>
-  	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
-  	<!-- script src="js/materialize.min.js"></script> -->
-  	<script src="js/scripts.js"></script>
+    <?php include("tools/scripts.php"); ?>
 
 </body>
 
