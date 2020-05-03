@@ -18,6 +18,7 @@
   
   <nav class="blue darken-4" role="navigation">
     <div class="nav-wrapper container">
+      <img class="responsive-img" src="img/logo_adk.png" alt="Logo ADK plongée" id="logoAdkNavbar">
       <a id="logo-container" href="index.php" class="brand-logo">ADK-plongée</a>
       <a href="#" data-target="mobile-navbar" class="sidenav-trigger"><i class="material-icons">menu</i></a>
       <ul class="right hide-on-med-and-down">
@@ -33,7 +34,7 @@
 			      <li><a class="dropdown-button" href="#!" data-target="outils_navBar">Outils<i class="material-icons right">arrow_drop_down</i></a></li>
             <?php   
 			      // Affichage pour les Admins en plus des membres
-            if($_SESSION['privilege']='administrateur') // Si admin
+            if($_SESSION['privilege']=='administrateur') // Si admin
             {
             ?>
 				      <li><a class="dropdown-button" href="#!" data-target="outils_admin_navBar">Outils Admin<i class="material-icons right">arrow_drop_down</i></a></li>
@@ -74,7 +75,7 @@
             <li><a href="creation_evt.php">Ajout d'événement</a></li>
             <?php   
             // Affichage pour les Admins en plus des membres
-            if($_SESSION['privilege']='administrateur') // Si admin
+            if($_SESSION['privilege']=='administrateur') // Si admin
             {
             ?>
               <li><a href="suppr_evt.php">Suppression d'événements</a></li>
