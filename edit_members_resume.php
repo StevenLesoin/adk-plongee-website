@@ -56,7 +56,6 @@ session_start()
 		    else // Tous les champs du formulaire sont remplis 
 		    {
 		      include("tools/data_base_connection.php");
-
 		      // récupération des infos du membre à modifier pour retourner le formulaire en cas d'erreur
 		      $req = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE id = :id');
 			  $req->execute(array(
@@ -94,7 +93,7 @@ session_start()
 			              'niv_plongeur' => $_POST['niv_plongeur'],
 			              'niv_encadrant' => $_POST['niv_encadrant'],
 			              'actif_saison' => $_POST['actif_saison'],
-			              'certif_med' => $_POST['certif_med'],
+			              'certif_med' => date('Y-m-d', strtotime($_POST['certif_med'])), // format date for bdd
 			              'inscription_valide' => $_POST['inscription_valide'],
 			          	  'id' => $_POST['edit_member_id']));
 
