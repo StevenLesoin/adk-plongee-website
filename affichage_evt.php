@@ -32,6 +32,7 @@ session_start()
 <body>
 
 <?php include("tools/navbar.php"); ?>
+<?php include("tools/data_evts.php"); ?>
 
 <?php
 /*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
@@ -110,20 +111,44 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 			$row = $result->fetch();
 			$result->closeCursor(); //requête terminée
 			
-				
-		
+			$type_evt = $row[1];
+			$publicateur = $row[11];
+			$date_publi = $row[12];
+			$nb_max_part = $row[9];
+			?>	
+			<div class="card-panel blue darken-4" align=center> 
+				<font size="5pt">
+			<?php
+			//On affiche le staut actuel de la sortie : 
+			if($type_evt=="Plongée")
+			{
+				if(isDP($id_evt)==0 AND isEnough($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Pas assez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
+				elseif(isDP($id_evt)==0 AND isEnough($id_evt)==1){echo ("<p style='color: white'>Pour le moment : Asez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
+				elseif(isDP($id_evt)==1 AND isEnough($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Pas assez de participants / DP inscrit <br> <b><u>Sortie non assurée</u></b></p>");}
+				elseif(isDP($id_evt)==1 AND isEnough($id_evt)==1 AND isFull($id_evt,$nb_max_part)==0){echo ("<p style='color: white'>Pour le moment : Assez de participants / DP <br> <b><u>Sortie assurée et il reste de la place</u></b></p>");}
+				elseif(isDP($id_evt)==1 AND isEnough($id_evt)==1 AND isFull($id_evt,$nb_max_part)==1){echo ("<p style='color: white'>Pour le moment : Assez de participants / DP <br> <b><u>Sortie assurée mais complète (Inscrivez vous pour liste d'attente)</u></b></p>");}
+				elseif(isDP($id_evt)==0 AND isFull($id_evt,$nb_max_part)==1){echo ("<p style='color: white'>Pour le moment : Assez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
+			}
+			// Pour une plongée piscine, on vérifie qu'il y ait un DP piscine
+			elseif($type_evt=="Piscine")
+			{
+				if(isDP_piscine($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Attente d'inscription d'un DP <br> <u><b>Séance non assurée</u></b></p>");}
+				else{echo ("<p style='color: white'>Pour le moment : DP présent <br> <u><b>Séance assurée</u></b></p>");}
+			}
 				// Même trame que le formulaire de création
 			?> 
+				</font>
+			</div>
 			<div class="row center">
 				<div class="row center">									
 					<div class="col s1">
 						<i class="material-icons prefix">add_circle</i>
 					</div> 
 					<div class="col s4" align="left" >
-						<u><b>Type d'évènement</b></u> : <?php echo $row[1]; ?>
+						<u><b>Type d'évènement</b></u> : <?php echo $type_evt; ?>
 					</div> 	
 					<div class="col s7" align="left" >
-						<u><b>Publié par</b></u> : <?php echo $row[11]." le ".$row[12]; ?>
+						<u><b>Publié par</b></u> : <?php echo $publicateur." le ".$date_publi; ?>
 					</div> 						
 				</div>
 				<div class="row center">
@@ -174,7 +199,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						<i class="material-icons prefix">group</i>
 					</div> 
 					<div class="col s3" align="left" >
-						<u><b>Nombre de participants max</b></u> : <?php echo $row[9]; ?>
+						<u><b>Nombre de participants max</b></u> : <?php echo $nb_max_part; ?>
 					</div> 
 					<div class="col s1">
 						<i class="material-icons prefix">toys</i>
@@ -225,9 +250,11 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				$req2->execute(array());
 				
 				$DP_present=0;
+				$num_inscrit=0;
 				while ($inscrit = $req2->fetch())		// Tant qu'il y a des inscrits, on les affiche
 				{
-					$test_passage=1;
+					$test_passage=1;			// On valide le fait qu'on est passé pour ne pas afficher le message de sortie vide
+					$num_inscrit++;				// On ajoute un participants pour la liste d'attente
 					$req3= $bdd->prepare('SELECT * FROM membres WHERE id="'.$inscrit[1].'"'); // 
 					$req3->execute(array());
 					$donnees_membre = $req3->fetch();
@@ -236,12 +263,29 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					$nom_membre = $donnees_membre[3];
 					$prenom_membre = $donnees_membre[4];
 					$certif_membre = $donnees_membre[11];
-
 					$niv_membre = $donnees_membre[8];
 					$niv_encad = $donnees_membre[9];
 					$comm_membre = $inscrit[3];
-					
-					if(strtotime($certif_membre)<$unanavantsortie AND ($row[1]=="Plongée" OR $row[1]=="Piscine"))		// Si le gars est pas à jour de certif médical, on affiche sa ligne en rouge -> Gaulé Capi on t'a vu !! 
+					// On va voir si le nombre d'inscrits est atteint
+					// Lors qu'il est atteint, la première fois, on affiche "Liste d'attente"
+					if($num_inscrit==($nb_max_part+1))
+					{?>
+						<div class='row center' style='color: grey'>
+							<span><u><b> Liste d'attente </u></b></span>
+						</div>
+						<div class='row center' style='color: grey'>
+						<i>
+					<?php
+					}
+					// Ensuite, on continue de mettre à la suite les lignes en liste d'attente, et affichage en gris toujours
+					elseif($num_inscrit>($nb_max_part+1))
+					{?>
+						<div class='row center' style='color: grey'>
+						<i>
+					<?php
+					}
+					//Et enfin, on affiche une ligne en rouge si le certificat médical est HS
+					elseif(strtotime($certif_membre)<$unanavantsortie AND ($type_evt=="Plongée" OR $type_evt=="Piscine"))		// Si le gars est pas à jour de certif médical, on affiche sa ligne en rouge -> Gaulé Capi on t'a vu !! 
 					{?>
 						<div class='row center' style='color: red'>
 					<?php
@@ -249,7 +293,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					else{
 						echo("<div class='row center'>");	// Nouvelle ligne
 					}
-					
+
 					// Afficher le nom du membres 
 					echo("<div class='col s2' align='left'>");
 					echo $nom_membre;
@@ -271,7 +315,6 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						$DP_present=1;
 					}
 					echo("</div>");
-
 					if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
 					{
 						// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre
@@ -295,7 +338,9 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					}
 					
 					// Fin de la nouvelle ligne
-					echo("</div>");
+					if($num_inscrit>($nb_max_part))
+					{echo("</i></div>");}		// Fin de la balise italique si on est dans les listes d'autorise
+					else{echo("</div>");}		// Fin de la ligne simple sinon
 					$req3->closeCursor(); //requête terminée
 				}
 				// Affichage des invités
@@ -303,11 +348,32 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				$req4->execute(array());
 				while ($inscrit_invit = $req4->fetch())		// Tant qu'il y a des inscrits, on les affiche
 				{
-					$test_passage=1;
+					$test_passage=1;			// On valide le fait qu'on est passé pour ne pas afficher le message de sortie vide
+					$num_inscrit++;				// On ajoute un participants pour la liste d'attente
 					$nom_invit = $inscrit_invit[1];
 					$prenom_invit = $inscrit_invit[2];
 					$niv_invit = $inscrit_invit[3];
 					$comm_invit = $inscrit_invit[4];
+					
+					if($num_inscrit==($nb_max_part+1))
+					{?>
+						<div class='row center' style='color: grey'>
+							<span><u><b> Liste d'attente </u></b></span>
+						</div>
+						<div class='row center' style='color: grey' font='italic'>
+						<i>
+					<?php
+					}
+					// Ensuite, on continue de mettre à la suite les lignes en liste d'attente, et affichage en gris toujours
+					elseif($num_inscrit>($nb_max_part+1))
+					{?>
+						<div class='row center' style='color: grey'>
+						<i>
+					<?php
+					}	
+					else{
+						echo("<div class='row center'>");	// Nouvelle ligne
+					}					
 					echo("<div class='row center'>");	// Nouvelle ligne
 					// Afficher le nom du membres 
 					echo("<div class='col s2' align='left'>");
@@ -344,7 +410,9 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						echo("</div>");
 					}
 					// Fin de la nouvelle ligne
-					echo("</div>");	
+					if($num_inscrit>($nb_max_part))
+					{echo("</i></div>");}		// Fin de la balise italique si on est dans les listes d'autorise
+					else{echo("</div>");}		// Fin de la ligne simple sinon
 				}
 				$req4->closeCursor(); //requête terminée
 				if($test_passage==0)
@@ -443,14 +511,10 @@ else	// Pas loggé
 }
 ?>
 
-  <?php include("tools/footer.php"); ?>
+	<?php include("tools/footer.php"); ?>
+	<!--  Scripts-->
+    <?php include("tools/scripts.php"); ?>
 
-  <!--  Scripts  
-
-  -->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/initi.js"></script>
 
 </body>
 

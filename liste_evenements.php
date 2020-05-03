@@ -255,17 +255,18 @@ session_start()
 		<div class="row center">
             <span> Legende des couleurs : </span> <span style='color: grey;'>Pas d'exigences</span> / <span style='color: brown;'>Pas de DP et pas assez de monde</span> / <span style='color: purple;'>Pas de DP mais assez de monde</span> / <span style='color: blue;'>Un DP, pas assez de monde</span> / <span style='color: green;'>Un DP et assez de monde</span> / <span style='color: orange;'>Sortie complète</span> / <span style='color: red;'>Sortie complète mais sans DP</span>
         </div>
+
+
 		
 		</div>
     </div>
   </div>
 
-  <?php include("tools/footer.php"); ?>
-
-  <!--  Scripts-->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/initi.js"></script>
+	<?php include("tools/footer.php"); ?>
+	<!--  Scripts-->
+    <?php include("tools/scripts.php"); ?>
 
 </body>
+
 </html>
+

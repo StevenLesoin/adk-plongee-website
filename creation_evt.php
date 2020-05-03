@@ -33,7 +33,6 @@ session_start()
 
 <?php
 include("tools/fonctions_unitaires.php"); 
-
 if(isset($_SESSION['pseudo'])) // Si déjà connecté
 {
 	if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
@@ -69,8 +68,8 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 
 					// Test du format de date
 					
-					if(isValid($date_lim) AND isValid($date_evt))		// Pas de problèmes de date
-					{
+//##					if(isValid($date_lim) AND isValid($date_evt))		// Pas de problèmes de date
+//##					{
 						$type = htmlspecialchars($_POST['type']);
 						$titre = htmlspecialchars($_POST['titre']);
 						$heure_evt = htmlspecialchars($_POST['heure_evt']);
@@ -90,16 +89,18 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						// Date courante
 						$datecourante = date_create();
 						$datecourantes = (string)date_format($datecourante, 'D-d/m/Y H:i:s');
-						$date_lim_f = date("Y-d-m", strtotime($date_lim));		// Mise au format de la date courante
-						$date_evt_f = date("Y-d-m", strtotime($date_evt));		// Mise au format de la date courante
+//##						$date_lim_f = date("Y-d-m", strtotime($date_lim));		// Mise au format de la date courante
+//##						$date_evt_f = date("Y-d-m", strtotime($date_evt));		// Mise au format de la date courante
 						$req2= $bdd->prepare('INSERT INTO evenements(id, type, titre, date_evt, heure_evt, date_lim, heure_lim, niveau_min, lieu,max_part, remarques, pseudo, date_publi) VALUES(:id, :type, :titre, :date_evt, :heure_evt, :date_lim, :heure_lim, :niveau_min, :lieu, :max_part, :remarques, :pseudo, :date_publi)');
 						$req2->execute(array(
 						  'id' => $id,
 						  'type' => $type,
 						  'titre' => $titre,
-						  'date_evt' => $date_evt_f,
+						  'date_evt' => $date_evt,
+//##						  'date_evt' => $date_evt_f,
 						  'heure_evt' => $heure_evt,
-						  'date_lim' => $date_lim_f,
+						  'date_lim' => $date_lim,
+//##						  'date_lim' => $date_lim_f,
 						  'heure_lim' => $heure_lim,
 						  'niveau_min' => $niveau_min,
 						  'lieu' => $lieu,
@@ -120,9 +121,9 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							<p><a href="liste_evenements.php">Lien vers la liste des sorties</a></p>
 						</div>
 						<?php
-					}
-					else	// Problème de date
-					{
+//##					}
+//##					else	// Problème de date
+/*					{
 						// Message pour dire que la date rentrée n'est pas au bon format
 						?>
 						<div class="row center">
@@ -133,10 +134,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						</div>
 						<?php
 					}
-					
-
-
-						
+*/											
 				}
 				else
 				{	// Formulaire à remplir ou formulaire incomplet : 
@@ -192,27 +190,25 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							<div class="row center">
 								<div class="input-field col s6">
 									<i class="material-icons prefix">date_range</i>
-									<input id="date_evt" type="date" class="validate" name='date_evt'>
-									<label for="date_evt">Date *</label>							
+									<input value="<?php echo date('d-m-Y'); ?>" id="date_evt" class="datepicker" name='date_evt'> 
+									<span class="helper-text">Date*</span>							
 								</div>
 								<div class="input-field col s6">
 									<i class="material-icons prefix">watch</i>
 									<input id="heure_evt" type="time" class="validate" name='heure_evt'>
-									<label for="heure_evt">Heure *</label>
+									<span class="helper-text">Heure *</span>
 								</div>
 							</div>
 							<div class="row center">
 								<div class="input-field col s6">
 									<i class="material-icons prefix">timer_off</i>
-									<?php				?>
-									<input id="date_lim" type="date" class="validate" name='date_lim' value="">
-
-									<label for="date_lim">Date limite d'inscription *</label>
+									<input value="<?php echo date('d-m-Y'); ?>" id="date_lim" class="datepicker" name='date_lim'> 
+									<span class="helper-text">Date limite d'inscription *</span>	
 								</div>
 								<div class="input-field col s6">
 									<i class="material-icons prefix">timer_off</i>
 									<input id="heure_lim" type="time" class="validate" name='heure_lim' value="21:00">
-									<label for="heure_lim">Heure limite d'inscription *</label>
+									<span class="helper-text">Heure limite d'inscription *</span>
 								</div>
 							</div>
 							<div class="row center">
@@ -227,7 +223,8 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 										  <option value = "3">N3</option>
 										  <!--<option value = "trimix">Trimix</option>
 										  <option value = "Autre">Autre</option>     On supprime cette option car elle ne permet pas de trier sur un chiffre) -->
-									   </select>										
+									   </select>	
+									   <span class="helper-text">Niveau mini</span>
 								</div>
 								<div class="input-field col s1">
 									<i class="material-icons prefix">group</i>									
@@ -249,7 +246,8 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 										  <option value = "11">11</option>
 										  <option value = "13">13</option>
 										  <option value = "14">14</option>
-									   </select>										
+									   </select>	
+										<span class="helper-text">Max</span>									   
 								</div>
 								<div class="input-field col s1">
 									<i class="material-icons prefix">toys</i>									
@@ -261,7 +259,8 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 										  <option value = "Club">Club</option>
 										  <option value = "Locaux_sociaux">Locaux Sociaux</option>
 										  <option value = "Autre">Autre</option>
-									   </select>										
+									   </select>	
+										<span class="helper-text">Lieu</span>									   
 								</div>
 							</div>
 							<div class="row center">
@@ -296,14 +295,10 @@ else	// Pas loggé
 	<?php
 }
 ?>
-  <?php include("tools/footer.php"); ?>
+	<?php include("tools/footer.php"); ?>
+	<!--  Scripts-->
+    <?php include("tools/scripts.php"); ?>
 
-  <!--  Scripts  
-
-  -->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/initi.js"></script>
 
 </body>
 
