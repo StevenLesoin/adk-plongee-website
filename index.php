@@ -25,7 +25,7 @@ session_start()
   <div id="index-banner" class="parallax-container">
     <div class="section no-pad-bot">
       <div class="container">
-        <h1 class="header center yellow-text">Bienvenu !</h1>
+        <h1 class="header center yellow-text">Bienvenue !</h1>
         <div class="row center">
           <img class="row center" src="img/logo_adk.png" alt="Logo ADK plongée" id="logoAdk">
         </div>
