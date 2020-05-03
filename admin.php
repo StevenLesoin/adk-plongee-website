@@ -46,7 +46,7 @@ session_start()
 		        include("tools/all_members_resume_tab.php");
 		        $req0->closeCursor(); //requête terminée
 	    	}
-	    	else if(!empty($_POST['edit_member_id'])) // Champ sélectionné pour modification
+	    	else if(isset($_POST['edit_member_id'])) // Champ sélectionné pour modification
 	    	{
 	    		include("tools/data_base_connection.php");
 	    		$req1 = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE id = :id');
