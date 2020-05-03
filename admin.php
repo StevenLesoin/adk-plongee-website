@@ -18,6 +18,8 @@ session_start()
 
 <body>
 
+
+
 	<?php 
 	if(isset($_SESSION['pseudo'])) // Si déjà connecté
     {
