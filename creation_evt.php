@@ -65,76 +65,53 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					// Gestion des formats de date
 					$date_evt = htmlspecialchars($_POST['date_evt']);
 					$date_lim = htmlspecialchars($_POST['date_lim']);
-
+					$date_evt_f = date('Y-m-d', strtotime($date_evt));
+					$date_lim_f = date('Y-m-d', strtotime($date_lim));
 					// Test du format de date
 					
-//##					if(isValid($date_lim) AND isValid($date_evt))		// Pas de problèmes de date
-//##					{
-						$type = htmlspecialchars($_POST['type']);
-						$titre = htmlspecialchars($_POST['titre']);
-						$heure_evt = htmlspecialchars($_POST['heure_evt']);
-						$heure_lim = htmlspecialchars($_POST['heure_lim']);
-						if(empty($_POST['niveau_min'])){$niveau_min="0";}else{$niveau_min=htmlspecialchars($_POST['niveau_min']);}
-						if(empty($_POST['lieu'])){$lieu="Mer";}else{$lieu=htmlspecialchars($_POST['lieu']);}
-						if(empty($_POST['max_part'])){$max_part="12";}else{$max_part=htmlspecialchars($_POST['max_part']);}
-						if(empty($_POST['remarques'])){$remarques=" ";}else{$remarques=htmlspecialchars($_POST['remarques']);}
+					$type = htmlspecialchars($_POST['type']);
+					$titre = htmlspecialchars($_POST['titre']);
+					$heure_evt = htmlspecialchars($_POST['heure_evt']);
+					$heure_lim = htmlspecialchars($_POST['heure_lim']);
+					if(empty($_POST['niveau_min'])){$niveau_min="0";}else{$niveau_min=htmlspecialchars($_POST['niveau_min']);}
+					if(empty($_POST['lieu'])){$lieu="Mer";}else{$lieu=htmlspecialchars($_POST['lieu']);}
+					if(empty($_POST['max_part'])){$max_part="12";}else{$max_part=htmlspecialchars($_POST['max_part']);}
+					if(empty($_POST['remarques'])){$remarques=" ";}else{$remarques=htmlspecialchars($_POST['remarques']);}
 
-						include("tools/data_base_connection.php");						
-						// Recherche du numéro d'index à affecter
-						$result = $bdd->query("SELECT MAX(id) FROM evenements");
-						$row = $result->fetch();
-						$req1 = $row[0];
-						$id = ++$req1;
-						
-						// Date courante
-						$datecourante = date_create();
-						$datecourantes = (string)date_format($datecourante, 'D-d/m/Y H:i:s');
-//##						$date_lim_f = date("Y-d-m", strtotime($date_lim));		// Mise au format de la date courante
-//##						$date_evt_f = date("Y-d-m", strtotime($date_evt));		// Mise au format de la date courante
-						$req2= $bdd->prepare('INSERT INTO evenements(id, type, titre, date_evt, heure_evt, date_lim, heure_lim, niveau_min, lieu,max_part, remarques, pseudo, date_publi) VALUES(:id, :type, :titre, :date_evt, :heure_evt, :date_lim, :heure_lim, :niveau_min, :lieu, :max_part, :remarques, :pseudo, :date_publi)');
-						$req2->execute(array(
-						  'id' => $id,
-						  'type' => $type,
-						  'titre' => $titre,
-						  'date_evt' => $date_evt,
-//##						  'date_evt' => $date_evt_f,
-						  'heure_evt' => $heure_evt,
-						  'date_lim' => $date_lim,
-//##						  'date_lim' => $date_lim_f,
-						  'heure_lim' => $heure_lim,
-						  'niveau_min' => $niveau_min,
-						  'lieu' => $lieu,
-						  'max_part' => $max_part,
-						  'remarques' => $remarques,
-						  'pseudo' => ($_SESSION['nom']." ".$_SESSION['prenom']),
-						  'date_publi' => $datecourantes));
+					include("tools/data_base_connection.php");						
+					// Recherche du numéro d'index à affecter
+					$result = $bdd->query("SELECT MAX(id) FROM evenements");
+					$row = $result->fetch();
+					$req1 = $row[0];
+					$id = ++$req1;
+					
+					$req2= $bdd->prepare('INSERT INTO evenements(id, type, titre, date_evt, heure_evt, date_lim, heure_lim, niveau_min, lieu,max_part, remarques, pseudo, date_publi) VALUES(:id, :type, :titre, :date_evt, :heure_evt, :date_lim, :heure_lim, :niveau_min, :lieu, :max_part, :remarques, :pseudo, NOW())');
+					$req2->execute(array(
+					  'id' => $id,
+					  'type' => $type,
+					  'titre' => $titre,
+					  'date_evt' => $date_evt_f,
+					  'heure_evt' => $heure_evt,
+					  'date_lim' => $date_lim_f,
+					  'heure_lim' => $heure_lim,
+					  'niveau_min' => $niveau_min,
+					  'lieu' => $lieu,
+					  'max_part' => $max_part,
+					  'remarques' => $remarques,
+					  'pseudo' => ($_SESSION['nom']." ".$_SESSION['prenom'])));
 
-						$result->closeCursor(); //requête terminée
-						$req2->closeCursor(); //requête terminée
-						
-						// Message pour dire que le formulaire à été est pris en compte
-						?>
-						<div class="row center">
-							<span class="flow-text" col s12">L'évènement à bien été créé</span>
-						</div>
-						<div class="row center">
-							<p><a href="liste_evenements.php">Lien vers la liste des sorties</a></p>
-						</div>
-						<?php
-//##					}
-//##					else	// Problème de date
-/*					{
-						// Message pour dire que la date rentrée n'est pas au bon format
-						?>
-						<div class="row center">
-							<span class="flow-text" col s12"> <b style='color: red;'>Les dates doivent être rentrées via le calendrier intégré ou en respectant le formalisme jj/mm/aaaa</b></span>
-						</div>
-						<div class="row center">
-							<p><a href="creation_evt.php">Retentes ta chance</a></p>
-						</div>
-						<?php
-					}
-*/											
+					$result->closeCursor(); //requête terminée
+					$req2->closeCursor(); //requête terminée
+					
+					// Message pour dire que le formulaire à été est pris en compte
+					?>
+					<div class="row center">
+						<span class="flow-text" col s12">L'évènement à bien été créé</span>
+					</div>
+					<div class="row center">
+						<p><a href="liste_evenements.php">Lien vers la liste des sorties</a></p>
+					</div>
+					<?php										
 				}
 				else
 				{	// Formulaire à remplir ou formulaire incomplet : 
@@ -190,8 +167,8 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							<div class="row center">
 								<div class="input-field col s6">
 									<i class="material-icons prefix">date_range</i>
-									<input value="<?php echo date('d-m-Y'); ?>" id="date_evt" class="datepicker" name='date_evt'> 
-									<span class="helper-text">Date*</span>							
+									<input value="<?php echo date('d-m-Y'); ?>" id="date_evt" class="datepicker" name='date_evt'> 					 
+									<span class="helper-text">Date *</span>							
 								</div>
 								<div class="input-field col s6">
 									<i class="material-icons prefix">watch</i>
@@ -202,7 +179,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							<div class="row center">
 								<div class="input-field col s6">
 									<i class="material-icons prefix">timer_off</i>
-									<input value="<?php echo date('d-m-Y'); ?>" id="date_lim" class="datepicker" name='date_lim'> 
+									<input value="<?php echo date('d-m-Y'); ?>" id="date_lim" class="datepicker2" name='date_lim'> 
 									<span class="helper-text">Date limite d'inscription *</span>	
 								</div>
 								<div class="input-field col s6">
