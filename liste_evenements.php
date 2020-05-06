@@ -17,11 +17,10 @@ session_start()
 </head>
 
 <body>
-
+<?php include("tools/navbar.php"); ?>
 
 <?php $date_limi_passee = 0; 		// test pour savoir si on autorise les inscriptions?>
 
-<?php include("tools/navbar.php"); ?>
 <?php include("tools/data_evts.php"); ?>
 <?php date_default_timezone_set('Europe/Paris'); ?>
 

@@ -131,6 +131,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						?>
 						<div class="row center">
 							<span class="flow-text" col s12"> <b style='color: red;'>La date / heure limite d'inscription limite doit être antiéreure à la date / heure de l'événement</b></span>
+							<?php echo  $_POST['date_lim']; echo $_POST['date_evt'];?>
 						</div>
 						<?php
 					}
@@ -167,12 +168,12 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							<div class="row center">
 								<div class="input-field col s6">
 									<i class="material-icons prefix">date_range</i>
-									<input value="<?php echo date('d-m-Y'); ?>" id="date_evt" class="datepicker" name='date_evt'> 					 
+									<input  value="<?php echo date('m-d-Y'); ?>" id="date_evt" class="datepicker3" name='date_evt'>					 
 									<span class="helper-text">Date *</span>							
 								</div>
 								<div class="input-field col s6">
 									<i class="material-icons prefix">watch</i>
-									<input id="heure_evt" type="time" class="validate" name='heure_evt'>
+									<input id="heure_evt" type="time" class="validate" name='heure_evt' value="21:00">
 									<span class="helper-text">Heure *</span>
 								</div>
 							</div>
