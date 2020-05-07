@@ -15,11 +15,6 @@
 
 <?php include("tools/navbar.php"); ?>
 
-<?php
-/*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
-echo $pass_hache; */
-?>
-
   <div class="section no-pad-bot" id="index-banner">
   	<div class="container">
     	<br><br>
@@ -55,12 +50,14 @@ echo $pass_hache; */
   	</div>
   </div>
 
+  <div id="index-banner" class="parallax-container">
+    <div class="parallax"><img class="responsive-img" src="img/bioSurTole1.jpg" alt="Unsplashed background img 1"></div>
+  </div>
+
   <?php include("tools/footer.php"); ?>
 
   <!--  Scripts-->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/init.js"></script>
+  <?php include("tools/scripts.php"); ?>
 
 </body>
 

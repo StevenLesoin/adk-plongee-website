@@ -28,9 +28,45 @@
               <td><?php echo $resultat['privilege'] ?></td>
               <td><?php echo $resultat['niv_plongeur'] ?></td>
               <td><?php echo $resultat['niv_encadrant'] ?></td>
-              <td><?php echo $resultat['actif_saison'] ?></td>
-              <td><?php echo $resultat['certif_med'] ?></td>
-              <td><?php echo $resultat['inscription_valide'] ?></td>
+              <td>
+                  <?php
+                    if($resultat['actif_saison'] == 1){
+                    ?><p class="center green-text">ACTIF</p><?
+                    }else if($resultat['actif_saison'] == 0){
+                    ?><p class="center orange-text">INACTIF</p><?php 
+                    }
+                  ?>
+              </td>
+              <td>
+                  <?php 
+                    if(strtotime("now") <= strtotime($resultat['certif_med'].' + 1 YEAR')){ // Si certificat pas dépassé de plus d'un an
+                    ?>
+                      <p class="center green-text"><?php echo date('d-m-Y', strtotime($resultat['certif_med'])); ?></p> 
+                    <?php
+                    }else{
+                    ?>
+                      <p class="center red-text"><?php echo date('d-m-Y', strtotime($resultat['certif_med'])); ?></p> 
+                    <?php
+                    }
+                  ?>                
+              </td>
+              <td>
+                    <?php
+                    if($resultat['inscription_valide'] == 1){
+                    ?>
+                      <p class="center green-text">OK</p>
+                    <?
+                    }else if($resultat['inscription_valide'] == 0){
+                    ?>
+                      <form action="admin.php" method="post">
+                        <input type="hidden" name="validate_registration" value="1" />
+                        <input type="hidden" name="validate_registration_member_id" value="<?php echo $resultat['id'] ?>" />
+                        <button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Valider</button>
+                      </form>
+                    <?php
+                    }
+                  ?>  
+              </td>
               <td>
                 <form action="admin.php" method="post">
                   <input type="hidden" name="edit_member_id" value="<?php echo $resultat['id'] ?>" />

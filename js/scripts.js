@@ -38,5 +38,9 @@ $(document).ready(function() {
 			
   			$(".button-collapse").sideNav();
 			$(".dropdown-trigger").dropdown();
+			$(".datepicker").datepicker({
+    			format: "dd-mm-yyyy"
+  			});
+			$('.parallax').parallax();
         
 });
