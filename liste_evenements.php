@@ -96,8 +96,8 @@ session_start()
 			<table class="striped">
 				<thead>
 				  <tr>
-					  <th>Type</th>
 					  <th>Titre <u>(Lien vers sortie)</u></th>
+					  <th>Type</th>
 					  <th>Date</th>
 					  <th>Date Limite</th>
 					  <th>Niv</th>
@@ -119,6 +119,44 @@ session_start()
 					<tr>
 						<td>
 							<?php
+							if(isset($_SESSION['pseudo'])) // Si connecté, on affiche les boutons d'ajout et de suppression d'inscription
+							{?>
+								<form action="affichage_evt.php" method="post">
+									<input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'>
+									<button class="btn waves-effect waves-light 
+									<?php 
+									if($resultat['type']=="Plongée")
+									{
+										if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==0){echo "brown";}
+										else if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==1){echo "purple";}
+										else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==0){echo "blue";}
+										else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==0){echo "green";}
+										else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==1){echo "orange";}
+										else if(isDP($resultat['id'])==0 AND isFull($resultat['id'],$resultat['max_part'])==1){echo "red";}
+										else{echo "grey";}
+									}
+									// Pour une plongée piscine, on vérifie qu'il y ait un DP piscine
+									else if($resultat['type']=="Piscine")
+									{
+										if(isDP_piscine($resultat['id'])==0){echo "purple";}
+										else{echo "green";}
+									}
+									else {echo "blue";} ?>
+											
+									darken-2" type="submit" name="submit"><?php if(strlen($resultat['titre'])>30){echo substr($resultat['titre'],0,27).'...';} else {echo $resultat['titre'];}?></button>
+								</form>
+							<?php
+							}
+							else
+							{ 
+								if(strlen($resultat['titre'])>20)
+								{echo '<label>'.substr($resultat['titre'],0,17).'...</label>';} 
+								else {echo '<label>'.$resultat['titre'].'</label>';}
+							}		// Affichage du titre de la sortie sans lien pour consulter en détail 
+							?>							
+						</td>
+						<td>
+							<?php
 							// Pour une plongée, on vérifie qu'il y ait un DP et un minimum d'inscrits
 							// ### Faire un différence entre plongée du bord (pas de mini) et plongée bateau
 							if($resultat['type']=="Plongée")
@@ -138,24 +176,6 @@ session_start()
 								else{echo ("<label style='color: green'>".$resultat['type']."</label>");}
 							}
 							else{?>	<label> <?php echo $resultat['type']?></label>	<?php } ?>
-						</td>
-						<td>
-							<?php
-							if(isset($_SESSION['pseudo'])) // Si connecté, on affiche les boutons d'ajout et de suppression d'inscription
-							{?>
-								<form action="affichage_evt.php" method="post">
-									<input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'>
-									<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit"><?php if(strlen($resultat['titre'])>30){echo substr($resultat['titre'],0,27).'...';} else {echo $resultat['titre'];}?></button>
-								</form>
-							<?php
-							}
-							else
-							{ 
-								if(strlen($resultat['titre'])>20)
-								{echo '<label>'.substr($resultat['titre'],0,17).'...</label>';} 
-								else {echo '<label>'.$resultat['titre'].'</label>';}
-							}		// Affichage du titre de la sortie sans lien pour consulter en détail 
-							?>
 						</td>
 						<td>
 							<label><?php echo date("D-d/m", strtotime($resultat['date_evt']))."<br>".substr ($resultat['heure_evt'],0,5)?></label>						
