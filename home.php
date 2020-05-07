@@ -88,7 +88,7 @@ session_start()
 				{
 					include("tools/navbar.php"); 
 					include("tools/print_msg.php"); // Define printMsg function 
-  					printMsg('Bienvenu !','',''); 
+  					printMsg('Bienvenue !','',''); 
 					include("tools/account_info.php"); 
 				}
 		    }
