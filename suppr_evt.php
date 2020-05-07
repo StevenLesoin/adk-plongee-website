@@ -21,13 +21,6 @@ session_start()
 <?php include("tools/navbar.php"); ?>
 
 <?php
-/*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
-echo $pass_hache; */
-?>
-
-
-
-<?php
 if($_SESSION['privilege']=="administrateur")		// On autorise l'accès à cette page
 {
 			// Traitement des suppressions
@@ -200,9 +193,8 @@ else		// La personne qui accède à la page n'est pas admin
   <?php include("tools/footer.php"); ?>
 
   <!--  Scripts-->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/initi.js"></script>
+	<!--  Scripts-->
+    <?php include("tools/scripts.php"); ?>
 
 </body>
 

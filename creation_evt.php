@@ -173,7 +173,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 								</div>
 								<div class="input-field col s6">
 									<i class="material-icons prefix">watch</i>
-									<input id="heure_evt" type="time" class="validate" name='heure_evt' value="21:00">
+									<input id="heure_evt" type="time" class="validate" name='heure_evt' value="08:15">
 									<span class="helper-text">Heure *</span>
 								</div>
 							</div>

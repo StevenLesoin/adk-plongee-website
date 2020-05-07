@@ -17,14 +17,13 @@ session_start()
 </head>
 
 <body>
-<?php include("tools/navbar.php"); ?>
 
-<?php $date_limi_passee = 0; 		// test pour savoir si on autorise les inscriptions?>
-
+<?php include("tools/navbar.php"); ?>	
 <?php include("tools/data_evts.php"); ?>
 <?php date_default_timezone_set('Europe/Paris'); ?>
 
 <?php
+		$date_limi_passee = 0; 	// test pour savoir si on autorise les inscriptions
 		if(isset($_SESSION['pseudo'])) // Si déjà connecté
 		{
 			// Traitement des inscriptions, désinscriptions (Les liens vers les plongées sont faites dans le formulaire)
@@ -68,7 +67,7 @@ session_start()
 			<?php
 			// Determination de la date d'il y a un an
 			$yaunan = strtotime('-1 year -1 day');		// timestamp d'il y a un an	
-			$yaunanmoinsunmois = strtotime('-1 month');
+			$yaunanmoinsunmois = strtotime('-1 year +1 month');
 			if(strtotime($_SESSION['certif_med'])<$yaunan)		// Si le gars est pas à jour de certif médical, on lui affiche une message énorme en rouge sur les inscriptions
 			{?>
 				<div class="row center">
