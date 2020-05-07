@@ -93,7 +93,7 @@ session_start()
 			
 			// Mise ne place de la trame du tableau
 			?>
-			<table class="striped">
+			<table class="striped responsive-table">
 				<thead>
 				  <tr>
 					  <th>Titre <u>(Lien vers sortie)</u></th>
@@ -129,7 +129,7 @@ session_start()
 									{
 										if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==0){echo "brown";}
 										else if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==1){echo "purple";}
-										else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==0){echo "blue";}
+										else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==0){echo "grey";}
 										else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==0){echo "green";}
 										else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==1){echo "orange";}
 										else if(isDP($resultat['id'])==0 AND isFull($resultat['id'],$resultat['max_part'])==1){echo "red";}
@@ -156,26 +156,7 @@ session_start()
 							?>							
 						</td>
 						<td>
-							<?php
-							// Pour une plongée, on vérifie qu'il y ait un DP et un minimum d'inscrits
-							// ### Faire un différence entre plongée du bord (pas de mini) et plongée bateau
-							if($resultat['type']=="Plongée")
-							{
-								if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==0){echo ("<label style='color: brown'>".$resultat['type']."</label>");}
-								else if(isDP($resultat['id'])==0 AND isEnough($resultat['id'])==1){echo ("<label style='color: purple'>".$resultat['type']."</label>");}
-								else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==0){echo ("<label style='color: blue'>".$resultat['type']."</label>");}
-								else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==0){echo ("<label style='color: green'>".$resultat['type']."</label>");}
-								else if(isDP($resultat['id'])==1 AND isEnough($resultat['id'])==1 AND isFull($resultat['id'],$resultat['max_part'])==1){echo ("<label style='color: orange'>".$resultat['type']."</label>");}
-								else if(isDP($resultat['id'])==0 AND isFull($resultat['id'],$resultat['max_part'])==1){echo ("<label style='color: red'>".$resultat['type']."</label>");}
-								else{echo ("<label style='color: grey'>".$resultat['type']."</label>");}
-							}
-							// Pour une plongée piscine, on vérifie qu'il y ait un DP piscine
-							else if($resultat['type']=="Piscine")
-							{
-								if(isDP_piscine($resultat['id'])==0){echo ("<label style='color: purple'>".$resultat['type']."</label>");}
-								else{echo ("<label style='color: green'>".$resultat['type']."</label>");}
-							}
-							else{?>	<label> <?php echo $resultat['type']?></label>	<?php } ?>
+							<label> <?php echo $resultat['type']?></label>
 						</td>
 						<td>
 							<label><?php echo date("D-d/m", strtotime($resultat['date_evt']))."<br>".substr ($resultat['heure_evt'],0,5)?></label>						
@@ -305,7 +286,7 @@ session_start()
 			$req1->closeCursor(); //requête terminée
 		?>	
 		<div class="row center">
-            <span> Legende des couleurs : </span> <span style='color: grey;'>Pas d'exigences</span> / <span style='color: brown;'>Pas de DP et pas assez de monde</span> / <span style='color: purple;'>Pas de DP mais assez de monde</span> / <span style='color: blue;'>Un DP, pas assez de monde</span> / <span style='color: green;'>Un DP et assez de monde</span> / <span style='color: orange;'>Sortie complète</span> / <span style='color: red;'>Sortie complète mais sans DP</span>
+            <span> Legende des couleurs : </span> <span style='color: blue;'>Pas d'exigences</span> / <span style='color: brown;'>Pas de DP et pas assez de monde</span> / <span style='color: purple;'>Pas de DP mais assez de monde</span> / <span style='color: grey;'>Un DP, pas assez de monde</span> / <span style='color: green;'>Un DP et assez de monde</span> / <span style='color: orange;'>Sortie complète</span> / <span style='color: red;'>Sortie complète mais sans DP</span>
         </div>
 
 
