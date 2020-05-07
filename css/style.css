@@ -12,3 +12,21 @@
 .icon-block .material-icons {
 	font-size: inherit;
 }
+
+#logoAdk 
+{
+/*	height: 500px;
+	width: 500px;*/
+	max-width: 20%;
+  	max-height: 20%;
+}
+
+#logoAdkNavbar
+{
+/*	height: 500px;
+	width: 500px;*/
+	margin-top : 3px;
+	margin-right : 10px;
+	max-width: 90%;
+  	max-height: 90%;
+}

@@ -86,13 +86,14 @@
 
   ?>
 
+  <div id="index-banner" class="parallax-container">
+    <div class="parallax"><img class="responsive-img" src="img/bioSurTole2.jpg" alt="Unsplashed background img 1"></div>
+  </div>
 
   <?php include("tools/footer.php"); ?>
 
   <!--  Scripts-->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/init.js"></script>
+  <?php include("tools/scripts.php"); ?>
 
   </body>
 

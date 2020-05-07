@@ -88,7 +88,7 @@ session_start()
 				{
 					include("tools/navbar.php"); 
 					include("tools/print_msg.php"); // Define printMsg function 
-  					printMsg('Bienvenu !','',''); 
+  					printMsg('Bienvenue !','',''); 
 					include("tools/account_info.php"); 
 				}
 		    }
@@ -111,9 +111,7 @@ session_start()
   <?php include("tools/footer.php"); ?>
 
   <!--  Scripts-->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/init.js"></script>
+  <?php include("tools/scripts.php"); ?>
 
   </body>
 

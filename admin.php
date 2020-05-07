@@ -34,7 +34,7 @@ session_start()
 		}
 		else if($_SESSION['privilege']=='administrateur' OR $_SESSION['privilege']=='bureau') // Membre du bureeau ou admin
 		{
-			if(empty($_POST['search_name']) AND empty($_POST['search_surname']) AND empty($_POST['edit_member_id'])) // Page vierge
+			if(empty($_POST['search_name']) AND empty($_POST['search_surname']) AND empty($_POST['edit_member_id']) AND empty($_POST['validate_registration_member_id'])) // Page vierge
 			{
 		    	include("tools/navbar.php"); 
 		    	include("tools/search_members_form.php");
@@ -46,7 +46,7 @@ session_start()
 		        include("tools/all_members_resume_tab.php");
 		        $req0->closeCursor(); //requête terminée
 	    	}
-	    	else if(!empty($_POST['edit_member_id'])) // Champ sélectionné pour modification
+	    	else if(isset($_POST['edit_member_id'])) // Champ sélectionné pour modification
 	    	{
 	    		include("tools/data_base_connection.php");
 	    		$req1 = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE id = :id');
@@ -57,6 +57,26 @@ session_start()
 
 		        include("tools/navbar.php"); 
 	    		include("tools/edit_members_resume_form.php"); 
+	    	}
+	    	else if(!empty($_POST['validate_registration']) AND !empty($_POST['validate_registration_member_id'])) // Champ sélectionné pour validation inscription
+	    	{
+	    		echo "test";
+	    		include("tools/data_base_connection.php");
+	    		// Valide l'inscription
+	    		$req2= $bdd->prepare('UPDATE membres SET inscription_valide = :inscription_valide WHERE id = :id');
+		        $req2->execute(array(
+		          'inscription_valide' => $_POST['validate_registration'],
+		          'id' => $_POST['validate_registration_member_id']));
+		        $req2->closeCursor(); //requête terminée
+
+		        // Liste de l'ensemble des membres 
+		    	$req0 = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres ORDER BY nom');
+		        $req0->execute(array());
+
+		        include("tools/navbar.php"); 
+		        include("tools/search_members_form.php");
+		       	include("tools/all_members_resume_tab.php");
+		       	$req0->closeCursor(); //requête terminée
 	    	}
 	    	else if(empty($_POST['search_name']) OR empty($_POST['search_surname'])) // Un ou plusieurs champs du formulaire de recherche sont vides
 	    	{
@@ -101,9 +121,7 @@ session_start()
 	<?php include("tools/footer.php"); ?>
 
 	<!--  Scripts-->
-	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<script src="js/materialize.js"></script>
-	<script src="js/init.js"></script>
+    <?php include("tools/scripts.php"); ?>
 
 </body>
 
