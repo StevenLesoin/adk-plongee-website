@@ -1,8 +1,5 @@
   <ul id="club_navBar" class="dropdown-content">
-    <li><a href="#">Historique</a></li>
-    <li><a href="#">Le club en chiffres</a></li>
-	  <li><a href="liste_evenements.php">Liste des événements</a></li>
-	  <li><a href="fonctionnement_site.php">FAQ / Fonctionnement du site</a></li>
+	  <li><a href="fonctionnement_site.php">FAQ</a></li>
   </ul>
   
   <ul id="outils_navBar" class="dropdown-content">
@@ -22,9 +19,9 @@
       <a id="logo-container" href="index.php" class="brand-logo">ADK-plongée</a>
       <a href="#" data-target="mobile-navbar" class="sidenav-trigger"><i class="material-icons">menu</i></a>
       <ul class="right hide-on-med-and-down">
-                <!-- Dropdown Trigger -->
-        <li><a class="dropdown-trigger" href="#!" data-target="club_navBar">Le club<i class="material-icons right">arrow_drop_down</i></a></li>
         <li><a href="#">Contact</a></li>
+        <!-- Dropdown Trigger -->
+        <li><a class="dropdown-trigger" href="#!" data-target="club_navBar">Le club<i class="material-icons right">arrow_drop_down</i></a></li>
 
         <?php  
 			    // Affichage pour les membres
@@ -42,7 +39,7 @@
             }
             ?>
             <li><a href="logout.php">Déconnexion</a></li>
-            <li><a href="home.php"><?php echo $_SESSION['pseudo']; ?></a></li>
+            <li><a href="home.php">Mon compte (<?php echo $_SESSION['pseudo']; ?>)</a></li>
           <?php 
           }
           else // Si non membre
@@ -59,12 +56,8 @@
 
 
     <ul class="sidenav" id="mobile-navbar">
-      <li><a href="#">Historique</a></li>
-      <li><a href="#">Le club en chiffres</a></li>
-      <li><a href="liste_evenements.php">Liste des événements</a></li>
-      <li><a href="fonctionnement_site.php">FAQ / Fonctionnement du site</a></li>
-
       <li><a href="#">Contact</a></li>
+      <li><a href="fonctionnement_site.php">FAQ</a></li>
 
       <?php  
           // Affichage pour les membres
@@ -84,7 +77,7 @@
             }
             ?>
             <li><a href="logout.php">Déconnexion</a></li>
-            <li><a href="home.php"><?php echo $_SESSION['pseudo']; ?></a></li>
+            <li><a href="home.php">Mon compte (<?php echo $_SESSION['pseudo']; ?>)</a></li>
           <?php 
           }
           else // Si non membre
