@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : ven. 08 mai 2020 à 14:18
+-- Généré le : ven. 08 mai 2020 à 16:21
 -- Version du serveur :  10.4.11-MariaDB
 -- Version de PHP : 7.4.4
 
@@ -134,10 +134,9 @@ CREATE TABLE `membres` (
 
 INSERT INTO `membres` (`id`, `pseudo`, `mdp`, `nom`, `prenom`, `email`, `privilege`, `oubli_mdp`, `niv_plongeur`, `niv_encadrant`, `actif_saison`, `certif_med`, `inscription_valide`) VALUES
 (1, 'sle', '$2y$10$V8bLw1HtqNcr8GJiBJwZIeQcT9SRqAm1QXbrJhrPpzPikhz9h/1BW', 'Lesoin', 'Steven', 'steven.lesoin@gmail.com', 'administrateur', 0, 3, 1, 1, '2020-01-01', 1),
-(2, 'luc', '$2y$10$MZfLQpeF4261c5dxrGqqOeXcwYrdZZJKBhcmMpJ3iDDeoT0SNYCeO', 'Carof', 'Lucie', 'lucie.carof@yahoo.fr', 'membre', 0, 1, 0, 0, '2020-04-01', 1),
+(2, 'luc', '$2y$10$MZfLQpeF4261c5dxrGqqOeXcwYrdZZJKBhcmMpJ3iDDeoT0SNYCeO', 'Carof', 'Lucie', 'lucie.carof@yahoo.fr', 'membre', 0, 1, 0, 0, '2020-04-01', 0),
 (4, 'Clément', '$2y$10$JqgVEXm2grkEBHnGP62bi.g5tju76L8eCwPJCafjaT1CNqWSZNoMC', 'MAHE', 'Clément', 'clement.mahe@gmail.com', 'administrateur', 0, 5, 3, 0, '2020-04-15', 1),
-(5, 'test', '$2y$10$BOD6sfjFVi18BJdMIc.A9.7E4KKLnVTt0a2eULEiUYKxCsNuCR8Ym', 'tutu', 'toto', 'test@test.com', 'membre', 1, 1, 0, 0, '2020-04-01', 0),
-(6, 'test1', '$2y$10$RrhdBoDrkcD334duFhnrkOFyvBVEp5XdEFReeAa3/uP.qe3Hk5jrS', 'tutu', 'toto', 'test1@test1.com', 'membre', 0, 0, 0, 0, '1000-01-01', 1);
+(5, 'test', '$2y$10$BOD6sfjFVi18BJdMIc.A9.7E4KKLnVTt0a2eULEiUYKxCsNuCR8Ym', 'tutu', 'toto', 'test@test.com', 'membre', 1, 1, 0, 0, '2020-04-01', 1);
 
 --
 -- Index pour les tables déchargées
@@ -163,7 +162,7 @@ ALTER TABLE `membres`
 -- AUTO_INCREMENT pour la table `membres`
 --
 ALTER TABLE `membres`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
