@@ -129,11 +129,14 @@
                             <label for="password">Mot de passe</label>
                         </div>
                         <input type="hidden" name="edit_member_id" value="<?php echo $_POST['edit_member_id'] ?>" />
-                        <button class="btn waves-effect waves-light blue darken-4" type="submit" name="submit">Valider les modifications</button>
-                        <br><br><br><br>
-                        <input type="hidden" name="delete_member_id" value="<?php echo $_POST['edit_member_id'] ?>" />
-                        <button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Supprimer le compte</button>  
+                        <button class="btn waves-effect waves-light blue darken-4" type="submit" name="submit">Valider les modifications</button>                        
                     </div>
+                </form>
+                <form class="col s12" action="edit_members_resume.php" method="post">
+                    <input type="hidden" name="edit_member_id" value="<?php echo $_POST['edit_member_id'] ?>" />
+                    <input type="hidden" name="delete_member_id" value="<?php echo $_POST['edit_member_id'] ?>" />
+                    <br><br><br><br>
+                    <button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Supprimer le compte</button> 
                 </form>
             </div>
         </div>
