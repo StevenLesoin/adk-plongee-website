@@ -12,11 +12,11 @@
 		<li><a href="admin.php">Infos membres</a></li>
 	</ul>
   
-  
-  <nav class="blue darken-4" role="navigation">
+<div class="navbar-fixed">
+  <nav class="blue darken-4 col s12" role="navigation">
     <div class="nav-wrapper container">
       <img class="responsive-img" src="img/logo_adk.png" alt="Logo ADK plongée" id="logoAdkNavbar">
-      <a id="logo-container" href="index.php" class="brand-logo">ADK-plongée</a>
+      <a id="logo-container" href="index.php" class="brand-logo">ADK plongée</a>
       <a href="#" data-target="mobile-navbar" class="sidenav-trigger"><i class="material-icons">menu</i></a>
       <ul class="right hide-on-med-and-down">
         <li><a href="#">Contact</a></li>
@@ -53,38 +53,38 @@
       </ul>
     </div>
   </nav>
+</div>
+ 
+      <ul class="sidenav" id="mobile-navbar">
+        <li><a href="#">Contact</a></li>
+        <li><a href="fonctionnement_site.php">FAQ</a></li>
 
-
-    <ul class="sidenav" id="mobile-navbar">
-      <li><a href="#">Contact</a></li>
-      <li><a href="fonctionnement_site.php">FAQ</a></li>
-
-      <?php  
-          // Affichage pour les membres
-          if(isset($_SESSION['pseudo']) AND isset($_SESSION['privilege'])) // Si membre
-          {
-            ?>
-            <li><a href="liste_evenements.php">Liste des événements</a></li>
-            <li><a href="creation_evt.php">Ajout d'événement</a></li>
-            <?php   
-            // Affichage pour les Admins en plus des membres
-            if($_SESSION['privilege']=='administrateur') // Si admin
+        <?php  
+            // Affichage pour les membres
+            if(isset($_SESSION['pseudo']) AND isset($_SESSION['privilege'])) // Si membre
             {
-            ?>
-              <li><a href="suppr_evt.php">Suppression d'événements</a></li>
-              <li><a href="admin.php">Infos membres</a></li>
+              ?>
+              <li><a href="liste_evenements.php">Liste des événements</a></li>
+              <li><a href="creation_evt.php">Ajout d'événement</a></li>
+              <?php   
+              // Affichage pour les Admins en plus des membres
+              if($_SESSION['privilege']=='administrateur') // Si admin
+              {
+              ?>
+                <li><a href="suppr_evt.php">Suppression d'événements</a></li>
+                <li><a href="admin.php">Infos membres</a></li>
+              <?php 
+              }
+              ?>
+              <li><a href="logout.php">Déconnexion</a></li>
+              <li><a href="home.php">Mon compte (<?php echo $_SESSION['pseudo']; ?>)</a></li>
             <?php 
             }
-            ?>
-            <li><a href="logout.php">Déconnexion</a></li>
-            <li><a href="home.php">Mon compte (<?php echo $_SESSION['pseudo']; ?>)</a></li>
-          <?php 
-          }
-          else // Si non membre
-          {
-            ?>
-            <li><a href="login.php">Accès membre</a></li>
-            <?php 
-          }
-        ?>
-    </ul>
+            else // Si non membre
+            {
+              ?>
+              <li><a href="login.php">Accès membre</a></li>
+              <?php 
+            }
+          ?>
+      </ul>
