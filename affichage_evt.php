@@ -334,7 +334,9 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						}
 						// Fin de la nouvelle ligne
 						if($num_inscrit>($nb_max_part))
-						{?>	<?php $italic=0;				// Pour passer les textes en italic?> </tr> <?php}		// Fin de la balise italique si on est dans les listes d'autorise
+						{ $italic=0;				// Pour passer les textes en italic
+							?></tr> <?php		// Fin de la balise italique si on est dans les listes d'autorise
+						}
 						else
 						{?>
 							</tr>  <?php		// Fin de la ligne simple sinon

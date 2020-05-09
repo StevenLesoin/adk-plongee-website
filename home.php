@@ -23,7 +23,8 @@ session_start()
     {
     	if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
 		{
-			header('location: edit_password.php');
+			//header('location: edit_password.php');
+			?><meta http-equiv="Refresh" content="0; url=http://tramasearider.free.fr/Site_ADK/edit_password.php" /><?
 		}
 		else if($_SESSION['inscription_valide']==0) // Inscription non validé
 		{
@@ -75,7 +76,8 @@ session_start()
 				
 				if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
 				{
-					header('location: edit_password.php');
+					//header('location: edit_password.php');
+					?><meta http-equiv="Refresh" content="0; url=http://tramasearider.free.fr/Site_ADK/edit_password.php" /><?
 				}
 				else if($_SESSION['inscription_valide']==0) // Inscription non validé
 				{
@@ -86,7 +88,8 @@ session_start()
 				}
 				else
 				{
-					header('location:index.php');
+					//header('location:index.php');
+					?><meta http-equiv="Refresh" content="0; url=http://tramasearider.free.fr/Site_ADK/index.php" /><?
 				}
 		    }
 		    else { // Erreur de mot de passe
@@ -101,7 +104,8 @@ session_start()
 	}
 	else
 	{
-		header('location: login.php');
+		//header('location: login.php');
+		?><meta http-equiv="Refresh" content="0; url=http://tramasearider.free.fr/Site_ADK/login.php" /><?
 	}
 	?>
 
