@@ -1,6 +1,6 @@
 <!-- $resultat must be set in php before include this page -->
     <div class="container">
-      <table class="striped responsive-table">
+      <table class="striped centered responsive-table">
         <thead>
           <tr>
               <th>Nom</th>
@@ -26,47 +26,47 @@
               <td><?php echo $resultat['pseudo'] ?></td>
               <td><?php echo $resultat['email'] ?></td>
               <td><?php echo $resultat['privilege'] ?></td>
-              <td><?php echo $resultat['niv_plongeur'] ?></td>
-              <td><?php echo $resultat['niv_encadrant'] ?></td>
-              <td>
-                  <?php
-                    if($resultat['actif_saison'] == 1){
-                    ?><p class="center green-text">ACTIF</p><?
-                    }else if($resultat['actif_saison'] == 0){
-                    ?><p class="center orange-text">INACTIF</p><?php 
-                    }
-                  ?>
-              </td>
-              <td>
-                  <?php 
-                    if(strtotime("now") <= strtotime($resultat['certif_med'].' + 1 YEAR')){ // Si certificat pas dépassé de plus d'un an
-                    ?>
-                      <p class="center green-text"><?php echo date('d-m-Y', strtotime($resultat['certif_med'])); ?></p> 
-                    <?php
-                    }else{
-                    ?>
-                      <p class="center red-text"><?php echo date('d-m-Y', strtotime($resultat['certif_med'])); ?></p> 
-                    <?php
-                    }
-                  ?>                
-              </td>
-              <td>
-                    <?php
-                    if($resultat['inscription_valide'] == 1){
-                    ?>
-                      <p class="center green-text">OK</p>
-                    <?
-                    }else if($resultat['inscription_valide'] == 0){
-                    ?>
-                      <form action="admin.php" method="post">
-                        <input type="hidden" name="validate_registration" value="1" />
-                        <input type="hidden" name="validate_registration_member_id" value="<?php echo $resultat['id'] ?>" />
-                        <button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Valider</button>
-                      </form>
-                    <?php
-                    }
-                  ?>  
-              </td>
+              <td>N<?php echo $resultat['niv_plongeur'] ?></td>
+              <td>E<?php echo $resultat['niv_encadrant'] ?></td>
+              <?php 
+              if($resultat['actif_saison'] == 1){
+              ?>
+                <td class="center green-text">ACTIF</td>
+              <?php
+              }else if($resultat['actif_saison'] == 0){
+              ?>
+                <td class="center orange-text">INACTIF</td>
+              <?php 
+              }
+              ?>
+              <?php 
+              if(strtotime("now") <= strtotime($resultat['certif_med'].' + 1 YEAR')){ // Si certificat pas dépassé de plus d'un an
+              ?>
+                <td class="center green-text"><?php echo date('d-m-Y', strtotime($resultat['certif_med'])); ?></td> 
+              <?php
+              }else{
+              ?>
+                <td class="center red-text"><?php echo date('d-m-Y', strtotime($resultat['certif_med'])); ?></td> 
+              <?php
+              }
+              ?>     
+              <?php
+              if($resultat['inscription_valide'] == 1){
+              ?>
+                <td class="center green-text">OK</td>
+              <?php
+              }else if($resultat['inscription_valide'] == 0){
+              ?>
+                <td>
+                  <form action="admin.php" method="post">
+                    <input type="hidden" name="validate_registration" value="1" />
+                    <input type="hidden" name="validate_registration_member_id" value="<?php echo $resultat['id'] ?>" />
+                    <button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Valider</button>
+                  </form>
+                </td>
+              <?php
+              }
+              ?>  
               <td>
                 <form action="admin.php" method="post">
                   <input type="hidden" name="edit_member_id" value="<?php echo $resultat['id'] ?>" />

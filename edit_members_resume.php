@@ -38,49 +38,67 @@ session_start()
 		    {
 		      header('location: admin.php');
 		    }
-		    else if(isset($_POST['delete_member_id']))
+		    else if(isset($_POST['delete_member_id'])) // Supression de compte
 		    {
-		    	include("tools/data_base_connection.php");
-		    	// récupération des infos du membre à modifier pour retourner le formulaire en cas d'erreur
-			    $req = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE id = :id');
-				$req->execute(array(
-				          'id' => $_POST['delete_member_id']));
-				$backup_resultat = $req->fetch();
-				$req->closeCursor(); //requête terminée
+		    	if(empty($_POST['password'])) // Le champs mdp est vide
+			    {
+			    	include("tools/data_base_connection.php");
+		    	  	$req = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE id = :id');
+			      	$req->execute(array(
+			          'id' => $_POST['delete_member_id']));
+			      	$resultat = $req->fetch();
+			      	$req->closeCursor(); //requête terminée
 
-		   		// Vérification du mot de passe
-			    $req0 = $bdd->prepare('SELECT mdp FROM membres WHERE pseudo = :pseudo');
-			    $req0->execute(array(
-			       'pseudo' => $_SESSION['pseudo']));
-			    $resultat = $req0->fetch();
-			    $req0->closeCursor(); //requête terminée
+			      	include("tools/navbar.php"); 
+			      	include("tools/print_msg.php"); // Define printMsg function 
+			      	printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+		  		  	printMsg('Le champ mot de passe n\'a pas été rempli','',''); 
+			      	include("tools/edit_members_resume_form.php");
+			    }
+			    else // Le champ mdp est rempli 
+			    {
+			    	include("tools/data_base_connection.php");
+			    	// récupération des infos du membre à modifier pour retourner le formulaire en cas d'erreur
+				    $req = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE id = :id');
+					$req->execute(array(
+					          'id' => $_POST['delete_member_id']));
+					$backup_resultat = $req->fetch();
+					$req->closeCursor(); //requête terminée
 
-			    // Comparaison du mdp envoyé via le formulaire avec la base
-				$isPasswordCorrect = password_verify($_POST['password'], $resultat['mdp']);
-				if($isPasswordCorrect) // Mdp OK
-				{	  
-				  // Suppression du membre
-			      $req1 = $bdd->prepare('DELETE FROM membres WHERE id = :id');
-				  $req1->execute(array(
-				          'id' => $_POST['delete_member_id']));
+			   		// Vérification du mot de passe
+				    $req0 = $bdd->prepare('SELECT mdp FROM membres WHERE pseudo = :pseudo');
+				    $req0->execute(array(
+				       'pseudo' => $_SESSION['pseudo']));
+				    $resultat = $req0->fetch();
+				    $req0->closeCursor(); //requête terminée
 
-				  include("tools/navbar.php"); 
-				  include("tools/print_msg.php"); // Define printMsg function 
-				  printMsg('Compte supprimé avec succès !','Liste des membres','admin.php'); 
+				    // Comparaison du mdp envoyé via le formulaire avec la base
+					$isPasswordCorrect = password_verify($_POST['password'], $resultat['mdp']);
+					if($isPasswordCorrect) // Mdp OK
+					{	  
+					  // Suppression du membre
+				      $req1 = $bdd->prepare('DELETE FROM membres WHERE id = :id');
+					  $req1->execute(array(
+					          'id' => $_POST['delete_member_id']));
 
-				  $req1->closeCursor(); //requête terminée
+					  include("tools/navbar.php"); 
+					  include("tools/print_msg.php"); // Define printMsg function 
+					  printMsg('Compte supprimé avec succès !','Liste des membres','admin.php'); 
+
+					  $req1->closeCursor(); //requête terminée
+					}
+					else // Mdp incorrect 
+				  	{
+				  	  $resultat = $backup_resultat;
+				  	  include("tools/navbar.php"); 
+				  	  include("tools/print_msg.php"); // Define printMsg function 
+					  printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
+			  		  printMsg('Mot de passe incorrect','',''); 
+					  include("tools/edit_members_resume_form.php");
+				  	}
 				}
-				else // Mdp incorrect 
-			  	{
-			  	  $resultat = $backup_resultat;
-			  	  include("tools/navbar.php"); 
-			  	  include("tools/print_msg.php"); // Define printMsg function 
-				  printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
-		  		  printMsg('Mot de passe incorrect','',''); 
-				  include("tools/edit_members_resume_form.php");
-			  	}
 		    }
-		    else if(isset($_POST['edit_member_id']))
+		    else if(isset($_POST['edit_member_id'])) // Modification du compte
 		    {
 			    if(empty($_POST['login']) OR empty($_POST['email']) OR empty($_POST['name']) OR empty($_POST['surname']) OR empty($_POST['password']) OR empty($_POST['privilege']) OR !isset($_POST['niv_plongeur']) OR !isset($_POST['niv_encadrant']) OR !isset($_POST['actif_saison']) OR empty($_POST['certif_med']) OR !isset($_POST['inscription_valide'])) // Un ou plusieurs champs du formulaire sont vides
 			    {
