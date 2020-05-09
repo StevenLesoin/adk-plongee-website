@@ -232,7 +232,7 @@ session_start()
 						<td style="text-align:center">
 						<?php
 							// On rentre la valeur de l'ID de la plongée en cours d'affichage pour le formulaire de la ligne		
-								if(isset($_SESSION['pseudo'])) // Si connecté, on affiche les boutons d'ajout et de suppression d'inscription
+								if(isset($_SESSION['pseudo'])AND ($_SESSION['inscription_valide']==1) AND ($_SESSION['actif_saison']==1)) // Si connecté, actif pour la saison et validé, on affiche les boutons d'ajout et de suppression d'inscription
 								{
 									if($_SESSION['niv_plongeur']>=$resultat['niveau_min']) // Si le mec à le niveau nécessaire, on lui propose de s'incrire, sinon, non
 									{

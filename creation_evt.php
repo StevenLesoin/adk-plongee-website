@@ -10,14 +10,6 @@ session_start()
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
   <title>Nouvel évènement</title>
    
-      <script type = "text/javascript"
-         src = "https://code.jquery.com/jquery-2.1.1.min.js"></script>           
-		<script>
-		 $(document).ready(function() {
-			$('select').material_select();
-		 });
-		 
-	  </script>
   
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -141,22 +133,19 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					<div class="row center">
 						<form class="col s12" action="creation_evt.php" method="post">
 							<div class="row center">									
-									<div class="col">
+									<div class="input-field col s1">
 										<i class="material-icons prefix">add_circle</i>
 									</div> 
-									<div class="col s2">
-										<label>Type d'évènement *</label>
-									</div> 
-									<div class="col s11">
-										<select class = "browser-default" name="type">
+									<div class="input-field col s11">
+										<select name="type">
 										  <option value = "Plongée">Plongée</option>
 										  <option value = "Piscine">Piscine</option>
 										  <option value = "Théorie">Théorie</option>
 										  <option value = "Vie du Club">Vie du club</option>
 										  <option value = "Autre">Autre</option>
-									   </select>
-									</div> 
-															
+									     </select>
+										<span class="helper-text">Type d'évènement *</span>	
+									</div> 		
 							</div>
 							<div class="row center">
 								<div class="input-field col s12">
@@ -194,7 +183,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 									<i class="material-icons prefix">flare</i>										
 								</div> 
 								<div class="input-field col s4">
-										<select class = "browser-default" name="niveau_min">
+										<select name="niveau_min">
 										  <option value = "0">Ouvert à tous</option>
 										  <option value = "1">N1</option>
 										  <option value = "2">N2</option>
@@ -208,7 +197,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 									<i class="material-icons prefix">group</i>									
 								</div>
 								<div class="input-field col s1">
-										<select class = "browser-default" name="max_part">
+										<select name="max_part">
 										  <option value = "12">12</option>
 										  <option value = "7">7</option>
 										  <option value = "6">6</option>
@@ -231,7 +220,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 									<i class="material-icons prefix">toys</i>									
 								</div> 
 								<div class="input-field col s4">
-										<select class = "browser-default" name="lieu">
+										<select name="lieu">
 										  <option value = "Mer">Mer</option>
 										  <option value = "Piscine">Piscine</option>
 										  <option value = "Club">Club</option>
