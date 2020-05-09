@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.2
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
--- Hôte : 127.0.0.1:3306
--- Généré le :  Dim 03 mai 2020 à 14:23
--- Version du serveur :  10.4.10-MariaDB
--- Version de PHP :  7.3.12
+-- Hôte : localhost
+-- Généré le : ven. 08 mai 2020 à 16:21
+-- Version du serveur :  10.4.11-MariaDB
+-- Version de PHP : 7.4.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données :  `adk_plongee_website`
+-- Base de données : `adk_plongee_website`
 --
 
 -- --------------------------------------------------------
@@ -28,8 +27,7 @@ SET time_zone = "+00:00";
 -- Structure de la table `evenements`
 --
 
-DROP TABLE IF EXISTS `evenements`;
-CREATE TABLE IF NOT EXISTS `evenements` (
+CREATE TABLE `evenements` (
   `id` int(11) NOT NULL,
   `type` text NOT NULL,
   `titre` text NOT NULL,
@@ -42,8 +40,7 @@ CREATE TABLE IF NOT EXISTS `evenements` (
   `max_part` int(11) NOT NULL,
   `remarques` text NOT NULL,
   `pseudo` text NOT NULL,
-  `date_publi` text NOT NULL,
-  PRIMARY KEY (`id`)
+  `date_publi` text NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -63,8 +60,7 @@ INSERT INTO `evenements` (`id`, `type`, `titre`, `date_evt`, `heure_evt`, `date_
 -- Structure de la table `inscriptions`
 --
 
-DROP TABLE IF EXISTS `inscriptions`;
-CREATE TABLE IF NOT EXISTS `inscriptions` (
+CREATE TABLE `inscriptions` (
   `id_evt` int(11) NOT NULL,
   `id_membre` int(11) NOT NULL,
   `time_inscr` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -93,8 +89,7 @@ INSERT INTO `inscriptions` (`id_evt`, `id_membre`, `time_inscr`, `commentaire`) 
 -- Structure de la table `invites`
 --
 
-DROP TABLE IF EXISTS `invites`;
-CREATE TABLE IF NOT EXISTS `invites` (
+CREATE TABLE `invites` (
   `id_evt` int(11) NOT NULL,
   `nom` text NOT NULL,
   `prenom` text NOT NULL,
@@ -117,23 +112,21 @@ INSERT INTO `invites` (`id_evt`, `nom`, `prenom`, `niveau`, `commentaire`) VALUE
 -- Structure de la table `membres`
 --
 
-DROP TABLE IF EXISTS `membres`;
-CREATE TABLE IF NOT EXISTS `membres` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `membres` (
+  `id` int(11) NOT NULL,
   `pseudo` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `mdp` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `nom` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `prenom` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `email` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `privilege` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `oubli_mdp` int(11) NOT NULL,
+  `oubli_mdp` int(11) NOT NULL DEFAULT 0,
   `niv_plongeur` int(11) NOT NULL DEFAULT 0,
   `niv_encadrant` int(11) NOT NULL DEFAULT 0,
   `actif_saison` int(11) NOT NULL DEFAULT 0,
-  `certif_med` date NOT NULL,
-  `inscription_valide` int(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+  `certif_med` date NOT NULL DEFAULT '1000-01-01',
+  `inscription_valide` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Déchargement des données de la table `membres`
@@ -144,6 +137,32 @@ INSERT INTO `membres` (`id`, `pseudo`, `mdp`, `nom`, `prenom`, `email`, `privile
 (2, 'luc', '$2y$10$MZfLQpeF4261c5dxrGqqOeXcwYrdZZJKBhcmMpJ3iDDeoT0SNYCeO', 'Carof', 'Lucie', 'lucie.carof@yahoo.fr', 'membre', 0, 1, 0, 0, '2020-04-01', 0),
 (4, 'Clément', '$2y$10$JqgVEXm2grkEBHnGP62bi.g5tju76L8eCwPJCafjaT1CNqWSZNoMC', 'MAHE', 'Clément', 'clement.mahe@gmail.com', 'administrateur', 0, 5, 3, 0, '2020-04-15', 1),
 (5, 'test', '$2y$10$BOD6sfjFVi18BJdMIc.A9.7E4KKLnVTt0a2eULEiUYKxCsNuCR8Ym', 'tutu', 'toto', 'test@test.com', 'membre', 1, 1, 0, 0, '2020-04-01', 1);
+
+--
+-- Index pour les tables déchargées
+--
+
+--
+-- Index pour la table `evenements`
+--
+ALTER TABLE `evenements`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `membres`
+--
+ALTER TABLE `membres`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `membres`
+--
+ALTER TABLE `membres`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

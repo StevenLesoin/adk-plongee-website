@@ -86,10 +86,7 @@ session_start()
 				}
 				else
 				{
-					include("tools/navbar.php"); 
-					include("tools/print_msg.php"); // Define printMsg function 
-  					printMsg('Bienvenue !','',''); 
-					include("tools/account_info.php"); 
+					header('location:index.php');
 				}
 		    }
 		    else { // Erreur de mot de passe
