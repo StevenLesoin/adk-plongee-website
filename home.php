@@ -86,7 +86,7 @@ session_start()
 				}
 				else
 				{
-					header('location:index.php');
+					header('location: index.php');
 				}
 		    }
 		    else { // Erreur de mot de passe
