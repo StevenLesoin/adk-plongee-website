@@ -60,7 +60,13 @@ session_start()
 	    	}
 	    	else if(!empty($_POST['validate_registration']) AND !empty($_POST['validate_registration_member_id'])) // Champ sélectionné pour validation inscription
 	    	{
-	    		echo "test";
+	    		include("tools/data_base_connection.php");
+	    		$req1 = $bdd->prepare('SELECT nom, prenom, email, privilege FROM membres WHERE id = :id');
+		        $req1->execute(array(
+		          'id' => $_POST['validate_registration_member_id']));
+		        $resultat = $req1->fetch();
+		        $req1->closeCursor(); //requête terminée
+
 	    		include("tools/data_base_connection.php");
 	    		// Valide l'inscription
 	    		$req2= $bdd->prepare('UPDATE membres SET inscription_valide = :inscription_valide WHERE id = :id');
@@ -69,11 +75,27 @@ session_start()
 		          'id' => $_POST['validate_registration_member_id']));
 		        $req2->closeCursor(); //requête terminée
 
+		        include("tools/navbar.php"); 
+
+		        include("tools/mail_adk.php");
+				// Rédacion du mail
+				$objet = 'Validation d\'inscritpion ADK plongée website';
+                $to = $resultat['email'];
+                //===== Contenu de votre message
+                $contenu =  "Mr, Mme ".$resultat['prenom']." ".$resultat['nom'].", \nVotre inscription sur le site ADK plongée vient d'être validée par l'administrateur. Vous pouvez maintenant vous y connecter avec vos indentifiants.";
+                //===== Envoi du mail
+            	$resMail = sendMailAdk($to,$objet,$contenu);
+            	include("tools/print_msg.php"); // Define printMsg function 
+		    	if ($resMail){
+		  			printMsg('Un email vient d\'être envoyé à l\'adresse suivante : '.$resultat['email'].' pout prévenir '.$resultat['prenom'].' '.$resultat['nom'].' que son inscritpion a bien été validée.','','');  
+		  		}else{
+		  			printMsg('Erreur lors de l\'envoi d\'un email à l\'adresse suivante : '.$email.'. Veuillez réessayer','','');  
+		  		}
+
 		        // Liste de l'ensemble des membres 
 		    	$req0 = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres ORDER BY nom');
 		        $req0->execute(array());
 
-		        include("tools/navbar.php"); 
 		        include("tools/search_members_form.php");
 		       	include("tools/all_members_resume_tab.php");
 		       	$req0->closeCursor(); //requête terminée
