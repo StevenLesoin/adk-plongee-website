@@ -63,7 +63,7 @@ session_start()
                 $to = $resultat['email'];
  
                         //===== Contenu de votre message
-                        $contenu =  "Mr, Mme ".$resultat['nom'].". Vous avez fait une demande de réinitialisation de votre mot de passe sur le site ADK plongée. Nous vous faisons parvenir votre mot de passe provisoir. Une fois connecté avec celui-ci, veuillez suivre la procédure de réinitialisation. Mot de passe provisoir: ".$new_password." .";
+                        $contenu =  "Salut ".$resultat['prenom']." ".$resultat['nom']." ! \nTu as fais une demande de réinitialisation de mot de passe sur le site ADK plongée. Nous te faisons parvenir un mot de passe provisoir. Une fois connecté avec celui-ci, tu dois suivre la procédure de réinitialisation pour en choisir un nouveau :). \nMot de passe provisoir: ".$new_password." .";
                         //===== Envoi du mail
             			$resMail = sendMailAdk($to,$objet,$contenu);
 
@@ -83,7 +83,7 @@ session_start()
 			include("tools/navbar.php");
 		    include("tools/print_msg.php"); // Define printMsg function 
 		    if ($resMail){
-		  		printMsg('Un email avec un mot de passe provisoir vient de vous être envoyé à l\'adresse suivante : '.$email.'. Veuillez changer ce mot de passe après l\'avoir utilisé pour vous connecter.','','');  
+		  		printMsg('Un email avec un mot de passe provisoir vient d\'être envoyé à l\'adresse suivante : '.$email.'. Ce mot de passe doit être changé après l\'avoir utilisé pour se connecter.','Se connecter','login.php');  
 		  	}else{
 		  		printMsg('Erreur lors de l\'envoi d\'un email à l\'adresse suivante : '.$email.'. Veuillez réessayer','','');  
 		  	}

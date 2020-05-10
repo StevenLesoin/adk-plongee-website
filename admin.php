@@ -82,7 +82,7 @@ session_start()
 				$objet = 'Validation d\'inscritpion ADK plongée website';
                 $to = $resultat['email'];
                 //===== Contenu de votre message
-                $contenu =  "Mr, Mme ".$resultat['prenom']." ".$resultat['nom'].", \nVotre inscription sur le site ADK plongée vient d'être validée par l'administrateur. Vous pouvez maintenant vous y connecter avec vos indentifiants.";
+                $contenu =  "Salut ".$resultat['prenom']." ".$resultat['nom']."! \nTon inscription sur le site ADK plongée vient d'être validée par l'administrateur. Tu peux maintenant te connecter avec tes indentifiants :). \nA très bientôt sous l'eau !";
                 //===== Envoi du mail
             	$resMail = sendMailAdk($to,$objet,$contenu);
             	include("tools/print_msg.php"); // Define printMsg function 
