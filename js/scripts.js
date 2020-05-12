@@ -36,11 +36,19 @@ $(document).ready(function() {
 				}
   			});
 			
+			$(".datepicker4").datepicker({
+				autoClose: true,
+				format: "dd-mm-yyyy",
+				firstDay: 1
+  			});
+			
   			$(".button-collapse").sideNav();
 			$(".dropdown-trigger").dropdown();
+			
 			$(".datepicker").datepicker({
-    			format: "dd-mm-yyyy"
+				format: "dd-mm-yyyy"
   			});
+			
 			$('.parallax').parallax();
         
 });

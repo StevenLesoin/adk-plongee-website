@@ -80,7 +80,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				{
 					$comm_plong = htmlspecialchars($_POST['comm_plong']);
 						// On va lire "inscription" pour pouvoir ajouter un commentaire (On écrase le précédent)
-						$req2= $bdd->query('UPDATE inscriptions SET commentaire = "'.$comm_plong.'" WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$_SESSION['id'].'")'); // 	### 1 a remplacer par l'ID du mec Loggé
+						$req2= $bdd->query('UPDATE inscriptions SET commentaire = "'.$comm_plong.'" WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$_SESSION['id'].'")'); // 	// ## Attention, fait perdre sa place dans la liste d'attnete !!!
 						$req2->closeCursor(); //requête terminée
 				}
 				if($_SESSION['privilege']=="administrateur")		// On autorise la suppression
@@ -135,6 +135,18 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				</font>
 			</div>
 			<div class="row center">
+				<!-- Affichage du lien de modification si admin ou propriétaire de la sortie -->
+				<?php if($_SESSION['privilege']=="administrateur" OR ($_SESSION['nom']." ".$_SESSION['prenom'])==$publicateur )
+				{ ?>
+					<div class="row center">									
+						<form action="modif_evt.php" method="post">
+								<input type='hidden' name='id_mod' value=<?php echo $id_evt?>> 		
+								<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit"><i class="material-icons">border_color</i>&nbsp; Modifier l'événement</button>
+						</form>		
+						
+					</div>	<?php 
+				} ?>
+				
 				<div class="row center">									
 					<div class="col s1">
 						<i class="material-icons prefix">add_circle</i>
@@ -219,7 +231,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 			<div class="row center">
 				<span class="flow-text" col s12"> Affichage des membres inscrits :</span>
 			</div>
-			<div class="row center"	>
+			<div class="responsive-table"	>
 			<!-- On insert une table dans un DIV pour les inscrits -->
 				<table class="striped responsive-table">
 					<thead>
@@ -227,9 +239,9 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						  <th>Nom</th>
 						  <th>Prénom</th>
 						  <th>Niveau</th>
-						  <th> </th>			<!-- Colonne pour afficher qui est DP ou autres infos -->		
+						  <th></th>			<!-- Colonne pour afficher qui est DP ou autres infos -->		
 						  <th>Commentaire</th>
-						  <th> </th>			<!-- Colonne pour supprimer un mambre si on est admin -->
+						  <th></th>			<!-- Colonne pour supprimer un mambre si on est admin -->
 					  </tr>
 					</thead>
 					
@@ -300,25 +312,27 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						}?>
 						
 						<!-- Afficher le nom du membre -->
-						<td align='left'><?php if($italic==1){echo "<i>";} echo $nom_membre;?></td>
+						<td><?php if($italic==1){echo "<i>";} echo $nom_membre;?></td>
 						<!-- Afficher le prénom du membre -->
-						<td align='left'><?php if($italic==1){echo "<i>";} echo $prenom_membre;?></td>
+						<td><?php if($italic==1){echo "<i>";} echo $prenom_membre;?></td>
 						<!-- Afficher le niveau du membre -->
-						<td align='left'><?php if($italic==1){echo "<i>";} if($niv_encad!=0){echo "N".$niv_membre."/E".$niv_encad;}	else{echo "N".$niv_membre;}?></td>					
+						<td><?php if($italic==1){echo "<i>";} if($niv_encad!=0){echo "N".$niv_membre."/E".$niv_encad;}	else{echo "N".$niv_membre;}?></td>					
 						<!-- Afficher le DP -->
-						<td align='left'><?php if($DP_present==0 AND ($niv_membre==5 OR $niv_encad>=3))		// Si pas encore de DP et que le plus ancien inscrit est N5 ou E3 -> Il est DP
+						<td><?php if($DP_present==0 AND ($niv_membre==5 OR $niv_encad>=3))		// Si pas encore de DP et que le plus ancien inscrit est N5 ou E3 -> Il est DP
 												{
 													echo "<b>DP</b>";
 													$DP_present=1;
-												}?>
+												}
+									else{echo"-";}
+									?>
 						</td>
 						<?php
 						if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
 						{
 							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre 
 							?>
-							<td align='left'> <?php if($italic==1){echo "<i>";} echo $comm_membre;?></td>
-							<td align='left'>
+							<td> <?php if($italic==1){echo "<i>";} if($comm_membre==''){echo "-";} else{echo $comm_membre;}?></td>
+							<td>
 							<form action="affichage_evt.php" method="post">
 								<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?>> 		
 								<input type='hidden' name='id_inscrit' value=<?php echo $id_membre?>>
@@ -330,7 +344,9 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						{
 							// Afficher le commentaire du memebre en 6 unités de longueur
 							?>
-							<td align='left'><?php if($italic==1){echo "<i>";} echo $comm_membre; ?></td> <?php
+							<td align='left'><?php if($italic==1){echo "<i>";} if($comm_membre==''){echo "-";} else{echo $comm_membre;} ?></td> 
+							<td>-</td>				<!-- Case vide pour le bouton de suppression qui n'existe pas si on est pas admin-->
+							<?php
 						}
 						// Fin de la nouvelle ligne
 						if($num_inscrit>($nb_max_part))
@@ -384,19 +400,20 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							<tr> <?php
 						}?>
 						<!-- Afficher le nom du membre -->
-						<td align='left'><?php if($italic==1){echo "<i>";} echo $nom_invit;?></td>
+						<td><?php if($italic==1){echo "<i>";} echo $nom_invit;?></td>
 						<!-- Afficher le prénom du membre -->
-						<td align='left'><?php if($italic==1){echo "<i>";} echo$prenom_invit;?></td>
+						<td><?php if($italic==1){echo "<i>";} echo$prenom_invit;?></td>
 						<!-- Afficher le niveau du membre -->
-						<td align='left'><?php if($italic==1){echo "<i>";} echo$niv_invit;?></td>					
+						<td><?php if($italic==1){echo "<i>";} echo$niv_invit;?></td>					
 						<!-- Case vide pour DP -->
-						<td align='left'></td>					
+						<td>-</td>					
 						<?php
 						if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
 						{
 							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre
-							?><td align='left'><?php if($italic==1){echo "<i>";} echo $comm_invit;?></td>
-							<td align='left'>
+							?>
+							<td><?php if($italic==1){echo "<i>";} if($comm_invit==''){echo "-";} else{echo $comm_invit;}?></td>
+							<td>
 								<form action="affichage_evt.php" method="post">
 									<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?> > 		
 									<input type='hidden' name='prenom' value='<?php echo $prenom_invit?>' >
@@ -409,7 +426,9 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						else
 						{	?>
 							<!-- Afficher le commentaire du memebre en 6 unités de longueur -->
-							<td align='left'><?php if($italic==1){echo "<i>";} echo $comm_invit ?></td> <?php
+							<td align='left'><?php if($italic==1){echo "<i>";} if($comm_invit==''){echo "-";} else{echo $comm_invit;} ?></td> 
+							<td>-</td>				<!-- Case vide pour le bouton de suppression qui n'existe pas si on est pas admin-->
+							<?php
 						}
 						// Fin de la nouvelle ligne
 						if($num_inscrit>($nb_max_part))
@@ -426,7 +445,9 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					if($test_passage==0)
 					{	// Pas de sorties à afficher?>
 						<tr class="row center">
-							<span class="flow-text" col s12">Quoi !!?? Personne d'inscrit ?????? Regardes la météo et inscrits toi si tu es sur(e) de toi ;-)</span>
+							<td colspan=6>
+							<span>Quoi !!?? Personne d'inscrit ?????? Regardes la météo et inscrits toi si tu es sur(e) de toi ;-)</span>
+							</td>
 						</tr>
 					
 						<?php

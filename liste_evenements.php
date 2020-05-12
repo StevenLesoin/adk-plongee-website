@@ -98,8 +98,8 @@ session_start()
 				  <tr>
 					  <th>Titre <u>(Lien vers sortie)</u></th>
 					  <th>Type</th>
-					  <th>Date</th>
-					  <th>Date Limite</th>
+					  <th>Date </br></th>
+					  <th>Date Limite </br></th>
 					  <th>Niv</th>
 					  <th>Lieu</th>
 					  <th>Remarques</th>
@@ -141,7 +141,8 @@ session_start()
 										if(isDP_piscine($resultat['id'])==0){echo "purple";}
 										else{echo "green";}
 									}
-									else {echo "blue";} ?>
+									else 
+									{echo "blue";} ?>
 											
 									darken-2" type="submit" name="submit"><?php if(strlen($resultat['titre'])>30){echo substr($resultat['titre'],0,27).'...';} else {echo $resultat['titre'];}?></button>
 								</form>
@@ -248,6 +249,7 @@ session_start()
 											if($date_limi_passee == 1)		// Si la date lmite d'inscription est passée, on grise la case
 											{
 												?><button class="btn disabled"><i class="material-icons">check_circle</i></button><?php
+												$date_limi_passee = 0;
 											}	
 											else				// On autorise l'inscription
 											{?>

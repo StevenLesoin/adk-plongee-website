@@ -69,32 +69,22 @@ if($_SESSION['privilege']=="administrateur")		// On autorise l'accès à cette p
 			
 			// Mise ne place de la trame du tableau
 			?>
-			<div class="row center">
-				<div class="input-field col s1">
-					<label>Type</label>							
-				</div>
-				<div class="input-field col s2">
-					<label>Titre</label>
-				</div>
-				<div class="input-field col s2">
-					<label>Date</label>							
-				</div>
-				<div class="input-field col s2">
-					<label>Date Limite</label>							
-				</div>
-				<div class="input-field col s1">
-					<label>Niveau Mini</label>							
-				</div>
-				<div class="input-field col s1">
-					<label>Lieu</label>
-				</div>
-				<div class="input-field col s2">
-					<label>Remarques</label>
-				</div>
-				<div class="input-field col s1">
-					<label>Inscription</label>
-				</div>
-			</div>
+			<table class="striped responsive-table">
+			<thead>
+			  <tr>
+				  <th>Titre <u>(Lien vers sortie)</u></th>
+				  <th>Type</th>
+				  <th>Date </br></th>
+				  <th>Date Limite </br></th>
+				  <th>Niv</th>
+				  <th>Lieu</th>
+				  <th>Remarques</th>
+				  <th>Inscrits</th>
+				  <th>Suppression</th>
+			  </tr>
+			</thead>
+			<tbody>
+			
 			<?php
 			$test_passage = 0;
 			while ($resultat = $req1->fetch())
@@ -102,34 +92,34 @@ if($_SESSION['privilege']=="administrateur")		// On autorise l'accès à cette p
 				$test_passage = 1;
 				// On rempli le tableau avec les différentes lignes
 				?>
-				<div class="row center">
-					<div class="input-field col s1">
+				<tr>
+					<td>
+						<label><?php if(strlen($resultat['titre'])>20){echo substr($resultat['titre'],0,17).'...';} else {echo $resultat['titre'];}?></label>
+					</td>
+					<td>
 						<label><?php echo $resultat['type']?></label>							
-					</div>
-					<div class="input-field col s2">
-						<label><?php if(strlen($resultat['titre'])>20){echo substr($resultat['titre'],0,17).'...';} else {echo $resultat['titre'];}?>"</label>
-					</div>
-					<div class="input-field col s2">
+					</td>
+					<td>
 						<label><?php echo date("D-d/m/Y", strtotime($resultat['date_evt']))."<br>".$resultat['heure_evt']?></label>							
-					</div>
-					<div class="input-field col s2">
+					</td>
+					<td>
 						<label><?php echo date("D-d/m/Y", strtotime($resultat['date_lim']))."<br>".$resultat['heure_lim']?></label>							
-					</div>
-					<div class="input-field col s1">
+					</td>
+					<td>
 						<label><?php echo $resultat['niveau_min']?></label>							
-					</div>
-					<div class="input-field col s1">
+					</td>
+					<td>
 						<label><?php echo $resultat['lieu']?></label>						
-					</div>
-					<div class="input-field col s2">
+					</td>
+					<td>
 						<label><?php 
 							if(strlen($resultat['remarques'])>20)
 							{echo substr($resultat['remarques'],0,17).'...';}
 							else 
 								echo $resultat['remarques'];
 						?></label>						
-					</div>
-					<div class="input-field col s1">
+					</td>
+					<td>
 						<!-- Formulaire pour faire l'inscription ou la désincription en passant l'ID de la plongée en paramètre-->
 						<form action="suppr_evt.php" method="post">
 							<?php	
@@ -154,15 +144,20 @@ if($_SESSION['privilege']=="administrateur")		// On autorise l'accès à cette p
 							echo "<label>".($nb_part."/".$resultat['max_part']."</label>");
 							// On rentre la valeur de l'ID de la plongée en cours d'affichage pour le formulaire de la ligne
 							?><input type='hidden' name='id_evt' value='<?php echo($resultat['id']);?>'>
-							<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">cancel</i></a></button>
 							<?php
 							$req2->closeCursor(); //requête terminée
 							?>
+					<td>
+						<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Supprimer</button>
+					<td>
 						</form>
-					</div>
-				</div>
+					
+					</td>
+				</tr>
 			<?php
-			}
+			}?>
+			</tbody>
+			</table> <?php
 			if($test_passage==0)
 			{	// Pas de sorties à afficher?>
 			    <div class="row center">

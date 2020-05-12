@@ -123,7 +123,6 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						?>
 						<div class="row center">
 							<span class="flow-text" col s12"> <b style='color: red;'>La date / heure limite d'inscription limite doit être antiéreure à la date / heure de l'événement</b></span>
-							<?php echo  $_POST['date_lim']; echo $_POST['date_evt'];?>
 						</div>
 						<?php
 					}
