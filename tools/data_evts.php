@@ -9,6 +9,7 @@
 	define("CST_invite_comptent",0);			// Les invités ne comptent pas comme des inscrits car il ne sont pas prioritaires -> On permet l'inscription même si c'est complet a cause d'invités
   
   include("tools/data_base_connection.php");	
+  
   // fonction qui détermine si il y a un DP présent sur l'événement
   // Renvoi 1 si y'a un DP, 0 sinon
   function isDP($id_evt){
@@ -36,8 +37,9 @@
 		{
 			$yaunDP=1;
 		}
+		$req3->closeCursor(); //requête terminée
 	}
-	$req3->closeCursor(); //requête terminée
+	$req2->closeCursor(); //requête terminée
 	
 	return $yaunDP;	
   }
@@ -69,8 +71,10 @@
 		{
 			$yaunDP=1;
 		}
+		$req3->closeCursor(); //requête terminée
 	}
-	$req3->closeCursor(); //requête terminée
+	$req2->closeCursor(); //requête terminée
+
 	
 	return $yaunDP;	
   }
@@ -135,7 +139,7 @@
 		$nb_invites++;
 	}
 	// On compte le nombre de mecs en prennant en compte les invités ou pas (paramètre)
-	if(($nb_membre+(CST_invite_comptent*$nb_invites))<$nb_max)
+	if(($nb_membres+(CST_invite_comptent*$nb_invites))<$nb_max)
 	{
 		$max = 0;
 	}
