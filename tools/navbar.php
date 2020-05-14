@@ -5,6 +5,7 @@
   <ul id="outils_navBar" class="dropdown-content">
 	 <li><a href="liste_evenements.php">Liste des événements</a></li>
 	 <li><a href="creation_evt.php">Ajout d'événement</a></li>
+   <li><a href="formations.php">Formations</a></li>
   </ul>
   
 	<ul id="outils_admin_navBar" class="dropdown-content">

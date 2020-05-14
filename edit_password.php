@@ -27,7 +27,7 @@ session_start()
 	      if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
 		  {
 			include("tools/print_msg.php"); // Define printMsg function 
-  			printMsg('Bienvenu !','',''); 
+  			printMsg('Bienvenue !','',''); 
 		  }
 	      include("tools/edit_password_form.php");
 	    }

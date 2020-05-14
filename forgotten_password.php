@@ -56,36 +56,16 @@ session_start()
 
 		  	// Mot de passe aléatoire provisoir
             $new_password = rand();
-            echo $new_password; // TODO : supprimer une fois l'envoi de mail ok 
 
+            	include("tools/mail_adk.php");
 				// Rédacion du mail
-				$objet = 'Nouveau mot de passe ADK-plongée';
+				$objet = 'Nouveau mot de passe ADK plongée website';
                 $to = $resultat['email'];
  
-                    	//===== Création du header du mail.
-                        $header = "From: NOM_DE_LA_PERSONNE <no-reply@test.com> \n";
-                        $header .= "Reply-To: ".$to."\n";
-                        $header .= "MIME-version: 1.0\n";
-                        $header .= "Content-type: text/html; charset=utf-8\n";
-                        $header .= "Content-Transfer-Encoding: 8bit";
- 
                         //===== Contenu de votre message
-                        $contenu =  "<html>".
-                            "<body>".
-                            "<p style='text-align: center; font-size: 18px'><b>Bonjour Mr, Mme".$resultat['nom']."</b>,</p><br/>".
-                            "<p style='text-align: justify'><i><b>Nouveau mot de passe : </b></i>".$new_password."</p><br/>".
-                            "</body>".
-                            "</html>";
+                        $contenu =  "Salut ".$resultat['prenom']." ".$resultat['nom']." ! \nTu as fais une demande de réinitialisation de mot de passe sur le site ADK plongée. Nous te faisons parvenir un mot de passe provisoir. Une fois connecté avec celui-ci, tu dois suivre la procédure de réinitialisation pour en choisir un nouveau :). \nMot de passe provisoir: ".$new_password." .";
                         //===== Envoi du mail
-						
-						//mail($to, $objet, $contenu, $header);
-						// echo ini_get('SMTP') . ":" . ini_get('smtp_port');
-						// // The message
-						// $message = "Line 1\r\nLine 2\r\nLine 3";
-						// // In case any of our lines are larger than 70 characters, we should use wordwrap()
-						// $message = wordwrap($message, 70, "\r\n");
-      //                   $bool = mail('steven.lesoin@gmail.com', 'Here Is What I Wanted to Send', $message);
-						// var_dump($bool);
+            			$resMail = sendMailAdk($to,$objet,$contenu);
 
 
 
@@ -100,9 +80,13 @@ session_start()
 		        'pseudo' => $_POST['pseudo'],
 		        'email' => $email));
 
-			include("tools/navbar.php"); 
+			include("tools/navbar.php");
 		    include("tools/print_msg.php"); // Define printMsg function 
-		  	printMsg('Un email avec un mot de passe provisoir vient de vous être envoyé à l\'adresse suivante : '.$email.'. Veuillez changer ce mot de passe après l\'avoir utilisé pour vous connecter.','','');  
+		    if ($resMail){
+		  		printMsg('Un email avec un mot de passe provisoir vient d\'être envoyé à l\'adresse suivante : '.$email.'. Ce mot de passe doit être changé après l\'avoir utilisé pour se connecter.','Se connecter','login.php');  
+		  	}else{
+		  		printMsg('Erreur lors de l\'envoi d\'un email à l\'adresse suivante : '.$email.'. Veuillez réessayer','','');  
+		  	}
 
 		    $req2->closeCursor(); //requête terminée	      
 	  	  }
