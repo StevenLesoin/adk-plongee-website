@@ -10,14 +10,6 @@ session_start()
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
   <title>Détail d'un évènement</title>
    
-      <script type = "text/javascript"
-         src = "https://code.jquery.com/jquery-2.1.1.min.js"></script>           
-		<script>
-		 $(document).ready(function() {
-			$('select').material_select();
-		 });
-		 
-	  </script>
   
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -32,14 +24,17 @@ session_start()
 <body>
 
 <?php include("tools/navbar.php"); ?>
+<?php include("tools/data_evts.php"); ?>
+<?php 
+	$italic =0;					// Gestion de l'affichage de la liste d'attente 
+	$personne_log_inscrite=0 	// Vérification si le mec connecté est inscrit?>
 
 <?php
 /*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
 echo $pass_hache; */
 
 if(isset($_SESSION['pseudo'])) // Si déjà connecté
-{
-?>
+{?>
   <div class="section no-pad-bot" id="index-banner">
   	<div class="container">
     	<br><br>
@@ -51,79 +46,116 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
         </div>
 		
 		
-		<?php if((isset($_POST['id_evt']) AND htmlspecialchars($_POST['id_evt'])!='')OR(isset($_POST['id_evt_local']) AND htmlspecialchars($_POST['id_evt_local'])!=''))		// Si on vient de cette page ou de la liste des événements
+		<?php 
+		if((isset($_POST['id_evt']) AND htmlspecialchars($_POST['id_evt'])!='')OR(isset($_POST['id_evt_local']) AND htmlspecialchars($_POST['id_evt_local'])!=''))		// Si on vient de cette page ou de la liste des événements
 		{	// Récupération des données de la plongée dont l'ID est "$_POST['evt_id']"
 		
-		include("tools/data_base_connection.php");	
+			include("tools/data_base_connection.php");	
 
-		if((isset($_POST['id_evt']) AND htmlspecialchars($_POST['id_evt'])!=''))	// On vient d'un page extérieure
-		{
-			$id_evt = htmlspecialchars($_POST['id_evt']);
-		}
-		else													// On vient de cette même page et on doit ajouter un commentaire ou un invité
-		{
-			$id_evt = htmlspecialchars($_POST['id_evt_local']);	// On reprend l'id de l'événement
-			if(isset($_POST['nom_invit']) AND htmlspecialchars($_POST['nom_invit'])!='' AND isset($_POST['prenom_invit']) AND htmlspecialchars($_POST['prenom_invit'])!='')	// Tous les champs sont remplis pour l'ajout d'un invité
+			if((isset($_POST['id_evt']) AND htmlspecialchars($_POST['id_evt'])!=''))	// On vient d'un page extérieure
 			{
-				$datecourante = date_create();
-				$datecourantes = (string)date_format($datecourante, 'd-m-Y H:i:s');
-				$nom_invit = htmlspecialchars($_POST['nom_invit']);
-				$prenom_invit = htmlspecialchars($_POST['prenom_invit']);
-				$niveau_invit = htmlspecialchars($_POST['niveau_invit']);
-				$comm_invit = "Invité par ".$_SESSION['nom']." ".$_SESSION['prenom']." à ".$datecourantes." : ".htmlspecialchars($_POST['comm_invit']);					// Ajouter le nom de la personne qui inscrit
-				$time_inscr = new DateTime();
-				$req2= $bdd->prepare('INSERT INTO invites(id_evt, nom, prenom, niveau, commentaire) VALUES(:id_evt, :nom, :prenom, :niveau, :commentaire)');
-				$req2->execute(array(
-				  'id_evt' => $_POST['id_evt_local'],
-				  'nom' => $nom_invit,
-				  'prenom' => $prenom_invit,
-				  'niveau' => $niveau_invit,
-				  'commentaire' => $comm_invit));				
+				$id_evt = htmlspecialchars($_POST['id_evt']);
 			}
-			if(isset($_POST['comm_plong']) AND htmlspecialchars($_POST['comm_plong'])!='')			// Il y a un commentaire (En plus de l'inscription d'un membre, on autorise)
+			else													// On vient de cette même page et on doit ajouter un commentaire ou un invité
 			{
-				$comm_plong = htmlspecialchars($_POST['comm_plong']);
-					// On va lire "inscription" pour pouvoir ajouter un commentaire (On écrase le précédent)
-					$req2= $bdd->query('UPDATE inscriptions SET commentaire = "'.$comm_plong.'" WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$_SESSION['id'].'")'); // 	### 1 a remplacer par l'ID du mec Loggé
-					$req2->closeCursor(); //requête terminée
-			}
-			if($_SESSION['privilege']=="administrateur")		// On autorise la suppression
-			{
-				if(isset($_POST['id_inscrit']) AND htmlspecialchars($_POST['id_inscrit'])!='')			// On demande de supprimer un membre
+				$id_evt = htmlspecialchars($_POST['id_evt_local']);	// On reprend l'id de l'événement
+				if(isset($_POST['nom_invit']) AND htmlspecialchars($_POST['nom_invit'])!='' AND isset($_POST['prenom_invit']) AND htmlspecialchars($_POST['prenom_invit'])!='')	// Tous les champs sont remplis pour l'ajout d'un invité
 				{
-					$id_inscrit = htmlspecialchars($_POST['id_inscrit']);
-						// On va lire "inscription" pour supprimer le mec en question
-						$req2= $bdd->query('DELETE FROM inscriptions WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$id_inscrit.'")'); // 	Suppression de l'inscrit club
+					$datecourante = date_create();
+					$datecourantes = (string)date_format($datecourante, 'd-m-Y H:i:s');
+					$nom_invit = htmlspecialchars($_POST['nom_invit']);
+					$prenom_invit = htmlspecialchars($_POST['prenom_invit']);
+					$niveau_invit = htmlspecialchars($_POST['niveau_invit']);
+					$comm_invit = "Invité par ".$_SESSION['nom']." ".$_SESSION['prenom']." à ".$datecourantes." : ".htmlspecialchars($_POST['comm_invit']);					// Ajouter le nom de la personne qui inscrit
+					$time_inscr = new DateTime();
+					$req2= $bdd->prepare('INSERT INTO invites(id_evt, nom, prenom, niveau, commentaire) VALUES(:id_evt, :nom, :prenom, :niveau, :commentaire)');
+					$req2->execute(array(
+					  'id_evt' => $_POST['id_evt_local'],
+					  'nom' => $nom_invit,
+					  'prenom' => $prenom_invit,
+					  'niveau' => $niveau_invit,
+					  'commentaire' => $comm_invit));				
+				}
+				if(isset($_POST['comm_plong']) AND htmlspecialchars($_POST['comm_plong'])!='')			// Il y a un commentaire (En plus de l'inscription d'un membre, on autorise)
+				{
+					$comm_plong = htmlspecialchars($_POST['comm_plong']);
+						// On va lire "inscription" pour pouvoir ajouter un commentaire (On écrase le précédent)
+						$req2= $bdd->query('UPDATE inscriptions SET commentaire = "'.$comm_plong.'" WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$_SESSION['id'].'")'); // 	// ## Attention, fait perdre sa place dans la liste d'attnete !!!
 						$req2->closeCursor(); //requête terminée
 				}
-				if(isset($_POST['prenom']) AND htmlspecialchars($_POST['prenom'])!='')					// On demande de supprimer un invité
+				if($_SESSION['privilege']=="administrateur")		// On autorise la suppression
 				{
-					$prenom = htmlspecialchars($_POST['prenom']);
-					$nom = htmlspecialchars($_POST['nom']);
-						// On va lire "invités" pour supprimer le mec en question
-						$req2= $bdd->query('DELETE FROM invites WHERE (id_evt ="'.$id_evt.'" AND prenom = "'.$prenom.'" AND nom = "'.$nom.'")'); // 	Suppression de l'inscrit club
-						$req2->closeCursor(); //requête terminée
-				}
-			}			
-		}				
+					if(isset($_POST['id_inscrit']) AND htmlspecialchars($_POST['id_inscrit'])!='')			// On demande de supprimer un membre
+					{
+						$id_inscrit = htmlspecialchars($_POST['id_inscrit']);
+							// On va lire "inscription" pour supprimer le mec en question
+							$req2= $bdd->query('DELETE FROM inscriptions WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$id_inscrit.'")'); // 	Suppression de l'inscrit club
+							$req2->closeCursor(); //requête terminée
+					}
+					if(isset($_POST['prenom']) AND htmlspecialchars($_POST['prenom'])!='')					// On demande de supprimer un invité
+					{
+						$prenom = htmlspecialchars($_POST['prenom']);
+						$nom = htmlspecialchars($_POST['nom']);
+							// On va lire "invités" pour supprimer le mec en question
+							$req2= $bdd->query('DELETE FROM invites WHERE (id_evt ="'.$id_evt.'" AND prenom = "'.$prenom.'" AND nom = "'.$nom.'")'); // 	Suppression de l'inscrit club
+							$req2->closeCursor(); //requête terminée
+					}
+				}			
+			}				
 			$result = $bdd->query("SELECT * FROM evenements WHERE id = '$id_evt'");
 			$row = $result->fetch();
 			$result->closeCursor(); //requête terminée
 			
-				
-		
-				// Même trame que le formulaire de création
-			?> 
+			$type_evt = $row[1];
+			$publicateur = $row[11];
+			$date_publi = $row[12];
+			$nb_max_part = $row[9];
+			?>	
+			<div class="card-panel blue darken-4" align=center> 
+				<font size="5pt">
+					<?php
+					//On affiche le staut actuel de la sortie : 
+					if($type_evt=="Plongée")
+					{
+						if(isDP($id_evt)==0 AND isEnough($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Pas assez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
+						elseif(isDP($id_evt)==0 AND isEnough($id_evt)==1){echo ("<p style='color: white'>Pour le moment : Asez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
+						elseif(isDP($id_evt)==1 AND isEnough($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Pas assez de participants / DP inscrit <br> <b><u>Sortie non assurée</u></b></p>");}
+						elseif(isDP($id_evt)==1 AND isEnough($id_evt)==1 AND isFull($id_evt,$nb_max_part)==0){echo ("<p style='color: white'>Pour le moment : Assez de participants / DP <br> <b><u>Sortie assurée et il reste de la place</u></b></p>");}
+						elseif(isDP($id_evt)==1 AND isEnough($id_evt)==1 AND isFull($id_evt,$nb_max_part)==1){echo ("<p style='color: white'>Pour le moment : Assez de participants / DP <br> <b><u>Sortie assurée mais complète (Inscrivez vous pour liste d'attente)</u></b></p>");}
+						elseif(isDP($id_evt)==0 AND isFull($id_evt,$nb_max_part)==1){echo ("<p style='color: white'>Pour le moment : Assez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
+					}
+					// Pour une plongée piscine, on vérifie qu'il y ait un DP piscine
+					elseif($type_evt=="Piscine")
+					{
+						if(isDP_piscine($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Attente d'inscription d'un DP <br> <u><b>Séance non assurée</u></b></p>");}
+						else{echo ("<p style='color: white'>Pour le moment : DP présent <br> <u><b>Séance assurée</u></b></p>");}
+					}
+						// Même trame que le formulaire de création
+					?> 
+				</font>
+			</div>
 			<div class="row center">
+				<!-- Affichage du lien de modification si admin ou propriétaire de la sortie -->
+				<?php if($_SESSION['privilege']=="administrateur" OR ($_SESSION['nom']." ".$_SESSION['prenom'])==$publicateur )
+				{ ?>
+					<div class="row center">									
+						<form action="modif_evt.php" method="post">
+								<input type='hidden' name='id_mod' value=<?php echo $id_evt?>> 		
+								<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit"><i class="material-icons">border_color</i>&nbsp; Modifier l'événement</button>
+						</form>		
+						
+					</div>	<?php 
+				} ?>
+				
 				<div class="row center">									
 					<div class="col s1">
 						<i class="material-icons prefix">add_circle</i>
 					</div> 
 					<div class="col s4" align="left" >
-						<u><b>Type d'évènement</b></u> : <?php echo $row[1]; ?>
+						<u><b>Type d'évènement</b></u> : <?php echo $type_evt; ?>
 					</div> 	
 					<div class="col s7" align="left" >
-						<u><b>Publié par</b></u> : <?php echo $row[11]." le ".$row[12]; ?>
+						<u><b>Publié par</b></u> : <?php echo $publicateur." le ".$date_publi; ?>
 					</div> 						
 				</div>
 				<div class="row center">
@@ -174,7 +206,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						<i class="material-icons prefix">group</i>
 					</div> 
 					<div class="col s3" align="left" >
-						<u><b>Nombre de participants max</b></u> : <?php echo $row[9]; ?>
+						<u><b>Nombre de participants max</b></u> : <?php echo $nb_max_part; ?>
 					</div> 
 					<div class="col s1">
 						<i class="material-icons prefix">toys</i>
@@ -194,169 +226,236 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 		
 				<div class="row center">
 				</div>
-				
+			</div>	
 				<!-- Affichage des inscrits -->
-			    <div class="row center">
-					<span class="flow-text" col s12"> Affichage des membres inscrits :</span>
-				</div>
-			    <div class="row center">
-					<div class="col s2" align="left" >
-						<u><b>Nom</b></u>
-					</div> 
-					<div class="col s2" align="left">
-						<u><b>Prénom</b></u>
-					</div> 
-					<div class="col s1" align="left" >
-						<u><b>Niveau</b></u>
-					</div> 
-					<div class="col s1" align="left" >
-						<u><b></b></u>				<!-- Colonne pour afficher qui est DP ou autres infos -->
-					</div> 
-					<div class="col s6" align="left" >
-						<u><b>Commentaire</b></u>
-					</div> 
-				</div>
-				<?php
-				$test_passage=0;
-				//$yaunan = strtotime('-1 year -1 day');		// timestamp d'il y a un an	
-				$unanavantsortie = strtotime('-1 year -1 day',(strtotime($row[3])));
-				//Affichage de la liste des inscrits membres: 
-				$req2= $bdd->prepare('SELECT * FROM inscriptions WHERE id_evt="'.$id_evt.'" ORDER BY time_inscr'); // On va chercher dans la liste d'inscription, les id des personnes inscrites dans l'ordre d'inscription
-				$req2->execute(array());
-				
-				$DP_present=0;
-				while ($inscrit = $req2->fetch())		// Tant qu'il y a des inscrits, on les affiche
-				{
-					$test_passage=1;
-					$req3= $bdd->prepare('SELECT * FROM membres WHERE id="'.$inscrit[1].'"'); // 
-					$req3->execute(array());
-					$donnees_membre = $req3->fetch();
+			<div class="row center">
+				<span class="flow-text" col s12"> Affichage des membres inscrits :</span>
+			</div>
+			<div class="responsive-table"	>
+			<!-- On insert une table dans un DIV pour les inscrits -->
+				<table class="striped responsive-table">
+					<thead>
+					  <tr>
+						  <th>Nom</th>
+						  <th>Prénom</th>
+						  <th>Niveau</th>
+						  <th></th>			<!-- Colonne pour afficher qui est DP ou autres infos -->		
+						  <th>Commentaire</th>
+						  <th></th>			<!-- Colonne pour supprimer un mambre si on est admin -->
+					  </tr>
+					</thead>
 					
-					$id_membre = $donnees_membre[0];
-					$nom_membre = $donnees_membre[3];
-					$prenom_membre = $donnees_membre[4];
-					$certif_membre = $donnees_membre[11];
-
-					$niv_membre = $donnees_membre[8];
-					$niv_encad = $donnees_membre[9];
-					$comm_membre = $inscrit[3];
 					
-					if(strtotime($certif_membre)<$unanavantsortie AND ($row[1]=="Plongée" OR $row[1]=="Piscine"))		// Si le gars est pas à jour de certif médical, on affiche sa ligne en rouge -> Gaulé Capi on t'a vu !! 
-					{?>
-						<div class='row center' style='color: red'>
-					<?php
-					}
-					else{
-						echo("<div class='row center'>");	// Nouvelle ligne
-					}
-					
-					// Afficher le nom du membres 
-					echo("<div class='col s2' align='left'>");
-					echo $nom_membre;
-					echo("</div>");
-					// Afficher le prénom du membre
-					echo("<div class='col s2' align='left'>");
-					echo $prenom_membre;
-					echo("</div>");
-					// Afficher le niveau du memebre
-					echo("<div class='col s1' align='left'>");
-					if($niv_encad!=0){echo "N".$niv_membre."/E".$niv_encad;}
-					else{echo "N".$niv_membre;}
-					echo("</div>");
-					// Affichage du DP 
-					echo("<div class='col s1' align='left'>");
-					if($DP_present==0 AND ($niv_membre==5 OR $niv_encad>=3))		// Si pas encore de DP et que le plus ancien inscrit est N5 ou E3 -> Il est DP
-					{
-						echo "<b>DP</b>";
-						$DP_present=1;
-					}
-					echo("</div>");
-
-					if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
-					{
-						// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre
-						echo("<div class='col s5' align='left'>");
-						echo $comm_membre;					
-						echo("</div>");
-						echo("<div class='col s1' align='left'>");?>
-						<form action="affichage_evt.php" method="post">
-							<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?> > 		
-							<input type='hidden' name='id_inscrit' value='<?php echo $id_membre?>' >
-							<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">cancel</i></a></button>
-						</form>	<?php				
-						echo("</div>");
-					}
-					else
-					{
-						// Afficher le commentaire du memebre en 6 unités de longueur
-						echo("<div class='col s6' align='left'>");
-						echo $comm_membre;					
-						echo("</div>");
-					}
-					
-					// Fin de la nouvelle ligne
-					echo("</div>");
-					$req3->closeCursor(); //requête terminée
-				}
-				// Affichage des invités
-				$req4= $bdd->prepare('SELECT * FROM invites WHERE id_evt="'.$id_evt.'"'); // On va chercher dans la liste d'inscription, les id des personnes inscrites
-				$req4->execute(array());
-				while ($inscrit_invit = $req4->fetch())		// Tant qu'il y a des inscrits, on les affiche
-				{
-					$test_passage=1;
-					$nom_invit = $inscrit_invit[1];
-					$prenom_invit = $inscrit_invit[2];
-					$niv_invit = $inscrit_invit[3];
-					$comm_invit = $inscrit_invit[4];
-					echo("<div class='row center'>");	// Nouvelle ligne
-					// Afficher le nom du membres 
-					echo("<div class='col s2' align='left'>");
-					echo $nom_invit;
-					echo("</div>");
-					// Afficher le prénom du membre
-					echo("<div class='col s2' align='left'>");
-					echo $prenom_invit;
-					echo("</div>");
-					// Afficher le niveau du memebre
-					echo("<div class='col s2' align='left'>");
-					echo $niv_invit;						
-					echo("</div>");
-					if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
-					{
-						// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre
-						echo("<div class='col s5' align='left'>");
-						echo $comm_invit;					
-						echo("</div>");
-						echo("<div class='col s1' align='left'>");?>
-						<form action="affichage_evt.php" method="post">
-							<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?> > 		
-							<input type='hidden' name='prenom' value='<?php echo $prenom_invit?>' >
-							<input type='hidden' name='nom' value='<?php echo $nom_invit?>' >
-							<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">cancel</i></a></button>
-						</form>	<?php				
-						echo("</div>");
-					}
-					else
-					{
-						// Afficher le commentaire du memebre en 6 unités de longueur
-						echo("<div class='col s6' align='left'>");
-						echo $comm_invit;					
-						echo("</div>");
-					}
-					// Fin de la nouvelle ligne
-					echo("</div>");	
-				}
-				$req4->closeCursor(); //requête terminée
-				if($test_passage==0)
-				{	// Pas de sorties à afficher?>
-					<div class="row center">
-						<span class="flow-text" col s12">Quoi !!?? Personne d'inscrit ?????? Regardes la météo et inscrits toi si tu es sur(e) de toi ;-)</span>
-					</div>
+					<tbody>				
 				
 					<?php
-				}				
-				$req2->closeCursor(); //requête terminée
-			?>
+					$test_passage=0;
+					//$yaunan = strtotime('-1 year -1 day');		// timestamp d'il y a un an	
+					$unanavantsortie = strtotime('-1 year -1 day',(strtotime($row[3])));
+					//Affichage de la liste des inscrits membres: 
+					$req2= $bdd->prepare('SELECT * FROM inscriptions WHERE id_evt="'.$id_evt.'" ORDER BY time_inscr'); // On va chercher dans la liste d'inscription, les id des personnes inscrites dans l'ordre d'inscription
+					$req2->execute(array());
+					
+					$DP_present=0;
+					$num_inscrit=0;
+					while ($inscrit = $req2->fetch())		// Tant qu'il y a des inscrits, on les affiche
+					{
+						$test_passage=1;			// On valide le fait qu'on est passé pour ne pas afficher le message de sortie vide
+						$num_inscrit++;				// On ajoute un participants pour la liste d'attente
+						$req3= $bdd->prepare('SELECT * FROM membres WHERE id="'.$inscrit[1].'"'); // 
+						$req3->execute(array());
+						$donnees_membre = $req3->fetch();
+						
+						$id_membre = $donnees_membre[0];
+						if($id_membre == $_SESSION['id']){$personne_log_inscrite=1;}
+						$nom_membre = $donnees_membre[3];
+						$prenom_membre = $donnees_membre[4];
+						$certif_membre = $donnees_membre[11];
+						$niv_membre = $donnees_membre[8];
+						$niv_encad = $donnees_membre[9];
+						$comm_membre = $inscrit[3];
+						// On va voir si le nombre d'inscrits est atteint
+						// Lors qu'il est atteint, la première fois, on affiche "Liste d'attente"
+						if($num_inscrit==($nb_max_part+1))
+						{?>
+							<tr style='color: grey'>
+								<td colspan=6>
+									<table class="centered">
+										<thead>
+										  <tr>
+											  <th><u><b> Liste d'attente </u></b></th>
+										  </tr>
+										</thead><tbody>	</tbody>
+										</table>
+								</td>
+							</tr>
+							<tr style='color: grey' font='italic'>
+							<?php $italic=1;				// Pour passer les textes en italic?>
+						<?php
+						}
+						// Ensuite, on continue de mettre à la suite les lignes en liste d'attente, et affichage en gris toujours
+						elseif($num_inscrit>($nb_max_part+1))
+						{?>
+							<tr style='color: grey' font='italic'>
+							<?php $italic=1;				// Pour passer les textes en italic?>
+						<?php
+						}
+						//Et enfin, on affiche une ligne en rouge si le certificat médical est HS
+						elseif(strtotime($certif_membre)<$unanavantsortie AND ($type_evt=="Plongée" OR $type_evt=="Piscine"))		// Si le gars est pas à jour de certif médical, on affiche sa ligne en rouge -> Gaulé Capi on t'a vu !! 
+						{?>
+							<tr style='color: red'>
+						<?php	
+						}
+						else
+						{?>
+							<tr>	<!-- Nouvelle ligne --> <?php
+						}?>
+						
+						<!-- Afficher le nom du membre -->
+						<td><?php if($italic==1){echo "<i>";} echo $nom_membre;?></td>
+						<!-- Afficher le prénom du membre -->
+						<td><?php if($italic==1){echo "<i>";} echo $prenom_membre;?></td>
+						<!-- Afficher le niveau du membre -->
+						<td><?php if($italic==1){echo "<i>";} if($niv_encad!=0){echo "N".$niv_membre."/E".$niv_encad;}	else{echo "N".$niv_membre;}?></td>					
+						<!-- Afficher le DP -->
+						<td><?php if($DP_present==0 AND ($niv_membre==5 OR $niv_encad>=3))		// Si pas encore de DP et que le plus ancien inscrit est N5 ou E3 -> Il est DP
+												{
+													echo "<b>DP</b>";
+													$DP_present=1;
+												}
+									else{echo"-";}
+									?>
+						</td>
+						<?php
+						if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
+						{
+							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre 
+							?>
+							<td> <?php if($italic==1){echo "<i>";} if($comm_membre==''){echo "-";} else{echo $comm_membre;}?></td>
+							<td>
+							<form action="affichage_evt.php" method="post">
+								<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?>> 		
+								<input type='hidden' name='id_inscrit' value=<?php echo $id_membre?>>
+								<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>
+							</form>					
+							</td> <?php
+						}
+						else
+						{
+							// Afficher le commentaire du memebre en 6 unités de longueur
+							?>
+							<td align='left'><?php if($italic==1){echo "<i>";} if($comm_membre==''){echo "-";} else{echo $comm_membre;} ?></td> 
+							<td>-</td>				<!-- Case vide pour le bouton de suppression qui n'existe pas si on est pas admin-->
+							<?php
+						}
+						// Fin de la nouvelle ligne
+						if($num_inscrit>($nb_max_part))
+						{ $italic=0;				// Pour passer les textes en italic
+							?></tr> <?php		// Fin de la balise italique si on est dans les listes d'autorise
+						}
+						else
+						{?>
+							</tr>  <?php		// Fin de la ligne simple sinon
+						}
+						$req3->closeCursor(); //requête terminée
+					}
+					// Affichage des invités
+					$req4= $bdd->prepare('SELECT * FROM invites WHERE id_evt="'.$id_evt.'"'); // On va chercher dans la liste d'inscription, les id des personnes inscrites
+					$req4->execute(array());
+					while ($inscrit_invit = $req4->fetch())		// Tant qu'il y a des inscrits, on les affiche
+					{
+						$test_passage=1;			// On valide le fait qu'on est passé pour ne pas afficher le message de sortie vide
+						$num_inscrit++;				// On ajoute un participants pour la liste d'attente
+						$nom_invit = $inscrit_invit[1];
+						$prenom_invit = $inscrit_invit[2];
+						$niv_invit = $inscrit_invit[3];
+						$comm_invit = $inscrit_invit[4];
+						
+						if($num_inscrit==($nb_max_part+1))
+						{?>
+							<tr style='color: grey'>
+								<td colspan=6>
+									<table class="centered">
+										<thead>
+										  <tr>
+											  <th><u><b> Liste d'attente </u></b></th>
+										  </tr>
+										</thead><tbody>	</tbody>
+										</table>
+								</td>
+							</tr>
+							<tr style='color: grey' font='italic'>
+							<?php $italic=1;				// Pour passer les textes en italic?>
+						<?php
+						}
+						// Ensuite, on continue de mettre à la suite les lignes en liste d'attente, et affichage en gris toujours
+						elseif($num_inscrit>($nb_max_part+1))			
+						{?>
+							<tr style='color: grey'>
+							<?php $italic=1;				// Pour passer les textes en italic?>
+						<?php
+						}	
+						else
+						{					// On affiche une ligne normale?>					
+							<tr> <?php
+						}?>
+						<!-- Afficher le nom du membre -->
+						<td><?php if($italic==1){echo "<i>";} echo $nom_invit;?></td>
+						<!-- Afficher le prénom du membre -->
+						<td><?php if($italic==1){echo "<i>";} echo$prenom_invit;?></td>
+						<!-- Afficher le niveau du membre -->
+						<td><?php if($italic==1){echo "<i>";} echo$niv_invit;?></td>					
+						<!-- Case vide pour DP -->
+						<td>-</td>					
+						<?php
+						if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
+						{
+							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre
+							?>
+							<td><?php if($italic==1){echo "<i>";} if($comm_invit==''){echo "-";} else{echo $comm_invit;}?></td>
+							<td>
+								<form action="affichage_evt.php" method="post">
+									<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?> > 		
+									<input type='hidden' name='prenom' value='<?php echo $prenom_invit?>' >
+									<input type='hidden' name='nom' value='<?php echo $nom_invit?>' >
+									<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>
+								</form>	
+							</td>
+							<?php				
+						}
+						else
+						{	?>
+							<!-- Afficher le commentaire du memebre en 6 unités de longueur -->
+							<td align='left'><?php if($italic==1){echo "<i>";} if($comm_invit==''){echo "-";} else{echo $comm_invit;} ?></td> 
+							<td>-</td>				<!-- Case vide pour le bouton de suppression qui n'existe pas si on est pas admin-->
+							<?php
+						}
+						// Fin de la nouvelle ligne
+						if($num_inscrit>($nb_max_part))
+						{?>
+							<?php $italic=0;				// Pour passer les textes en italic?>
+							</tr>		<!-- Fin de la balise italique si on est dans les listes d'autorise --> <?php
+						}
+						else
+						{?>
+							</tr>			<!-- Fin de la ligne simple sinon --> <?php
+						}
+					}
+					$req4->closeCursor(); //requête terminée
+					if($test_passage==0)
+					{	// Pas de sorties à afficher?>
+						<tr class="row center">
+							<td colspan=6>
+							<span>Quoi !!?? Personne d'inscrit ?????? Regardes la météo et inscrits toi si tu es sur(e) de toi ;-)</span>
+							</td>
+						</tr>
+					
+						<?php
+					}				
+					$req2->closeCursor(); //requête terminée?>
+					
+					</tbody>
+				</table>
 			
 			</div>
 				<!--   Ajout d'un invité   -->
@@ -381,7 +480,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							<label for="prenom_invit">Prénom *</label>		
 						</div>
 						<div class="input-field col s2">
-							<select class = "browser-default" name="niveau_invit">
+							<select name="niveau_invit">
 							  <option value = "N0">N0</option>
 							  <option value = "N1">N1</option>
 							  <option value = "N2">N2</option>
@@ -399,13 +498,17 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							<label for="comm_invit">Commentaire</label>		
 						</div>
 					<div class="input-field col s1">
-						<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">add_circle</i></a></button>	
+						<button class="btn waves-effect waves-light green darken-2" type="submit" name="submit"><i class="material-icons">add_circle</i></button>
 					</div>
 					</form>
 				</div>
-				<!--   Ajout d'un commentaire   -->
+				<!--   Ligne vie pour démarquer la fin de l'affichage des inscrits   -->
 				<div class="row center">
 				</div>
+				<!--   Ajout d'un commentaire seulement pour les personnes inscrites   -->
+				<?php 
+				if($personne_log_inscrite==1)
+				{ ?>
 				<div class="row center">
 					<span class="flow-text" col s12"> Un commentaire sur la plongée / l'inscription ?</span>
 				</div>
@@ -417,22 +520,26 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						<label for="comm_plong">Commentaire</label>		
 					</div>
 					<div class="input-field col s1">
-						<button class="waves-effect waves-teal btn-flat" type="submit" name="submit"><a><i class="material-icons">add_circle</i></a></button>	
+						<button class="btn waves-effect waves-light green darken-2" type="submit" name="submit"><i class="material-icons">add_circle</i></button>	
 					</div>
 					</form>
-				</div>			
+				</div> <?php
+				}
+				?>
+				
 			<?php
 		}
 		else
 		{
 			echo ("<div class='row center'><span class='flow-text' col s12'>Vous n'avez pas sélectionné de d'événement à afficher</span></div>");
-		}	?>
-		
+		}	
+		?>
   	</div>
   </div>
 
 <?php
 }
+
 else	// Pas loggé
 {
 	?>
@@ -443,16 +550,11 @@ else	// Pas loggé
 }
 ?>
 
-  <?php include("tools/footer.php"); ?>
+	<?php include("tools/footer.php"); ?>
+	<!--  Scripts-->
+    <?php include("tools/scripts.php"); ?>
 
-  <!--  Scripts  
-
-  -->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/initi.js"></script>
 
 </body>
-
 
 </html>

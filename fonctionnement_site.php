@@ -20,11 +20,6 @@ session_start()
 
 <?php include("tools/navbar.php"); ?>
 
-<?php
-/*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
-echo $pass_hache; */
-?>
-
 <!--	Affichage des plongées  -->
   <div class="section no-pad-bot" id="index-banner">
   	<div class="container">
@@ -87,10 +82,7 @@ echo $pass_hache; */
   </div>
 
   <?php include("tools/footer.php"); ?>
-
   <!--  Scripts-->
-  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script src="js/materialize.js"></script>
-  <script src="js/initi.js"></script>
+  <?php include("tools/scripts.php"); ?>
 
 </body>
