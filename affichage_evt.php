@@ -25,6 +25,7 @@ session_start()
 
 <?php include("tools/navbar.php"); ?>
 <?php include("tools/data_evts.php"); ?>
+<?php include("tools/fonctions_unitaires.php"); ?>
 <?php 
 	$italic =0;					// Gestion de l'affichage de la liste d'attente 
 	$personne_log_inscrite=0 	// Vérification si le mec connecté est inscrit?>
@@ -45,8 +46,11 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
             <p><a href="liste_evenements.php">Lien vers la liste de tous les événements</a></p>
         </div>
 		
-		
 		<?php 
+		// affichage d'un message si le certificat medical n'est pas perimé
+			isPasMalade();
+		
+		// Traitement des formulaires
 		if((isset($_POST['id_evt']) AND htmlspecialchars($_POST['id_evt'])!='')OR(isset($_POST['id_evt_local']) AND htmlspecialchars($_POST['id_evt_local'])!=''))		// Si on vient de cette page ou de la liste des événements
 		{	// Récupération des données de la plongée dont l'ID est "$_POST['evt_id']"
 		
@@ -80,10 +84,15 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				{
 					$comm_plong = htmlspecialchars($_POST['comm_plong']);
 						// On va lire "inscription" pour pouvoir ajouter un commentaire (On écrase le précédent)
-						$req2= $bdd->query('UPDATE inscriptions SET commentaire = "'.$comm_plong.'" WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$_SESSION['id'].'")'); // 	// ## Attention, fait perdre sa place dans la liste d'attnete !!!
+						$req2= $bdd->prepare('UPDATE inscriptions SET commentaire =:commentaire WHERE (id_evt =:id_evt AND id_membre =:session_id)'); // 
+						$req2->execute(array(
+						'commentaire' => $comm_plong,
+						'id_evt' => $id_evt,
+						'session_id' => $_SESSION['id']));
 						$req2->closeCursor(); //requête terminée
+					
 				}
-				if($_SESSION['privilege']=="administrateur")		// On autorise la suppression
+				if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On autorise la suppression
 				{
 					if(isset($_POST['id_inscrit']) AND htmlspecialchars($_POST['id_inscrit'])!='')			// On demande de supprimer un membre
 					{
@@ -100,7 +109,24 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							$req2= $bdd->query('DELETE FROM invites WHERE (id_evt ="'.$id_evt.'" AND prenom = "'.$prenom.'" AND nom = "'.$nom.'")'); // 	Suppression de l'inscrit club
 							$req2->closeCursor(); //requête terminée
 					}
-				}			
+				}	
+				// Gestion de l'inscription du membre loggé sur cette page
+				if(isset($_POST['desinscription']) AND htmlspecialchars($_POST['desinscription'])!='')			// On demande de supprimer un membre
+				{
+					// On va lire "inscription" pour supprimer le mec en question
+					$req2= $bdd->query('DELETE FROM inscriptions WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$_SESSION['id'].'")'); // 	Suppression de l'inscrit club
+					$req2->closeCursor(); //requête terminée
+				}
+				if(isset($_POST['inscription']) AND htmlspecialchars($_POST['inscription'])!='')			// On ajoute le mec
+				{						
+					$time_inscr = new DateTime();
+					$req2= $bdd->prepare('INSERT INTO inscriptions(id_evt, id_membre, commentaire) VALUES(:id_evt, :id_membre, :commentaire)');
+					$req2->execute(array(
+				  'id_evt' => $id_evt,
+				  'id_membre' => $_SESSION['id'],
+				  'commentaire' => ""));	
+					$req2->closeCursor(); //requête terminée					  	
+				}				
 			}				
 			$result = $bdd->query("SELECT * FROM evenements WHERE id = '$id_evt'");
 			$row = $result->fetch();
@@ -110,6 +136,9 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 			$publicateur = $row[11];
 			$date_publi = $row[12];
 			$nb_max_part = $row[9];
+			$niv_min = $row[7];
+			$date_lim_inscr = $row[5];
+			$heure_lim_inscr = $row[6];
 			?>	
 			<div class="card-panel blue darken-4" align=center> 
 				<font size="5pt">
@@ -136,7 +165,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 			</div>
 			<div class="row center">
 				<!-- Affichage du lien de modification si admin ou propriétaire de la sortie -->
-				<?php if($_SESSION['privilege']=="administrateur" OR ($_SESSION['nom']." ".$_SESSION['prenom'])==$publicateur )
+				<?php if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau" OR ($_SESSION['nom']." ".$_SESSION['prenom'])==$publicateur )
 				{ ?>
 					<div class="row center">									
 						<form action="modif_evt.php" method="post">
@@ -200,7 +229,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						<i class="material-icons prefix">flare</i>
 					</div> 
 					<div class="col s2" align="left" >
-						<u><b>Niveau mini</b></u> : <?php echo $row[7]; ?>
+						<u><b>Niveau mini</b></u> : <?php echo $niv_min; ?>
 					</div> 	
 					<div class="col s1">
 						<i class="material-icons prefix">group</i>
@@ -227,6 +256,58 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				<div class="row center">
 				</div>
 			</div>	
+			<div class="card-panel blue darken-4" align=center> 
+				<div class="row center">
+					<div class="col s6" align="right">
+						<p style='color: white'>S'inscrire / se désinscrire :</p> 
+					</div>
+					<div div class="col s6" align="left">
+						<form action="affichage_evt.php" method="post">
+							<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?>> 							
+							<?php
+							// On affiche la possiblité de s'inscrire ou de se désinscrire		
+							if(isset($_SESSION['pseudo'])AND ($_SESSION['inscription_valide']==1) AND ($_SESSION['actif_saison']==1)) // Si connecté, actif pour la saison et validé, on affiche les boutons d'ajout et de suppression d'inscription
+							{
+								if($_SESSION['niv_plongeur']>=$niv_min) // Si le mec à le niveau nécessaire, on lui propose de s'incrire, sinon, non
+								{
+									if(isInscrit($_SESSION['id'], $id_evt))  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+									{
+										?>
+										<input type='hidden' name='desinscription' value='desinscription'> 
+										<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Se désinscrire</button>
+									<?php }		// Sinon de s'inscrire
+									else
+									{
+										$datenow = date("Y-m-d");
+										$heurenow = date("H:i:s");
+										$date_limi_passee = 0;
+										if($date_lim_inscr<$datenow OR ($date_lim_inscr==$datenow AND $heure_lim_inscr>$heurenow))
+										{
+											$date_limi_passee = 1;
+										}
+										if($date_limi_passee == 1)		// Si la date lmite d'inscription est passée, on grise la case
+										{
+											?><button class="btn disabled">Trop tard !</button><?php
+										}	
+										else				// On autorise l'inscription
+										{?>
+											<input type='hidden' name='inscription' value='inscription'> 
+											<button class="btn waves-effect waves-light green darken-2" type="submit" name="submit">S'inscrire</button>
+										<?php 
+										}
+									} 
+								}
+								else
+								{
+									?>
+									<button class="btn disabled"><?php echo "<b style='color: red;'>N".$niv_min." min</b>";?></button>
+									<?php
+								}
+							}?>
+						</form>
+					</div>
+				</div>
+			</div>
 				<!-- Affichage des inscrits -->
 			<div class="row center">
 				<span class="flow-text" col s12"> Affichage des membres inscrits :</span>
@@ -327,11 +408,11 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 									?>
 						</td>
 						<?php
-						if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
+						if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On affiche une possibilité de supprimer quelqu'un pour les admins
 						{
 							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre 
 							?>
-							<td> <?php if($italic==1){echo "<i>";} if($comm_membre==''){echo "-";} else{echo $comm_membre;}?></td>
+							<td> <?php if($italic==1){echo "<i>";} if($comm_membre=='' OR empty($comm_membre)){echo "-";} else{echo $comm_membre;}?></td>
 							<td>
 							<form action="affichage_evt.php" method="post">
 								<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?>> 		
@@ -408,7 +489,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						<!-- Case vide pour DP -->
 						<td>-</td>					
 						<?php
-						if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
+						if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On affiche une possibilité de supprimer quelqu'un pour les admins
 						{
 							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre
 							?>
@@ -510,7 +591,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				if($personne_log_inscrite==1)
 				{ ?>
 				<div class="row center">
-					<span class="flow-text" col s12"> Un commentaire sur la plongée / l'inscription ?</span>
+					<span class="flow-text" col s12"> Modifier mon commentaire (Remplace le précédent)</span>
 				</div>
 				<div class="row center">
 					<form class="col s12" action="affichage_evt.php" method="post">								

@@ -21,7 +21,7 @@ session_start()
 <?php include("tools/navbar.php"); ?>
 
 <?php
-if($_SESSION['privilege']=="administrateur")		// On autorise l'accès à cette page
+if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On autorise l'accès à cette page
 {
 			// Traitement des suppressions
 		if(isset($_POST['id_evt']) AND $_POST['id_evt']!='')
@@ -132,7 +132,7 @@ if($_SESSION['privilege']=="administrateur")		// On autorise l'accès à cette p
 							$nb_part=0;
 							while ($inscrit = $req2->fetch())		// Dans la table des membres
 							{
-								if($inscrit[1]==$_SESSION['id'])	// ### 1 à remplacer par l'ID du mec connecté
+								if($inscrit[1]==$_SESSION['id'])
 								{
 									$deja_inscrit=1;
 								}

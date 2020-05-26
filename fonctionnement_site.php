@@ -62,7 +62,7 @@ session_start()
 		    <div class="input-field col s12">
             <label>Si vous ne réusssisez pas à vous inscrire sur la page listant les différents événements ou à obtenir les détails d'un événement: </br>
 			- Vérifiez la connexion à votre esace membre</br>
-			- Assurez vous que vous avez le niveau nécessaire pour vous inscire à la sortie</br>
+			- Assurez vous que vous avez le niveau nécessaire pour vous inscrire à la sortie</br>
 			</label>
 			</div>
         </div>

@@ -20,6 +20,7 @@ session_start()
 
 <?php include("tools/navbar.php"); ?>	
 <?php include("tools/data_evts.php"); ?>
+<?php include("tools/fonctions_unitaires.php"); ?>
 <?php date_default_timezone_set('Europe/Paris'); ?>
 
 <?php
@@ -35,7 +36,7 @@ session_start()
 					$req2= $bdd->prepare('DELETE FROM inscriptions WHERE id_evt=:id_evt AND id_membre=:id_membre');	// On supprime l'inscription du gus
 					$req2->execute(array(
 					  'id_evt' => $_POST['id_evt'],
-					  'id_membre' => $_SESSION['id']));				// ### A changer par l'ID de la session active   
+					  'id_membre' => $_SESSION['id']));			
 				}
 				else
 				{
@@ -44,7 +45,7 @@ session_start()
 					$req2->execute(array(
 					  'id_evt' => $_POST['id_evt'],
 					  'id_membre' => $_SESSION['id'],
-					  'commentaire' => " "));				// ### A changer par l'ID de la session active				  
+					  'commentaire' => ""));						  
 				}  
 				$req2->closeCursor(); //requête terminée
 			}	
@@ -65,23 +66,9 @@ session_start()
             <p><a href="creation_evt.php">Lien pour créer un événement</a></p>
         </div>
 			<?php
-			// Determination de la date d'il y a un an
-			$yaunan = strtotime('-1 year -1 day');		// timestamp d'il y a un an	
-			$yaunanmoinsunmois = strtotime('-1 year +1 month');
-			if(strtotime($_SESSION['certif_med'])<$yaunan)		// Si le gars est pas à jour de certif médical, on lui affiche une message énorme en rouge sur les inscriptions
-			{?>
-				<div class="row center">
-					<span class="flow-text" col s12"><b style='color: red;'>Attention, votre certificat médical n'est pas à jour !!</b></span>
-				</div>
-			<?php
-			}
-			else if(strtotime($_SESSION['certif_med'])<$yaunanmoinsunmois)
-			{?>
-				<div class="row center">
-					<span class="flow-text" col s12"><b style='color: orange;'>Attention, votre certificat médical expire le <?php echo date("D-d/m/Y",strtotime('+1 year',strtotime($_SESSION['certif_med'])))?></b></span>
-				</div>
-			<?php
-			}
+			// affichage d'un message si le certificat medical n'est pas perimé
+			isPasMalade();
+			
 		}?>
 		<div class="row center">
 		<?php
@@ -113,6 +100,7 @@ session_start()
 			while ($resultat = $req1->fetch())
 			{
 				$test_passage = 1;
+				$date_limi_passee = 0;
 				// On rempli le tableau avec les différentes lignes
 				?>
 				
@@ -166,12 +154,6 @@ session_start()
 						<?php
 							$datenow = date("Y-m-d");
 							$heurenow = date("H:i:s");
-/*							echo $datenow." ";
-							echo $heurenow." ";
-							echo $resultat['date_lim']." ";
-							echo $resultat['heure_lim']." ";
-							if($resultat['date_lim']<$datenow){echo "La date foire";}
-*/
 							if($resultat['date_lim']<$datenow OR ($resultat['date_lim']==$datenow AND $resultat['heure_lim']>$heurenow))
 							{?>
 								<label><b style='color: red;'><?php echo date("D-d/m", strtotime($resultat['date_lim']))."<br>".substr ($resultat['heure_lim'],0,5)?></b></label><?php
@@ -248,7 +230,8 @@ session_start()
 										{
 											if($date_limi_passee == 1)		// Si la date lmite d'inscription est passée, on grise la case
 											{
-												?><button class="btn disabled"><i class="material-icons">check_circle</i></button><?php
+												?>
+												<button class="btn disabled"><i class="material-icons">check_circle</i></button><?php
 												$date_limi_passee = 0;
 											}	
 											else				// On autorise l'inscription
