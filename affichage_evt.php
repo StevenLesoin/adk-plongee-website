@@ -28,7 +28,12 @@ session_start()
 <?php include("tools/fonctions_unitaires.php"); ?>
 <?php 
 	$italic =0;					// Gestion de l'affichage de la liste d'attente 
-	$personne_log_inscrite=0 	// Vérification si le mec connecté est inscrit?>
+	$personne_log_inscrite=0; 	// Vérification si le mec connecté est inscrit
+	
+	$datenow = date("Y-m-d");
+	$heurenow = date("H:i:s");
+	
+	?>
 
 <?php
 /*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
@@ -278,8 +283,6 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 									<?php }		// Sinon de s'inscrire
 									else
 									{
-										$datenow = date("Y-m-d");
-										$heurenow = date("H:i:s");
 										$date_limi_passee = 0;
 										if($date_lim_inscr<$datenow OR ($date_lim_inscr==$datenow AND $heure_lim_inscr>$heurenow))
 										{
@@ -545,44 +548,57 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				<div class="row center">
 					<span class="flow-text" col s12"> Ajout d'un invité :</span>
 				</div>
-				<div class="row center">
-					<span col s12"><i>Licence et certificat médical de moins d'un an nécéssaire - Sera contrôlé par le DP</i></span>
-				</div>
-				<div class="row center">
-					<form class="col s12" action="affichage_evt.php" method="post">								
-						<input type="hidden" name="id_evt_local" value = '<?php echo($id_evt);?>'>	<!-- Renvoi de l'id de l'évènement pour l'afficher une fois l'inscription faite -->
-						<div class="input-field col s2">
-							<i class="material-icons prefix">add_circle</i>
-							<input id="nom_invit" type="text" class="validate" name='nom_invit'>
-							<label for="nom_invit">Nom *</label>		
-						</div>
-						<div class="input-field col s2">
-							<input id="prenom_invit" type="text" class="validate" name='prenom_invit'>
-							<label for="prenom_invit">Prénom *</label>		
-						</div>
-						<div class="input-field col s2">
-							<select name="niveau_invit">
-							  <option value = "N0">N0</option>
-							  <option value = "N1">N1</option>
-							  <option value = "N2">N2</option>
-							  <option value = "N3">N3</option>
-							  <option value = "N4">N4</option>
-							  <option value = "E1">E1</option>
-							  <option value = "E2">E2</option>
-							  <option value = "E3">E3</option>
-							  <option value = "E4">E4</option>
-							  <option value = "Autre">Autre</option>
-							</select>										
-						</div>	
-						<div class="input-field col s5">
-							<input id="comm_invit" type="text" class="validate" name='comm_invit'>
-							<label for="comm_invit">Commentaire</label>		
-						</div>
-					<div class="input-field col s1">
-						<button class="btn waves-effect waves-light green darken-2" type="submit" name="submit"><i class="material-icons">add_circle</i></button>
+				<?php
+				// On offre la possibilité d'inscrire un invité que si la date limite n'est pas dépassée
+				if($date_lim_inscr<$datenow OR ($date_lim_inscr==$datenow AND $heure_lim_inscr>$heurenow))
+				{?>
+					<div class="row center">
+					<span col s12"><i>La date limite d'inscription est dépassée, ajout d'un invité impossible</i></span>
 					</div>
-					</form>
-				</div>
+				<?php	
+				}
+				else
+				{?>
+					<div class="row center">
+						<span col s12"><i>Licence et certificat médical de moins d'un an nécéssaire - Sera contrôlé par le DP</i></span>
+					</div>
+					<div class="row center">
+						<form class="col s12" action="affichage_evt.php" method="post">								
+							<input type="hidden" name="id_evt_local" value = '<?php echo($id_evt);?>'>	<!-- Renvoi de l'id de l'évènement pour l'afficher une fois l'inscription faite -->
+							<div class="input-field col s2">
+								<i class="material-icons prefix">add_circle</i>
+								<input id="nom_invit" type="text" class="validate" name='nom_invit'>
+								<label for="nom_invit">Nom *</label>		
+							</div>
+							<div class="input-field col s2">
+								<input id="prenom_invit" type="text" class="validate" name='prenom_invit'>
+								<label for="prenom_invit">Prénom *</label>		
+							</div>
+							<div class="input-field col s2">
+								<select name="niveau_invit">
+								  <option value = "N0">N0</option>
+								  <option value = "N1">N1</option>
+								  <option value = "N2">N2</option>
+								  <option value = "N3">N3</option>
+								  <option value = "N4">N4</option>
+								  <option value = "E1">E1</option>
+								  <option value = "E2">E2</option>
+								  <option value = "E3">E3</option>
+								  <option value = "E4">E4</option>
+								  <option value = "Autre">Autre</option>
+								</select>										
+							</div>	
+							<div class="input-field col s5">
+								<input id="comm_invit" type="text" class="validate" name='comm_invit'>
+								<label for="comm_invit">Commentaire</label>		
+							</div>
+						<div class="input-field col s1">
+							<button class="btn waves-effect waves-light green darken-2" type="submit" name="submit"><i class="material-icons">add_circle</i></button>
+						</div>
+						</form>
+					</div>
+					<?php
+				}?>
 				<!--   Ligne vie pour démarquer la fin de l'affichage des inscrits   -->
 				<div class="row center">
 				</div>
