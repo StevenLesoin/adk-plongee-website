@@ -152,7 +152,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					if($type_evt=="Plongée")
 					{
 						if(isDP($id_evt)==0 AND isEnough($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Pas assez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
-						elseif(isDP($id_evt)==0 AND isEnough($id_evt)==1){echo ("<p style='color: white'>Pour le moment : Asez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
+						elseif(isDP($id_evt)==0 AND isEnough($id_evt)==1){echo ("<p style='color: white'>Pour le moment : Assez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
 						elseif(isDP($id_evt)==1 AND isEnough($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Pas assez de participants / DP inscrit <br> <b><u>Sortie non assurée</u></b></p>");}
 						elseif(isDP($id_evt)==1 AND isEnough($id_evt)==1 AND isFull($id_evt,$nb_max_part)==0){echo ("<p style='color: white'>Pour le moment : Assez de participants / DP <br> <b><u>Sortie assurée et il reste de la place</u></b></p>");}
 						elseif(isDP($id_evt)==1 AND isEnough($id_evt)==1 AND isFull($id_evt,$nb_max_part)==1){echo ("<p style='color: white'>Pour le moment : Assez de participants / DP <br> <b><u>Sortie assurée mais complète (Inscrivez vous pour liste d'attente)</u></b></p>");}
@@ -284,7 +284,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 									else
 									{
 										$date_limi_passee = 0;
-										if($date_lim_inscr<$datenow OR ($date_lim_inscr==$datenow AND $heure_lim_inscr>$heurenow))
+										if($date_lim_inscr<$datenow OR ($date_lim_inscr==$datenow AND $heure_lim_inscr<$heurenow))
 										{
 											$date_limi_passee = 1;
 										}
@@ -550,7 +550,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				</div>
 				<?php
 				// On offre la possibilité d'inscrire un invité que si la date limite n'est pas dépassée
-				if($date_lim_inscr<$datenow OR ($date_lim_inscr==$datenow AND $heure_lim_inscr>$heurenow))
+				if($date_lim_inscr<$datenow OR ($date_lim_inscr==$datenow AND $heure_lim_inscr<$heurenow))
 				{?>
 					<div class="row center">
 					<span col s12"><i>La date limite d'inscription est dépassée, ajout d'un invité impossible</i></span>

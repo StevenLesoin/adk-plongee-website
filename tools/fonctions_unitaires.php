@@ -18,6 +18,7 @@
 			$dt=1;
 		}
 	}	
+	$req2->closeCursor(); //requête terminée
 	return $dt;
   }
   ?> 
@@ -44,4 +45,50 @@
 	}
 }?>  
   
-  								
+ <?php function envoi_mail($id_membre, $objet, $textmessage){ 
+
+	// Ouvir la base de donnée pour aller chercher le mail du gazier avec son id
+	include("tools/data_base_connection.php");
+	$req2= $bdd->prepare('SELECT * FROM membres WHERE id=:id'); 
+	$req2->execute(array(
+				'id' => $id_membre));
+	while ($inscrit = $req2->fetch())		// Dans la table des membres
+	{
+		$destinataire = $inscrit[5];		//	On pointe sur son adresse mail
+	}
+ 
+	$expediteur = 'admin@adkplongee.fr';
+	$copie = NULL;
+	$copie_cachee = NULL;
+	$objet = $objet; 
+	$headers = 'Reply-To: '.$expediteur."\n"; 
+	$headers .= 'From: "ADK Plongee Administration"<'.$expediteur.'>'."\n"; 
+	$headers .= 'Delivered-to: '.$destinataire."\n"; 
+	$headers .= 'Cc: '.$copie."\n"; 
+	$headers .= 'Bcc: '.$copie_cachee."\n\n";   
+	$message = $textmessage;
+	mail($destinataire, $objet, $message, $headers);
+
+	$req2->closeCursor(); //requête terminée
+ 
+}?>  
+
+ <?php function envoi_mail_direct($mail, $objet, $textmessage){ 
+
+	// Ouvir la base de donnée pour aller chercher le mail du gazier avec son id
+
+	$destinataire = $mail;		//	On pointe sur son adresse mail
+ 
+	$expediteur = 'admin@adkplongee.fr';
+	$copie = NULL;
+	$copie_cachee = NULL;
+	$objet = $objet; 
+	$headers = 'Reply-To: '.$expediteur."\n"; 
+	$headers .= 'From: "ADK Plongee Administration"<'.$expediteur.'>'."\n"; 
+	$headers .= 'Delivered-to: '.$destinataire."\n"; 
+	$headers .= 'Cc: '.$copie."\n"; 
+	$headers .= 'Bcc: '.$copie_cachee."\n\n";   
+	$message = $textmessage;
+	mail($destinataire, $objet, $message, $headers);
+ 
+}?>   								

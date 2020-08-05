@@ -31,10 +31,10 @@
 			      <li><a class="dropdown-button" href="#!" data-target="outils_navBar">Outils<i class="material-icons right">arrow_drop_down</i></a></li>
             <?php   
 			      // Affichage pour les Admins en plus des membres
-            if($_SESSION['privilege']=='administrateur') // Si admin
+			if($_SESSION['privilege']=='administrateur' OR $_SESSION['privilege']=='bureau') // Si admin
             {
             ?>
-				      <li><a class="dropdown-button" href="#!" data-target="outils_admin_navBar">Outils Admin<i class="material-icons right">arrow_drop_down</i></a></li>
+				  <li><a class="dropdown-button" href="#!" data-target="outils_admin_navBar">Outils Admin<i class="material-icons right">arrow_drop_down</i></a></li>
             <?php 
             }
             ?>
@@ -68,7 +68,7 @@
               <li><a href="creation_evt.php">Ajout d'événement</a></li>
               <?php   
               // Affichage pour les Admins en plus des membres
-              if($_SESSION['privilege']=='administrateur') // Si admin
+              if($_SESSION['privilege']==('administrateur' OR 'bureau')) // Si admin
               {
               ?>
                 <li><a href="suppr_evt.php">Suppression d'événements</a></li>

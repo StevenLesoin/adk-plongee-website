@@ -37,19 +37,28 @@ session_start()
   <div class="container">
     <div class="section">
       <!--   Icon Section   -->
+	  <div class="row">
+        <div class="col s12">
+          <div class="icon-block">
+            <h2 class="center blue-text text-darken-4"><i class="material-icons">directions_boat</i></h2>
+            <h5 class="center"><p><u><a href="liste_evenements.php">Lien vers la liste de tous les événements</a></u></p></h5>
+			
+          </div>
+        </div>
+      </div>
       <div class="row">
         <div class="col s4">
           <div class="icon-block">
             <h2 class="center blue-text text-darken-4"><i class="material-icons">sentiment_very_satisfied</i></h2>
             <h5 class="center">A propos</h5>
-            <p class="light">Site web du club associatif de plongée de l'ADK (Association sportive du Comité d'Entreprise de Thales DMS Brest) bla bla bla.</p>
+            <p class="light">Site web du club associatif de plongée de l'ADK (Association sportive du Comité d'Entreprise de Thales DMS Brest) - Association De Kesteria.</p>
           </div>
         </div>
         <div class="col s4">
           <div class="icon-block">
             <h2 class="center blue-text text-darken-4"><i class="material-icons">group</i></h2>
             <h5 class="center">Le site</h5>
-            <p class="light">Description outils et capacités du site pour les membres bla bla bla</p>
+            <p class="light">Ce site permet de consulter les activités de la section plongée de l'ADK, de s'inscrire aux événements et bien d'autres choses encore</p>
           </div>
         </div>
         <div class="col s4">

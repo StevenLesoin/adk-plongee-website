@@ -154,7 +154,7 @@ session_start()
 						<?php
 							$datenow = date("Y-m-d");
 							$heurenow = date("H:i:s");
-							if($resultat['date_lim']<$datenow OR ($resultat['date_lim']==$datenow AND $resultat['heure_lim']>$heurenow))
+							if($resultat['date_lim']<$datenow OR ($resultat['date_lim']==$datenow AND $resultat['heure_lim']<$heurenow))			
 							{?>
 								<label><b style='color: red;'><?php echo date("D-d/m", strtotime($resultat['date_lim']))."<br>".substr ($resultat['heure_lim'],0,5)?></b></label><?php
 								$date_limi_passee = 1;

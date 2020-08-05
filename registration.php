@@ -28,6 +28,7 @@
     else // Tous les champs du formulaire sont remplis 
     {
       include("tools/data_base_connection.php");
+      include("tools/fonctions_unitaires.php"); 
       // Vérification de la validité des informations
       $pseudo = htmlspecialchars($_POST['login']);
       $req1 = $bdd->prepare('SELECT id FROM membres WHERE pseudo = :pseudo');
@@ -54,7 +55,8 @@
               'prenom' => $_POST['surname']));
 
             include("tools/print_msg.php"); // Define printMsg function 
-            printMsg('Inscription réussie !','Se connecter','login.php'); 
+            printMsg('Inscription réussie ! Un mail de confirmation vous à été envoyé sur votre adresse mail','Se connecter','login.php'); 
+			envoi_mail_direct($_POST['email'],'ADK Plongée - Prise en compte de votre inscription','Votre inscription à bien été prise en compte. Un administrateur la validera pour vous donner un accès illimité au site');
             $req2->closeCursor(); //requête terminée
           }
           else // L'email n'a pas une forme valide

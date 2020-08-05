@@ -19,6 +19,7 @@ session_start()
 <body>
 
 	<?php 
+		include("tools/fonctions_unitaires.php");
 	    if(empty($_POST['pseudo']) AND empty($_POST['email'])) // La page est vierge
 	    {
 	      include("tools/navbar.php"); 
@@ -53,41 +54,13 @@ session_start()
 		  else
 		  {
 		  	$email = $resultat['email'];
-
+			$objet = 'ADK-Plongee - Nouveau mot de passe';
 		  	// Mot de passe aléatoire provisoir
-            $new_password = rand();
-            echo $new_password; // TODO : supprimer une fois l'envoi de mail ok 
-
-				// Rédacion du mail
-				$objet = 'Nouveau mot de passe ADK-plongée';
-                $to = $resultat['email'];
- 
-                    	//===== Création du header du mail.
-                        $header = "From: NOM_DE_LA_PERSONNE <no-reply@test.com> \n";
-                        $header .= "Reply-To: ".$to."\n";
-                        $header .= "MIME-version: 1.0\n";
-                        $header .= "Content-type: text/html; charset=utf-8\n";
-                        $header .= "Content-Transfer-Encoding: 8bit";
- 
-                        //===== Contenu de votre message
-                        $contenu =  "<html>".
-                            "<body>".
-                            "<p style='text-align: center; font-size: 18px'><b>Bonjour Mr, Mme".$resultat['nom']."</b>,</p><br/>".
-                            "<p style='text-align: justify'><i><b>Nouveau mot de passe : </b></i>".$new_password."</p><br/>".
-                            "</body>".
-                            "</html>";
-                        //===== Envoi du mail
-						
-						//mail($to, $objet, $contenu, $header);
-						// echo ini_get('SMTP') . ":" . ini_get('smtp_port');
-						// // The message
-						// $message = "Line 1\r\nLine 2\r\nLine 3";
-						// // In case any of our lines are larger than 70 characters, we should use wordwrap()
-						// $message = wordwrap($message, 70, "\r\n");
-      //                   $bool = mail('steven.lesoin@gmail.com', 'Here Is What I Wanted to Send', $message);
-						// var_dump($bool);
-
-
+            $new_password = rand();   
+			//===== Contenu de votre message
+			$contenu =  "Bonjour, votre nouveau mot de passe :".$new_password ;
+			// Envoi du mail	
+			envoi_mail_direct($email,$objet,$contenu);
 
 		    // Hachage du mot de passe
             $new_pass_hache = password_hash($new_password, PASSWORD_DEFAULT);
