@@ -35,7 +35,14 @@
       $req1->execute(array(
         'pseudo' => $pseudo));
       $resultat = $req1->fetch();
-      if(!$resultat) // Le pseudo est disponible
+	  
+	  $email = htmlspecialchars($_POST['email']);
+      $req1 = $bdd->prepare('SELECT id FROM membres WHERE email = :email');
+      $req1->execute(array(
+        'email' => $email));
+      $resultat2 = $req1->fetch();
+	  
+      if((!$resultat)AND(!$resultat2)) // Le pseudo est disponible
       {
         if($_POST['password1']==$_POST['password2']) 
         {
@@ -43,7 +50,8 @@
           {
             // Hachage du mot de passe
             $pass_hache = password_hash($_POST['password1'], PASSWORD_DEFAULT);
-
+			// Mise en majuscule du nom 
+			$nom_MAJ = strtoupper($_POST['name']);
             // Insertion
             $req2= $bdd->prepare('INSERT INTO membres(pseudo, mdp, email, nom, prenom, privilege) VALUES(:pseudo, :password, :email, :nom, :prenom, \'membre\')');
             $privilege = "membre";
@@ -51,7 +59,7 @@
               'pseudo' => $pseudo,
               'password' => $pass_hache,            
               'email' => $_POST['email'],
-              'nom' => $_POST['name'],
+              'nom' => $nom_MAJ,
               'prenom' => $_POST['surname']));
 
             include("tools/print_msg.php"); // Define printMsg function 
@@ -79,7 +87,7 @@
       {
         include("tools/print_msg.php"); // Define printMsg function 
         printMsg('Un ou plusieurs champs n\'ont pas été remplis correctement !','',''); 
-        printMsg('Ce pseudo n\'est pas dipsonible','',''); 
+        printMsg('Ce pseudo n\'est pas dipsonible ou ce mail est déjà enregistré','',''); 
         include("tools/registration_form.php");  
       }
 

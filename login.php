@@ -35,6 +35,15 @@
                             <label for="password">Mot de passe</label>
                         </div>
                     </div>
+	                <div class="row center">
+                        <div class="input-field col s6">
+                            <i class="material-icons prefix">email</i>
+                            <input id="mail" type="text" class="validate" name="mail">
+                            <label for="mail">Ou Mail</label>
+                        </div>
+                        <div class="input-field col s6">
+                        </div>
+                    </div>
                     <div class="row center">
                         <button class="btn waves-effect waves-light blue darken-4" type="submit" name="submit">Se connecter</button> 
                     </div>

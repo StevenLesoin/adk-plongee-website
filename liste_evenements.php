@@ -74,8 +74,8 @@ session_start()
 		<?php
 			// Consultation de la base de données pour affichage
 			include("tools/data_base_connection.php");
-							
-			$req1= $bdd->prepare('SELECT * FROM evenements ORDER BY date_evt ASC'); // ## a mettre en place WHERE date_evt>NOW() ORDER BY date_evt');
+						
+			$req1= $bdd->prepare('SELECT * FROM evenements WHERE date_evt>NOW() ORDER BY date_evt ASC'); // ## a mettre en place WHERE date_evt>NOW() ORDER BY date_evt');
 			$req1->execute(array());
 			
 			// Mise ne place de la trame du tableau
