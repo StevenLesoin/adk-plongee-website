@@ -25,6 +25,7 @@ session_start()
 
 <?php
 		$date_limi_passee = 0; 	// test pour savoir si on autorise les inscriptions
+		$date_passee = 0; 		// test pour savoir si on autorise les inscriptions
 		if(isset($_SESSION['pseudo'])) // Si déjà connecté
 		{
 			// Traitement des inscriptions, désinscriptions (Les liens vers les plongées sont faites dans le formulaire)
@@ -123,6 +124,7 @@ session_start()
 			{
 				$test_passage = 1;
 				$date_limi_passee = 0;
+				$date_passee = 0;
 				// On rempli le tableau avec les différentes lignes
 				?>
 				
@@ -170,6 +172,14 @@ session_start()
 							<label> <?php echo $resultat['type']?></label>
 						</td>
 						<td>
+							<?php
+							$datenow = date("Y-m-d");
+							$heurenow = date("H:i:s");
+							if($resultat['date_evt']<$datenow OR ($resultat['date_evt']==$datenow AND $resultat['heure_evt']<$heurenow))			
+							{
+								$date_passee = 1;
+							}
+							?>
 							<label><?php echo date("D-d/m", strtotime($resultat['date_evt']))."<br>".substr ($resultat['heure_evt'],0,5)?></label>						
 						</td>
 						<td>
@@ -242,15 +252,23 @@ session_start()
 									if($_SESSION['niv_plongeur']>=$resultat['niveau_min']) // Si le mec à le niveau nécessaire, on lui propose de s'incrire, sinon, non
 									{
 										?><input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'> <?php
-										if($deja_inscrit==1)  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+										if(($deja_inscrit==1))  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
 										{
 											?>
 											<input type="hidden" name="act" value = "D">
-											<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>
-										<?php }		// Sinon de s'inscrire
+											<?php 
+											if($date_passee == 0) // Si la date de l'événement n'est pas passé, on lui affiche un bouton pour s'inscrire
+											{ ?>
+												<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>			<?php									
+											}
+											else		// Sinon, on lui empêche de se désinscrire après la date de la sortie
+											{ ?>
+												<button class="btn disabled"><i class="material-icons">cancel</i></button> <?php
+											}
+										}		// Sinon de s'inscrire
 										else
 										{
-											if($date_limi_passee == 1)		// Si la date lmite d'inscription est passée, on grise la case
+											if(($date_limi_passee == 1) OR ($date_passee == 1))		// Si la date lmite d'inscription est passée, on grise la case
 											{
 												?>
 												<button class="btn disabled"><i class="material-icons">check_circle</i></button><?php

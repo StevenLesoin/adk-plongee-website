@@ -18,7 +18,6 @@ session_start()
     
 	<!-- Fonctions de la feuille -->
 
-  
 </head>
 
 <body>
@@ -33,12 +32,10 @@ session_start()
 	$datenow = date("Y-m-d");
 	$heurenow = date("H:i:s");
 	
+	$date_passee = 0;
 	?>
-
+	
 <?php
-/*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
-echo $pass_hache; */
-
 if(isset($_SESSION['pseudo'])) // Si déjà connecté
 {?>
   <div class="section no-pad-bot" id="index-banner">
@@ -144,6 +141,17 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 			$niv_min = $row[7];
 			$date_lim_inscr = $row[5];
 			$heure_lim_inscr = $row[6];
+			
+			// Détermination si la date de l'événement est passée pour griser les cases qui vonf bien
+			$datenow = date("Y-m-d");
+			$heurenow = date("H:i:s");
+			$date_evt = $row[3];
+			$heure_evt = $row[4];
+			if(($date_evt<$datenow) OR ($date_evt==$datenow AND $heure_evt<$heurenow))			
+			{
+				$date_passee = 1;
+			}	
+			
 			?>	
 			<div class="card-panel blue darken-4" align=center> 
 				<font size="5pt">
@@ -175,7 +183,16 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					<div class="row center">									
 						<form action="modif_evt.php" method="post">
 								<input type='hidden' name='id_mod' value=<?php echo $id_evt?>> 		
-								<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit"><i class="material-icons">border_color</i>&nbsp; Modifier l'événement</button>
+								<?php
+								if($date_passee == 1)
+								{?>
+									<button class="btn disabled"><i class="material-icons">border_color</i>&nbsp; Modifier l'événement</button> <?php
+								}
+								else
+								{?>
+									<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit"><i class="material-icons">border_color</i>&nbsp; Modifier l'événement</button> <?php
+								}?>
+								
 						</form>		
 						
 					</div>	<?php 
@@ -277,10 +294,18 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 								{
 									if(isInscrit($_SESSION['id'], $id_evt))  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
 									{
-										?>
-										<input type='hidden' name='desinscription' value='desinscription'> 
-										<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Se désinscrire</button>
-									<?php }		// Sinon de s'inscrire
+										if($date_passee == 1)
+										{?>
+											<input type='hidden' name='desinscription' value='desinscription'> 
+											<button class="btn disabled">Se désinscrire</button><?php	
+										}
+										else
+										{?>
+											<input type='hidden' name='desinscription' value='desinscription'> 
+											<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Se désinscrire</button><?php
+										}
+										 
+									}		// Sinon de s'inscrire
 									else
 									{
 										$date_limi_passee = 0;
@@ -411,7 +436,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 									?>
 						</td>
 						<?php
-						if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On affiche une possibilité de supprimer quelqu'un pour les admins
+						if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On affiche une possibilité de supprimer quelqu'un pour les admins et le bureau et seulement pour les admins si la date est dépassée
 						{
 							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre 
 							?>
@@ -419,8 +444,19 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							<td>
 							<form action="affichage_evt.php" method="post">
 								<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?>> 		
-								<input type='hidden' name='id_inscrit' value=<?php echo $id_membre?>>
-								<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>
+								<input type='hidden' name='id_inscrit' value=<?php echo $id_membre?>> <?php
+								// Test de voir si la date est dépassée
+								if($date_passee==1) 
+								{	// Si la date de l'événement est passée, seul un admin peut supprimer un participant
+									if($_SESSION['privilege']=="administrateur")
+									{?>
+										<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button><?php
+									}									
+								}
+								else	// Si la date n'est pas dépassée, Admin, et Bureau peuvent supprimer
+								{?>
+									<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button><?php
+								}?>
 							</form>					
 							</td> <?php
 						}
@@ -492,7 +528,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						<!-- Case vide pour DP -->
 						<td>-</td>					
 						<?php
-						if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On affiche une possibilité de supprimer quelqu'un pour les admins
+						if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On affiche une possibilité de supprimer quelqu'un pour les admins, même après l'événement
 						{
 							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre
 							?>
@@ -501,8 +537,20 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 								<form action="affichage_evt.php" method="post">
 									<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?> > 		
 									<input type='hidden' name='prenom' value='<?php echo $prenom_invit?>' >
-									<input type='hidden' name='nom' value='<?php echo $nom_invit?>' >
-									<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>
+									<input type='hidden' name='nom' value='<?php echo $nom_invit?>' > <?php
+							
+									// Test de voir si la date est dépassée
+									if($date_passee==1) 
+									{	// Si la date de l'événement est passée, seul un admin peut supprimer un participant
+										if($_SESSION['privilege']=="administrateur")
+										{?>
+											<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button><?php
+										}									
+									}
+									else	// Si la date n'est pas dépassée, Admin, et Bureau peuvent supprimer
+									{?>
+										<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button><?php
+									}?>
 								</form>	
 							</td>
 							<?php				
@@ -636,7 +684,6 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 
 <?php
 }
-
 else	// Pas loggé
 {
 	?>

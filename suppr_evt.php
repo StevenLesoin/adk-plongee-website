@@ -168,12 +168,12 @@ if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")
 							<?php
 							$req2->closeCursor(); //requête terminée
 							?>
+					</td>
 					<td>
-						<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Supprimer</button>
-					<td>
+							<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Supprimer</button>
+					</td>
 						</form>
 					
-					</td>
 				</tr>
 			<?php
 			}?>
