@@ -21,6 +21,7 @@ session_start()
 <?php include("tools/navbar.php"); ?>
 
 <?php
+
 if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On autorise l'accès à cette page
 {
 			// Traitement des suppressions
@@ -51,7 +52,6 @@ if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")
 			$req2->closeCursor(); //requête terminée
 		}	
 ?>
-
 <!--	Affichage des plongées  -->
   <div class="section no-pad-bot" id="index-banner">
   	<div class="container">
@@ -63,8 +63,29 @@ if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")
 		<?php
 			// Consultation de la base de données pour affichage
 			include("tools/data_base_connection.php");
-							
-			$req1= $bdd->prepare('SELECT * FROM evenements ORDER BY date_evt ASC'); // ## a mettre en place WHERE date_evt>NOW() ORDER BY date_evt');
+			
+			// Si un bouton de filtrage d'affichage des dates à été cliqué, on adapte la récupération de la BDD
+			if(isset($_POST['semaine']))
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements WHERE date_evt>=(CURDATE() + INTERVAL -7 DAY) ORDER BY date_evt ASC');
+			}
+			else if(isset($_POST['mois']))
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements WHERE date_evt>=(CURDATE() + INTERVAL -31 DAY) ORDER BY date_evt ASC');
+			}
+			else if(isset($_POST['annee']))
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements WHERE date_evt>=(CURDATE() + INTERVAL -365 DAY) ORDER BY date_evt ASC');
+			}
+			else if(isset($_POST['full']))			
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements ORDER BY date_evt ASC');
+			}
+			else	// Affichage par défaut à l'arrivée sur la page -> Evénements futurs ou à la date du jour
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements WHERE date_evt>=CURDATE() ORDER BY date_evt ASC'); 
+			}
+			// Requette commune peu importe ce qui à été demandé
 			$req1->execute(array());
 			
 			// Mise ne place de la trame du tableau
@@ -169,6 +190,36 @@ if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")
 			$req1->closeCursor(); //requête terminée
 		?>	
 		</div>
+		
+		<div class="row center">
+            <span class="flow-text" col s12"> Et si on remontait le temps ?</span>
+        </div>
+		<div class="row center">
+			<div class="input-field col s3">
+				<form action="suppr_evt.php" method="post">
+					<input type='hidden' name='semaine' value='semaine'> 		
+					<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit">Semaine</button>
+				</form>	
+			</div>
+			<div class="input-field col s3">
+				<form action="suppr_evt.php" method="post">
+					<input type='hidden' name='mois' value='mois'> 		
+					<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit">Mois</button>
+				</form>
+			</div>
+			<div class="input-field col s3">
+				<form action="suppr_evt.php" method="post">
+					<input type='hidden' name='annee' value='annee'> 		
+					<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit">Année</button>
+				</form>
+			</div>
+			<div class="input-field col s3">
+				<form action="suppr_evt.php" method="post">
+					<input type='hidden' name='full' value='full'> 		
+					<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit">Tout</button>
+				</form>
+			</div>
+        </div>
     </div>
   </div>
 <?php	
