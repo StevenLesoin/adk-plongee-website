@@ -51,59 +51,74 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 		
 		<?php	
 				
-				// Partie mise à jour
-				if(isset($_POST['type']) AND htmlspecialchars($_POST['type'])!='' AND isset($_POST['titre']) AND htmlspecialchars($_POST['titre'])!='' AND isset($_POST['date_evt']) AND htmlspecialchars($_POST['date_evt'])!='' AND isset($_POST['heure_evt']) AND htmlspecialchars($_POST['heure_evt'])!='' AND isset($_POST['date_lim']) AND htmlspecialchars($_POST['date_lim'])!='' AND isset($_POST['heure_lim']) AND htmlspecialchars($_POST['heure_lim'])!=''
-					AND ((htmlspecialchars($_POST['date_evt'])>htmlspecialchars($_POST['date_lim'])) OR (htmlspecialchars($_POST['date_evt'])==htmlspecialchars($_POST['date_lim']))AND(htmlspecialchars($_POST['heure_evt'])>=htmlspecialchars($_POST['heure_lim']))))
-				
+				if(isset($_POST['type']) AND htmlspecialchars($_POST['type'])!=''){$type_s = htmlspecialchars($_POST['type']);}
+				if(isset($_POST['date_evt']) AND htmlspecialchars($_POST['date_evt'])!=''){$date_evt_s = date('Y-m-d', strtotime(htmlspecialchars($_POST['date_evt'])));}
+				if(isset($_POST['heure_evt']) AND htmlspecialchars($_POST['heure_evt'])!=''){$heure_evt_s = htmlspecialchars($_POST['heure_evt']);}
+				if(isset($_POST['date_lim']) AND htmlspecialchars($_POST['date_lim'])!=''){$date_lim_s = date('Y-m-d', strtotime(htmlspecialchars($_POST['date_lim'])));}
+				if(isset($_POST['heure_lim']) AND htmlspecialchars($_POST['heure_lim'])!=''){$heure_lim_s = htmlspecialchars($_POST['heure_lim']);}
+						
+				if(isset($_POST['type']) AND htmlspecialchars($_POST['type'])!='' AND isset($_POST['titre']) AND htmlspecialchars($_POST['titre'])!='' AND isset($date_evt_s) AND isset($heure_evt_s) AND isset($date_lim_s) AND isset($heure_lim_s))
 				{	// Formulaire déjà rempli avec les champs obligatoires, on le traite
+					if(($date_evt_s>$date_lim_s) OR ($date_evt_s==$date_lim_s AND $heure_evt_s>=$heure_lim_s))
+						// Cohérence des dates
+					{
+							// Gestion des formats de date
+						$date_evt = htmlspecialchars($_POST['date_evt']);
+						$date_lim = htmlspecialchars($_POST['date_lim']);
+						$date_evt_f = date('Y-m-d', strtotime($date_evt));
+						$date_lim_f = date('Y-m-d', strtotime($date_lim));
+						// Test du format de date
+						
+						// Récupération de l'id de l'événement en question
+						$id_evt_local = htmlspecialchars($_POST['id_evt_local']);
+						
+						$type = htmlspecialchars($_POST['type']);
+						$titre = htmlspecialchars($_POST['titre']);
+						$heure_evt = htmlspecialchars($_POST['heure_evt']);
+						$heure_lim = htmlspecialchars($_POST['heure_lim']);
+						if(empty($_POST['niveau_min'])){$niveau_min="0";}else{$niveau_min=htmlspecialchars($_POST['niveau_min']);}
+						if(empty($_POST['lieu'])){$lieu="Mer";}else{$lieu=htmlspecialchars($_POST['lieu']);}
+						if(empty($_POST['max_part'])){$max_part="12";}else{$max_part=htmlspecialchars($_POST['max_part']);}
+						if(empty($_POST['remarques'])){$remarques=" ";}else{$remarques=htmlspecialchars($_POST['remarques']);}
 
-					// Gestion des formats de date
-					$date_evt = htmlspecialchars($_POST['date_evt']);
-					$date_lim = htmlspecialchars($_POST['date_lim']);
-					$date_evt_f = date('Y-m-d', strtotime($date_evt));
-					$date_lim_f = date('Y-m-d', strtotime($date_lim));
-					// Test du format de date
-					
-					// Récupération de l'id de l'événement en question
-					$id_evt_local = htmlspecialchars($_POST['id_evt_local']);
-					
-					$type = htmlspecialchars($_POST['type']);
-					$titre = htmlspecialchars($_POST['titre']);
-					$heure_evt = htmlspecialchars($_POST['heure_evt']);
-					$heure_lim = htmlspecialchars($_POST['heure_lim']);
-					if(empty($_POST['niveau_min'])){$niveau_min="0";}else{$niveau_min=htmlspecialchars($_POST['niveau_min']);}
-					if(empty($_POST['lieu'])){$lieu="Mer";}else{$lieu=htmlspecialchars($_POST['lieu']);}
-					if(empty($_POST['max_part'])){$max_part="12";}else{$max_part=htmlspecialchars($_POST['max_part']);}
-					if(empty($_POST['remarques'])){$remarques=" ";}else{$remarques=htmlspecialchars($_POST['remarques']);}
-
-					include("tools/data_base_connection.php");						
-					// Recherche du numéro d'index à affecter
-					
-					$req2= $bdd->prepare('UPDATE evenements SET type=:type, titre=:titre, date_evt=:date_evt, heure_evt=:heure_evt, date_lim=:date_lim, heure_lim=:heure_lim, niveau_min=:niveau_min, lieu=:lieu,max_part=:max_part, remarques=:remarques, pseudo=:pseudo WHERE id=:id_evt_local');
-					$req2->execute(array(
-					  'id_evt_local' => $id_evt_local,
-					  'type' => $type,
-					  'titre' => $titre,
-					  'date_evt' => $date_evt_f,
-					  'heure_evt' => $heure_evt,
-					  'date_lim' => $date_lim_f,
-					  'heure_lim' => $heure_lim,
-					  'niveau_min' => $niveau_min,
-					  'lieu' => $lieu,
-					  'max_part' => $max_part,
-					  'remarques' => $remarques,
-					  'pseudo' => ($_SESSION['nom']." ".$_SESSION['prenom'])));
-					$req2->closeCursor(); //requête terminée
-					
-					// Message pour dire que le formulaire à été est pris en compte
-					?>
-					<div class="row center">
-						<span class="flow-text" col s12">L'évènement à bien été modifié</span>
-					</div>
-					<div class="row center">
-						<p><a href="liste_evenements.php">Lien vers la liste des sorties</a></p>
-					</div>
-					<?php										
+						include("tools/data_base_connection.php");						
+						// Recherche du numéro d'index à affecter
+						
+						$req2= $bdd->prepare('UPDATE evenements SET type=:type, titre=:titre, date_evt=:date_evt, heure_evt=:heure_evt, date_lim=:date_lim, heure_lim=:heure_lim, niveau_min=:niveau_min, lieu=:lieu,max_part=:max_part, remarques=:remarques, pseudo=:pseudo WHERE id=:id_evt_local');
+						$req2->execute(array(
+						  'id_evt_local' => $id_evt_local,
+						  'type' => $type,
+						  'titre' => $titre,
+						  'date_evt' => $date_evt_f,
+						  'heure_evt' => $heure_evt,
+						  'date_lim' => $date_lim_f,
+						  'heure_lim' => $heure_lim,
+						  'niveau_min' => $niveau_min,
+						  'lieu' => $lieu,
+						  'max_part' => $max_part,
+						  'remarques' => $remarques,
+						  'pseudo' => ($_SESSION['nom']." ".$_SESSION['prenom'])));
+						$req2->closeCursor(); //requête terminée
+						
+						// Message pour dire que le formulaire à été est pris en compte
+						?>
+						<div class="row center">
+							<span class="flow-text" col s12">L'évènement à bien été modifié</span>
+						</div>
+						<div class="row center">
+							<p><a href="liste_evenements.php">Lien vers la liste des sorties</a></p>
+						</div>
+						<?php										
+					}
+					else		// Pas de cohérence de date
+					{
+						// Message pour dire que la date d'inscription doit être inférieure à la date de l'événement
+						?>
+						<div class="row center">
+							<span class="flow-text" col s12"> <b style='color: red;'>La date / heure limite d'inscription limite doit être antiéreure à la date / heure de l'événement</b></span>
+						</div>
+						<?php
+					}
 				}
 				else
 				{	// Formulaire à remplir ou formulaire incomplet : 
@@ -113,17 +128,6 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						?>
 						<div class="row center">
 							<span class="flow-text" col s12"> <b style='color: red;'>Formulaire incomplet, remplissez tous les champs avec un * </b></span>
-						</div>
-						<?php
-					}
-					if(isset($_POST['date_evt']) AND htmlspecialchars($_POST['date_evt'])!='' AND isset($_POST['heure_evt']) AND htmlspecialchars($_POST['heure_evt'])!='' AND isset($_POST['date_lim']) AND htmlspecialchars($_POST['date_lim'])!='' AND isset($_POST['heure_lim']) AND htmlspecialchars($_POST['heure_lim'])!=''
-					AND((htmlspecialchars($_POST['date_evt'])<htmlspecialchars($_POST['date_lim']))OR((htmlspecialchars($_POST['date_evt'])==htmlspecialchars($_POST['date_lim']))AND(htmlspecialchars($_POST['heure_evt'])<=htmlspecialchars($_POST['heure_lim'])))))
-					{
-						// Message pour dire que la date d'inscription doit être inférieure à la date de l'événement
-						?>
-						<div class="row center">
-							<span class="flow-text" col s12"> <b style='color: red;'>La date / heure limite d'inscription limite doit être antiéreure à la date / heure de l'événement</b></span>
-							<?php echo  $_POST['date_lim']; echo $_POST['date_evt'];?>
 						</div>
 						<?php
 					}

@@ -1,3 +1,15 @@
+  <?php  
+  // Définition des constantes du club : 
+
+	define("CST_add_site","http://www.adkplongee.ovh/");
+  
+	define("CST_Ajout_Evt",2);					// 3ième champ de la table pour les préférences de mail associés à un nouvel événement
+	define("CST_Modf_Evt",3);					// 4ième champ de la table pour les préférences de mail associés à une modification d'événement
+	define("CST_Suppression_Evt",4);			// 5ième champ de la table pour les préférences de mail associés à la suppression
+	define("CST_Sortie_Annulee",5);				// 6ième champ de la table pour les préférences de mail associés à l'annulation d'un evénement si pas les conditions nécessaires
+ ?>
+
+
   <ul id="club_navBar" class="dropdown-content">
 	  <li><a href="fonctionnement_site.php">FAQ</a></li>
   </ul>

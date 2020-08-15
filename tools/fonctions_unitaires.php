@@ -91,4 +91,61 @@
 	$message = $textmessage;
 	mail($destinataire, $objet, $message, $headers);
  
-}?>   								
+}?>  
+
+
+ <?php function envoi_mail_liste($param, $objet, $textmessage){ 
+
+	// Ouvir la base de donnée pour aller chercher le mail du gazier avec son id
+	// Partie sélection dans la base de donnée
+	$mailinglist = "";
+	
+	include("tools/data_base_connection.php");
+	
+	// On va chercher dans la table les inscrits qui sont actifs cette année
+	$req2= $bdd->prepare('SELECT * FROM membres WHERE actif_saison=:id'); 
+	$req2->execute(array(
+				'id' => 1));
+	
+	while ($inscrit = $req2->fetch())		// Dans la table des membres
+	{
+		//Pour chaque membre, on va chercher dans la table paramètres si il veut recevoir un email 	
+			$req3= $bdd->prepare('SELECT * FROM parametres_membres WHERE id_membre=:id_membre'); 
+			$req3->execute(array(
+				'id_membre' => $inscrit[0]));
+			while ($pref = $req3->fetch())		// Dans la table des membres
+			{
+				if($pref[$param]==1)
+				// Si sa préférence pour le champ Mail Nouvel evt est à 1, on l'ajout à la mailing list
+				{
+						// Construction de la mailing liste suivant ses préférences
+						if($mailinglist=="")
+						{
+							$mailinglist=$inscrit[5];
+						}
+						else
+						{
+							$mailinglist=$mailinglist.";".$inscrit[5];
+						}
+				}
+			}
+			$req3->closeCursor(); //requête terminée	
+	}
+ 
+	$req2->closeCursor(); //requête terminée	
+	
+	// Partie envoi de mail
+	$copie_cachee = $mail;		//	On pointe sur son adresse mail
+ 
+	$expediteur = 'admin@adkplongee.fr';
+	$copie = NULL;
+	$destinataire = NULL;
+	$objet = $objet; 
+	$headers = 'Reply-To: '.$expediteur."\n"; 
+	$headers .= 'From: "ADK Plongee Evénements"<'.$expediteur.'>'."\n"; 
+	$headers .= 'Delivered-to: '.$destinataire."\n"; 
+	$headers .= 'Cc: '.$copie."\n"; 
+	$headers .= 'Bcc: '.$copie_cachee."\n\n";   
+	$message = $textmessage;
+	mail($destinataire, $objet, $message, $headers);
+}?>							 								

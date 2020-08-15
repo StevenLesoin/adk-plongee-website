@@ -66,6 +66,20 @@
             printMsg('Inscription réussie ! Un mail de confirmation vous à été envoyé sur votre adresse mail','Se connecter','login.php'); 
 			envoi_mail_direct($_POST['email'],'ADK Plongée - Prise en compte de votre inscription','Votre inscription à bien été prise en compte. Un administrateur la validera pour vous donner un accès illimité au site');
             $req2->closeCursor(); //requête terminée
+			
+			// On va chercher l'ID de la nouvelle ligne crée
+			$req1= $bdd->prepare('SELECT * FROM membres WHERE email="'.$_POST['email'].'"');
+			$req1->execute(array());			
+			while ($resultat = $req1->fetch())
+			{
+				// Ajout d'une ligne dans le champ paramètre pour la nouvelle personne crée
+				$req3= $bdd->prepare('INSERT INTO parametres_membres(id_membre) VALUES(:id_membre)');
+				$req3->execute(array(
+				  'id_membre' => $resultat[0]));			
+				$req3->closeCursor(); //requête terminée
+			}
+            $req1->closeCursor(); //requête terminée
+		
           }
           else // L'email n'a pas une forme valide
           {
