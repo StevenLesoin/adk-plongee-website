@@ -7,6 +7,7 @@
 	define("CST_Modf_Evt",3);					// 4ième champ de la table pour les préférences de mail associés à une modification d'événement
 	define("CST_Suppression_Evt",4);			// 5ième champ de la table pour les préférences de mail associés à la suppression
 	define("CST_Sortie_Annulee",5);				// 6ième champ de la table pour les préférences de mail associés à l'annulation d'un evénement si pas les conditions nécessaires
+	
  ?>
 
 

@@ -102,15 +102,22 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						$req2->closeCursor(); //requête terminée
 						
 						// Envoi d'un mail pour prévenir de la publication d'un événement club
-						envoi_mail_liste(CST_Ajout_Evt, "ADK Plongee -".$titre, "Bonjour, un nouvel événement ".$type." est ouvert à l'inscritpion. Rdv à ".$heure_evt." le ".$date_evt.". Retrouvez le sur le site : ".CST_add_site);
+						$objet = "ADK Plongee - ".$titre;
+						$corps = "Bonjour, un nouvel événement ".$type." est ouvert à l'inscritpion à partir du niveau ".$niveau_min.". Rdv à ".$heure_evt." le ".$date_evt.". Retrouvez le sur le site : ".CST_add_site;
 						
-						echo "ADK Plongee -".$titre;
-						echo "Bonjour, un nouvel événement ".$type." est ouvert à l'inscritpion. Rdv à ".$heure_evt." le ".$date_evt.". Retrouvez le sur le site :".CST_add_site;
-						
+						envoi_mail_liste(CST_Ajout_Evt, $objet, $corps);
+							
 						// Message pour dire que le formulaire à été est pris en compte
 						?>
 						<div class="row center">
 							<span class="flow-text" col s12">L'évènement à bien été créé, un mail envoyé aux membres actifs</span>
+						</div>
+
+						<div class="row center">
+							L'email suivant à été envoyé aux membres actifs : <br>
+							<b>Objet :</b> <?php echo $objet; ?> <br>
+							<b>Message :</b> <?php echo $corps; ?> <br>
+					
 						</div>
 						<div class="row center">
 							<p><a href="liste_evenements.php">Lien vers la liste des sorties</a></p>

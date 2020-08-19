@@ -93,7 +93,9 @@
  
 }?>  
 
-
+<?php
+// Envoi d'un mail à tous les membres actifs du club
+?>
  <?php function envoi_mail_liste($param, $objet, $textmessage){ 
 
 	// Ouvir la base de donnée pour aller chercher le mail du gazier avec son id
@@ -135,7 +137,7 @@
 	$req2->closeCursor(); //requête terminée	
 	
 	// Partie envoi de mail
-	$copie_cachee = $mail;		//	On pointe sur son adresse mail
+	$copie_cachee = $mailinglist;		//	On pointe sur son adresse mail
  
 	$expediteur = 'admin@adkplongee.fr';
 	$copie = NULL;
@@ -149,3 +151,75 @@
 	$message = $textmessage;
 	mail($destinataire, $objet, $message, $headers);
 }?>							 								
+
+						
+<?php
+// Envoi d'un mail à tous les inscrits d'une plongée
+?>
+ <?php function envoi_mail_modif_evt($type_notif, $id_evt_local, $objet, $textmessage){ 
+
+	// Ouvir la base de donnée pour aller chercher le mail du gazier avec son id
+	// Partie sélection dans la base de donnée
+	$mailinglist = "";
+	
+	include("tools/data_base_connection.php");
+	
+	// On va chercher dans la table événements, les gens qui sont inscrits
+	
+	$req2= $bdd->prepare('SELECT * FROM inscriptions WHERE id_evt=:id_evt'); 
+	$req2->execute(array(
+				'id_evt' => $id_evt_local));
+	
+	while ($evenement = $req2->fetch())		// Pour chaque membre inscrit à l'événement
+	{
+		//Pour chaque gus, on va chercher son sa ligne pour exploiter son mail si besoin 	
+		$req3= $bdd->prepare('SELECT * FROM membres WHERE id=:id'); 
+		$req3->execute(array(
+			'id' => $evenement[1]));
+			
+		while ($recup_inscrits = $req3->fetch())		// Pour le mec en question
+		{
+			// On va chercher dans les inscrits, les préférences du type pour voir si il veut être prévenu
+			$req1= $bdd->prepare('SELECT * FROM parametres_membres WHERE id_membre=:id_membre'); 
+			$req1->execute(array(
+			'id_membre' => $evenement[1]));
+
+			while ($pref = $req1->fetch())		// Dans la table des préférences, on va chercher le champ de paramètre qui nous intéresse.
+			{
+				if($pref[$type_notif]==1)
+				// Si sa préférence pour le champ Mail Nouvel evt est à 1, on l'ajout à la mailing list
+				{
+						// Construction de la mailing liste suivant ses préférences
+						if($mailinglist=="")
+						{
+							$mailinglist=$recup_inscrits[5];
+						}
+						else
+						{
+							$mailinglist=$mailinglist.";".$recup_inscrits[5];
+						}
+				}
+			}
+			$req1->closeCursor(); //requête terminée
+		}
+		$req3->closeCursor(); //requête terminée	
+	}
+	$req2->closeCursor(); //requête terminée	
+
+	echo "Un mail de notification à été envoyé à : ".$mailinglist;
+	
+	// Partie envoi de mail
+	$copie_cachee = $mailinglist;		//	On pointe sur son adresse mail
+ 
+	$expediteur = 'admin@adkplongee.fr';
+	$copie = NULL;
+	$destinataire = NULL;
+	$objet = $objet; 
+	$headers = 'Reply-To: '.$expediteur."\n"; 
+	$headers .= 'From: "ADK Plongee Evénements"<'.$expediteur.'>'."\n"; 
+	$headers .= 'Delivered-to: '.$destinataire."\n"; 
+	$headers .= 'Cc: '.$copie."\n"; 
+	$headers .= 'Bcc: '.$copie_cachee."\n\n";   
+	$message = $textmessage;
+	mail($destinataire, $objet, $message, $headers);
+}?>

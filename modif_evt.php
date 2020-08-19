@@ -100,6 +100,12 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						  'pseudo' => ($_SESSION['nom']." ".$_SESSION['prenom'])));
 						$req2->closeCursor(); //requête terminée
 						
+						// On prépare un mail pour notifier aux participants inscrits que l'événement à été modifié (Si leur préférence est renseignée)
+						$objet = "ADK Plongee - ".$titre." / Modification de l'événement";
+						$corps = "Bonjour, l'événement ".$type." auquel vous êtes inscrit le ".$date_evt." à été modifié. Votre inscription reste valide mais vérifiez les changements apportés a cet événements : ".CST_add_site;
+						
+						envoi_mail_modif_evt(CST_Modf_Evt, $id_evt_local, $objet, $corps);
+						
 						// Message pour dire que le formulaire à été est pris en compte
 						?>
 						<div class="row center">
