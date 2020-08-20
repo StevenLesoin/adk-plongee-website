@@ -136,6 +136,8 @@
  
 	$req2->closeCursor(); //requête terminée	
 	
+	echo "Mail envoyé à : ".$mailinglist;
+	
 	// Partie envoi de mail
 	$copie_cachee = $mailinglist;		//	On pointe sur son adresse mail
  

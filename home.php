@@ -41,10 +41,9 @@ session_start()
 	else if((isset($_POST['login'])OR (isset($_POST['mail']))) AND isset($_POST['password'])) // Si tentative de connexion
 	{
 		include("tools/data_base_connection.php");
-
 		//  Récupération de l'utilisateur et de son pass hashé
 		
-		if(isset($_POST['mail']))  // Login avec son mail
+		if(isset($_POST['mail']) AND ($_POST['mail']!=""))  // Login avec son mail
 		{
 			$mail = htmlspecialchars($_POST['mail']);
 			$req = $bdd->prepare('SELECT id, pseudo, mdp, email, nom, prenom, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE email = :mail');
@@ -55,6 +54,7 @@ session_start()
 		}
 		else		// Login avec le pseudo
 		{
+					echo "on passe au bon endroit";
 			$pseudo = htmlspecialchars($_POST['login']);
 			$req = $bdd->prepare('SELECT id, pseudo, mdp, email, nom, prenom, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE pseudo = :pseudo');
 			$req->execute(array(
