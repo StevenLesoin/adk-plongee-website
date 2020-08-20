@@ -54,7 +54,6 @@ session_start()
 		}
 		else		// Login avec le pseudo
 		{
-					echo "on passe au bon endroit";
 			$pseudo = htmlspecialchars($_POST['login']);
 			$req = $bdd->prepare('SELECT id, pseudo, mdp, email, nom, prenom, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE pseudo = :pseudo');
 			$req->execute(array(

@@ -103,7 +103,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						
 						// Envoi d'un mail pour prévenir de la publication d'un événement club
 						$objet = "ADK Plongee - ".$titre;
-						$corps = "Bonjour, un nouvel événement ".$type." est ouvert à l'inscritpion à partir du niveau ".$niveau_min.". Rdv à ".$heure_evt." le ".$date_evt.". Retrouvez le sur le site : ".CST_add_site;
+						$corps = "Bonjour, un nouvel événement ".$type." est ouvert à l'inscription à partir du niveau ".$niveau_min.". Rdv à ".$heure_evt." le ".$date_evt.". Retrouvez le sur le site : ".CST_add_site;
 						
 						envoi_mail_liste(CST_Ajout_Evt, $objet, $corps);
 							
