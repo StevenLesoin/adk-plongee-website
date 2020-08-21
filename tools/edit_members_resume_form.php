@@ -66,8 +66,8 @@
                                 <option value="1">N1</option>
                                 <option value="2">N2</option>
                                 <option value="3">N3</option>
-                                <option value="3">N4</option>
-                                <option value="3">N5</option>
+                                <option value="4">N4</option>
+                                <option value="5">N5</option>
                             </select>
                             <label>Niveau de plongée</label>
                             <i class="material-icons prefix">school</i>
