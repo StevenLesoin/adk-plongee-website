@@ -79,7 +79,7 @@
                                 <option value="1">E1</option>
                                 <option value="2">E2</option>
                                 <option value="3">E3</option>
-                                <option value="3">E4</option>
+                                <option value="4">E4</option>
                             </select>
                             <label>Niveau d'encadrement</label>
                             <i class="material-icons prefix">supervisor_account</i>
