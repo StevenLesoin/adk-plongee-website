@@ -25,6 +25,7 @@ session_start()
 		{
 			//header('location: edit_password.php');
 			?><meta http-equiv="Refresh" content="0; url=http://www.adkplongee.ovh/edit_password.php" /><?php
+
 		}
 		else if($_SESSION['inscription_valide']==0) // Inscription non validé
 		{
@@ -102,6 +103,7 @@ session_start()
 				{
 					//header('location:index.php');
 					?><meta http-equiv="Refresh" content="0; url=http://www.adkplongee.ovh/index.php" /><?php
+
 				}
 		    }
 		    else { // Erreur de mot de passe
@@ -118,6 +120,7 @@ session_start()
 	{
 		//header('location: login.php');
 		?><meta http-equiv="Refresh" content="0; url=http://www.adkplongee.ovh/login.php" /><?php
+
 	}
 	?>
 

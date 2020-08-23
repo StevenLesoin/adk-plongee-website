@@ -73,11 +73,27 @@ session_start()
 				// Envoi d'un mail : 
 				envoi_mail($_POST['validate_registration_member_id'],'Inscription Validée', 'Votre inscription à bien été validée, vous pouvez maintenant profiter de la totalité du site');
 
+		        include("tools/navbar.php"); 
+
+		        include("tools/mail_adk.php");
+				// Rédacion du mail
+				$objet = 'Validation d\'inscritpion ADK plongée website';
+                $to = $resultat['email'];
+                //===== Contenu de votre message
+                $contenu =  "Salut ".$resultat['prenom']." ".$resultat['nom']."! \nTon inscription sur le site ADK plongée vient d'être validée par l'administrateur. Tu peux maintenant te connecter avec tes indentifiants :). \nA très bientôt sous l'eau !";
+                //===== Envoi du mail
+            	$resMail = sendMailAdk($to,$objet,$contenu);
+            	include("tools/print_msg.php"); // Define printMsg function 
+		    	if ($resMail){
+		  			printMsg('Un email vient d\'être envoyé à l\'adresse suivante : '.$resultat['email'].' pout prévenir '.$resultat['prenom'].' '.$resultat['nom'].' que son inscritpion a bien été validée.','','');  
+		  		}else{
+		  			printMsg('Erreur lors de l\'envoi d\'un email à l\'adresse suivante : '.$email.'. Veuillez réessayer','','');  
+		  		}
+
 		        // Liste de l'ensemble des membres 
 		    	$req0 = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres ORDER BY nom');
 		        $req0->execute(array());
 
-		        include("tools/navbar.php"); 
 		        include("tools/search_members_form.php");
 		       	include("tools/all_members_resume_tab.php");
 		       	$req0->closeCursor(); //requête terminée

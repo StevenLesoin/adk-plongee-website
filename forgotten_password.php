@@ -73,9 +73,13 @@ session_start()
 		        'pseudo' => $_POST['pseudo'],
 		        'email' => $email));
 
-			include("tools/navbar.php"); 
+			include("tools/navbar.php");
 		    include("tools/print_msg.php"); // Define printMsg function 
-		  	printMsg('Un email avec un mot de passe provisoir vient de vous être envoyé à l\'adresse suivante : '.$email.'. Veuillez changer ce mot de passe après l\'avoir utilisé pour vous connecter.','','');  
+		    if ($resMail){
+		  		printMsg('Un email avec un mot de passe provisoir vient d\'être envoyé à l\'adresse suivante : '.$email.'. Ce mot de passe doit être changé après l\'avoir utilisé pour se connecter.','Se connecter','login.php');  
+		  	}else{
+		  		printMsg('Erreur lors de l\'envoi d\'un email à l\'adresse suivante : '.$email.'. Veuillez réessayer','','');  
+		  	}
 
 		    $req2->closeCursor(); //requête terminée	      
 	  	  }
