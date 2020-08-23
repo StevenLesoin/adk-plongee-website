@@ -20,10 +20,12 @@ session_start()
 
 <?php include("tools/navbar.php"); ?>	
 <?php include("tools/data_evts.php"); ?>
+<?php include("tools/fonctions_unitaires.php"); ?>
 <?php date_default_timezone_set('Europe/Paris'); ?>
 
 <?php
 		$date_limi_passee = 0; 	// test pour savoir si on autorise les inscriptions
+		$date_passee = 0; 		// test pour savoir si on autorise les inscriptions
 		if(isset($_SESSION['pseudo'])) // Si déjà connecté
 		{
 			// Traitement des inscriptions, désinscriptions (Les liens vers les plongées sont faites dans le formulaire)
@@ -35,7 +37,7 @@ session_start()
 					$req2= $bdd->prepare('DELETE FROM inscriptions WHERE id_evt=:id_evt AND id_membre=:id_membre');	// On supprime l'inscription du gus
 					$req2->execute(array(
 					  'id_evt' => $_POST['id_evt'],
-					  'id_membre' => $_SESSION['id']));				// ### A changer par l'ID de la session active   
+					  'id_membre' => $_SESSION['id']));			
 				}
 				else
 				{
@@ -44,7 +46,7 @@ session_start()
 					$req2->execute(array(
 					  'id_evt' => $_POST['id_evt'],
 					  'id_membre' => $_SESSION['id'],
-					  'commentaire' => " "));				// ### A changer par l'ID de la session active				  
+					  'commentaire' => ""));						  
 				}  
 				$req2->closeCursor(); //requête terminée
 			}	
@@ -59,37 +61,45 @@ session_start()
         <div class="row center">
             <span class="flow-text" col s12">Liste des évènements ADK :</span>
         </div>
+		<div class="row center">
 		<?php if(isset($_SESSION['pseudo'])) // Si connecté, on propose d'ajouter une plongée, sinon, on ne montre pas le lien
 		{?>
 		<div class="row center">
             <p><a href="creation_evt.php">Lien pour créer un événement</a></p>
         </div>
 			<?php
-			// Determination de la date d'il y a un an
-			$yaunan = strtotime('-1 year -1 day');		// timestamp d'il y a un an	
-			$yaunanmoinsunmois = strtotime('-1 year +1 month');
-			if(strtotime($_SESSION['certif_med'])<$yaunan)		// Si le gars est pas à jour de certif médical, on lui affiche une message énorme en rouge sur les inscriptions
-			{?>
-				<div class="row center">
-					<span class="flow-text" col s12"><b style='color: red;'>Attention, votre certificat médical n'est pas à jour !!</b></span>
-				</div>
-			<?php
-			}
-			else if(strtotime($_SESSION['certif_med'])<$yaunanmoinsunmois)
-			{?>
-				<div class="row center">
-					<span class="flow-text" col s12"><b style='color: orange;'>Attention, votre certificat médical expire le <?php echo date("D-d/m/Y",strtotime('+1 year',strtotime($_SESSION['certif_med'])))?></b></span>
-				</div>
-			<?php
-			}
+			// affichage d'un message si le certificat medical n'est pas perimé
+			isPasMalade();
+			
 		}?>
 		<div class="row center">
 		<?php
 			// Consultation de la base de données pour affichage
 			include("tools/data_base_connection.php");
-							
-			$req1= $bdd->prepare('SELECT * FROM evenements ORDER BY date_evt ASC'); // ## a mettre en place WHERE date_evt>NOW() ORDER BY date_evt');
-			$req1->execute(array());
+			
+			// Si un bouton de filtrage d'affichage des dates à été cliqué, on adapte la récupération de la BDD
+			if(isset($_POST['semaine']))
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements WHERE date_evt>=(CURDATE() + INTERVAL -7 DAY) ORDER BY date_evt ASC');
+			}
+			else if(isset($_POST['mois']))
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements WHERE date_evt>=(CURDATE() + INTERVAL -31 DAY) ORDER BY date_evt ASC');
+			}
+			else if(isset($_POST['annee']))
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements WHERE date_evt>=(CURDATE() + INTERVAL -365 DAY) ORDER BY date_evt ASC');
+			}
+			else if(isset($_POST['full']))			
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements ORDER BY date_evt ASC');
+			}
+			else	// Affichage par défaut à l'arrivée sur la page -> Evénements futurs ou à la date du jour
+			{
+				$req1= $bdd->prepare('SELECT * FROM evenements WHERE date_evt>=CURDATE() ORDER BY date_evt ASC'); 
+			}
+			// Requette commune peu importe ce qui à été demandé
+			$req1->execute(array());			
 			
 			// Mise ne place de la trame du tableau
 			?>
@@ -113,6 +123,8 @@ session_start()
 			while ($resultat = $req1->fetch())
 			{
 				$test_passage = 1;
+				$date_limi_passee = 0;
+				$date_passee = 0;
 				// On rempli le tableau avec les différentes lignes
 				?>
 				
@@ -160,19 +172,21 @@ session_start()
 							<label> <?php echo $resultat['type']?></label>
 						</td>
 						<td>
+							<?php
+							$datenow = date("Y-m-d");
+							$heurenow = date("H:i:s");
+							if($resultat['date_evt']<$datenow OR ($resultat['date_evt']==$datenow AND $resultat['heure_evt']<$heurenow))			
+							{
+								$date_passee = 1;
+							}
+							?>
 							<label><?php echo date("D-d/m", strtotime($resultat['date_evt']))."<br>".substr ($resultat['heure_evt'],0,5)?></label>						
 						</td>
 						<td>
 						<?php
 							$datenow = date("Y-m-d");
 							$heurenow = date("H:i:s");
-/*							echo $datenow." ";
-							echo $heurenow." ";
-							echo $resultat['date_lim']." ";
-							echo $resultat['heure_lim']." ";
-							if($resultat['date_lim']<$datenow){echo "La date foire";}
-*/
-							if($resultat['date_lim']<$datenow OR ($resultat['date_lim']==$datenow AND $resultat['heure_lim']>$heurenow))
+							if($resultat['date_lim']<$datenow OR ($resultat['date_lim']==$datenow AND $resultat['heure_lim']<$heurenow))			
 							{?>
 								<label><b style='color: red;'><?php echo date("D-d/m", strtotime($resultat['date_lim']))."<br>".substr ($resultat['heure_lim'],0,5)?></b></label><?php
 								$date_limi_passee = 1;
@@ -238,17 +252,26 @@ session_start()
 									if($_SESSION['niv_plongeur']>=$resultat['niveau_min']) // Si le mec à le niveau nécessaire, on lui propose de s'incrire, sinon, non
 									{
 										?><input type='hidden' name='id_evt' value='<?php echo $resultat['id'];?>'> <?php
-										if($deja_inscrit==1)  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+										if(($deja_inscrit==1))  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
 										{
 											?>
 											<input type="hidden" name="act" value = "D">
-											<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>
-										<?php }		// Sinon de s'inscrire
+											<?php 
+											if($date_passee == 0) // Si la date de l'événement n'est pas passé, on lui affiche un bouton pour s'inscrire
+											{ ?>
+												<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>			<?php									
+											}
+											else		// Sinon, on lui empêche de se désinscrire après la date de la sortie
+											{ ?>
+												<button class="btn disabled"><i class="material-icons">cancel</i></button> <?php
+											}
+										}		// Sinon de s'inscrire
 										else
 										{
-											if($date_limi_passee == 1)		// Si la date lmite d'inscription est passée, on grise la case
+											if(($date_limi_passee == 1) OR ($date_passee == 1))		// Si la date lmite d'inscription est passée, on grise la case
 											{
-												?><button class="btn disabled"><i class="material-icons">check_circle</i></button><?php
+												?>
+												<button class="btn disabled"><i class="material-icons">check_circle</i></button><?php
 												$date_limi_passee = 0;
 											}	
 											else				// On autorise l'inscription
@@ -289,6 +312,35 @@ session_start()
 		?>	
 		<div class="row center">
             <span> Legende des couleurs : </span> <span style='color: blue;'>Pas d'exigences</span> / <span style='color: brown;'>Pas de DP et pas assez de monde</span> / <span style='color: purple;'>Pas de DP mais assez de monde</span> / <span style='color: grey;'>Un DP, pas assez de monde</span> / <span style='color: green;'>Un DP et assez de monde</span> / <span style='color: orange;'>Sortie complète</span> / <span style='color: red;'>Sortie complète mais sans DP</span>
+        </div>
+		<div class="row center">
+            <span class="flow-text" col s12">Affichage des événements antiérieurs:</span>
+        </div>
+		<div class="row center">
+			<div class="input-field col s3">
+				<form action="liste_evenements.php" method="post">
+					<input type='hidden' name='semaine' value='semaine'> 		
+					<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit">Semaine</button>
+				</form>	
+			</div>
+			<div class="input-field col s3">
+				<form action="liste_evenements.php" method="post">
+					<input type='hidden' name='mois' value='mois'> 		
+					<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit">Mois</button>
+				</form>
+			</div>
+			<div class="input-field col s3">
+				<form action="liste_evenements.php" method="post">
+					<input type='hidden' name='annee' value='annee'> 		
+					<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit">Année</button>
+				</form>
+			</div>
+			<div class="input-field col s3">
+				<form action="liste_evenements.php" method="post">
+					<input type='hidden' name='full' value='full'> 		
+					<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit">Tout</button>
+				</form>
+			</div>
         </div>
 
 

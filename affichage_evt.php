@@ -18,21 +18,24 @@ session_start()
     
 	<!-- Fonctions de la feuille -->
 
-  
 </head>
 
 <body>
 
 <?php include("tools/navbar.php"); ?>
 <?php include("tools/data_evts.php"); ?>
+<?php include("tools/fonctions_unitaires.php"); ?>
 <?php 
 	$italic =0;					// Gestion de l'affichage de la liste d'attente 
-	$personne_log_inscrite=0 	// Vérification si le mec connecté est inscrit?>
-
+	$personne_log_inscrite=0; 	// Vérification si le mec connecté est inscrit
+	
+	$datenow = date("Y-m-d");
+	$heurenow = date("H:i:s");
+	
+	$date_passee = 0;
+	?>
+	
 <?php
-/*$pass_hache = password_hash("LucieCarof1*", PASSWORD_DEFAULT);
-echo $pass_hache; */
-
 if(isset($_SESSION['pseudo'])) // Si déjà connecté
 {?>
   <div class="section no-pad-bot" id="index-banner">
@@ -45,8 +48,11 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
             <p><a href="liste_evenements.php">Lien vers la liste de tous les événements</a></p>
         </div>
 		
-		
 		<?php 
+		// affichage d'un message si le certificat medical n'est pas perimé
+			isPasMalade();
+		
+		// Traitement des formulaires
 		if((isset($_POST['id_evt']) AND htmlspecialchars($_POST['id_evt'])!='')OR(isset($_POST['id_evt_local']) AND htmlspecialchars($_POST['id_evt_local'])!=''))		// Si on vient de cette page ou de la liste des événements
 		{	// Récupération des données de la plongée dont l'ID est "$_POST['evt_id']"
 		
@@ -80,10 +86,15 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				{
 					$comm_plong = htmlspecialchars($_POST['comm_plong']);
 						// On va lire "inscription" pour pouvoir ajouter un commentaire (On écrase le précédent)
-						$req2= $bdd->query('UPDATE inscriptions SET commentaire = "'.$comm_plong.'" WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$_SESSION['id'].'")'); // 	// ## Attention, fait perdre sa place dans la liste d'attnete !!!
+						$req2= $bdd->prepare('UPDATE inscriptions SET commentaire =:commentaire WHERE (id_evt =:id_evt AND id_membre =:session_id)'); // 
+						$req2->execute(array(
+						'commentaire' => $comm_plong,
+						'id_evt' => $id_evt,
+						'session_id' => $_SESSION['id']));
 						$req2->closeCursor(); //requête terminée
+					
 				}
-				if($_SESSION['privilege']=="administrateur")		// On autorise la suppression
+				if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On autorise la suppression
 				{
 					if(isset($_POST['id_inscrit']) AND htmlspecialchars($_POST['id_inscrit'])!='')			// On demande de supprimer un membre
 					{
@@ -100,7 +111,24 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 							$req2= $bdd->query('DELETE FROM invites WHERE (id_evt ="'.$id_evt.'" AND prenom = "'.$prenom.'" AND nom = "'.$nom.'")'); // 	Suppression de l'inscrit club
 							$req2->closeCursor(); //requête terminée
 					}
-				}			
+				}	
+				// Gestion de l'inscription du membre loggé sur cette page
+				if(isset($_POST['desinscription']) AND htmlspecialchars($_POST['desinscription'])!='')			// On demande de supprimer un membre
+				{
+					// On va lire "inscription" pour supprimer le mec en question
+					$req2= $bdd->query('DELETE FROM inscriptions WHERE (id_evt ="'.$id_evt.'" AND id_membre = "'.$_SESSION['id'].'")'); // 	Suppression de l'inscrit club
+					$req2->closeCursor(); //requête terminée
+				}
+				if(isset($_POST['inscription']) AND htmlspecialchars($_POST['inscription'])!='')			// On ajoute le mec
+				{						
+					$time_inscr = new DateTime();
+					$req2= $bdd->prepare('INSERT INTO inscriptions(id_evt, id_membre, commentaire) VALUES(:id_evt, :id_membre, :commentaire)');
+					$req2->execute(array(
+				  'id_evt' => $id_evt,
+				  'id_membre' => $_SESSION['id'],
+				  'commentaire' => ""));	
+					$req2->closeCursor(); //requête terminée					  	
+				}				
 			}				
 			$result = $bdd->query("SELECT * FROM evenements WHERE id = '$id_evt'");
 			$row = $result->fetch();
@@ -110,6 +138,20 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 			$publicateur = $row[11];
 			$date_publi = $row[12];
 			$nb_max_part = $row[9];
+			$niv_min = $row[7];
+			$date_lim_inscr = $row[5];
+			$heure_lim_inscr = $row[6];
+			
+			// Détermination si la date de l'événement est passée pour griser les cases qui vonf bien
+			$datenow = date("Y-m-d");
+			$heurenow = date("H:i:s");
+			$date_evt = $row[3];
+			$heure_evt = $row[4];
+			if(($date_evt<$datenow) OR ($date_evt==$datenow AND $heure_evt<$heurenow))			
+			{
+				$date_passee = 1;
+			}	
+			
 			?>	
 			<div class="card-panel blue darken-4" align=center> 
 				<font size="5pt">
@@ -118,7 +160,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 					if($type_evt=="Plongée")
 					{
 						if(isDP($id_evt)==0 AND isEnough($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Pas assez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
-						elseif(isDP($id_evt)==0 AND isEnough($id_evt)==1){echo ("<p style='color: white'>Pour le moment : Asez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
+						elseif(isDP($id_evt)==0 AND isEnough($id_evt)==1){echo ("<p style='color: white'>Pour le moment : Assez de participants / Pas de DP <br> <b><u>Sortie non assurée</u></b></p>");}
 						elseif(isDP($id_evt)==1 AND isEnough($id_evt)==0){echo ("<p style='color: white'>Pour le moment : Pas assez de participants / DP inscrit <br> <b><u>Sortie non assurée</u></b></p>");}
 						elseif(isDP($id_evt)==1 AND isEnough($id_evt)==1 AND isFull($id_evt,$nb_max_part)==0){echo ("<p style='color: white'>Pour le moment : Assez de participants / DP <br> <b><u>Sortie assurée et il reste de la place</u></b></p>");}
 						elseif(isDP($id_evt)==1 AND isEnough($id_evt)==1 AND isFull($id_evt,$nb_max_part)==1){echo ("<p style='color: white'>Pour le moment : Assez de participants / DP <br> <b><u>Sortie assurée mais complète (Inscrivez vous pour liste d'attente)</u></b></p>");}
@@ -136,12 +178,21 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 			</div>
 			<div class="row center">
 				<!-- Affichage du lien de modification si admin ou propriétaire de la sortie -->
-				<?php if($_SESSION['privilege']=="administrateur" OR ($_SESSION['nom']." ".$_SESSION['prenom'])==$publicateur )
+				<?php if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau" OR ($_SESSION['nom']." ".$_SESSION['prenom'])==$publicateur )
 				{ ?>
 					<div class="row center">									
 						<form action="modif_evt.php" method="post">
 								<input type='hidden' name='id_mod' value=<?php echo $id_evt?>> 		
-								<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit"><i class="material-icons">border_color</i>&nbsp; Modifier l'événement</button>
+								<?php
+								if($date_passee == 1)
+								{?>
+									<button class="btn disabled"><i class="material-icons">border_color</i>&nbsp; Modifier l'événement</button> <?php
+								}
+								else
+								{?>
+									<button class="btn waves-effect waves-light blue darken-2" type="submit" name="submit"><i class="material-icons">border_color</i>&nbsp; Modifier l'événement</button> <?php
+								}?>
+								
 						</form>		
 						
 					</div>	<?php 
@@ -200,7 +251,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						<i class="material-icons prefix">flare</i>
 					</div> 
 					<div class="col s2" align="left" >
-						<u><b>Niveau mini</b></u> : <?php echo $row[7]; ?>
+						<u><b>Niveau mini</b></u> : <?php echo $niv_min; ?>
 					</div> 	
 					<div class="col s1">
 						<i class="material-icons prefix">group</i>
@@ -227,6 +278,64 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				<div class="row center">
 				</div>
 			</div>	
+			<div class="card-panel blue darken-4" align=center> 
+				<div class="row center">
+					<div class="col s6" align="right">
+						<p style='color: white'>S'inscrire / se désinscrire :</p> 
+					</div>
+					<div div class="col s6" align="left">
+						<form action="affichage_evt.php" method="post">
+							<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?>> 							
+							<?php
+							// On affiche la possiblité de s'inscrire ou de se désinscrire		
+							if(isset($_SESSION['pseudo'])AND ($_SESSION['inscription_valide']==1) AND ($_SESSION['actif_saison']==1)) // Si connecté, actif pour la saison et validé, on affiche les boutons d'ajout et de suppression d'inscription
+							{
+								if($_SESSION['niv_plongeur']>=$niv_min) // Si le mec à le niveau nécessaire, on lui propose de s'incrire, sinon, non
+								{
+									if(isInscrit($_SESSION['id'], $id_evt))  		// Si la personne est déjà inscrite à la sortie, on lui offre la possibilité de se désinscrire
+									{
+										if($date_passee == 1)
+										{?>
+											<input type='hidden' name='desinscription' value='desinscription'> 
+											<button class="btn disabled">Se désinscrire</button><?php	
+										}
+										else
+										{?>
+											<input type='hidden' name='desinscription' value='desinscription'> 
+											<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit">Se désinscrire</button><?php
+										}
+										 
+									}		// Sinon de s'inscrire
+									else
+									{
+										$date_limi_passee = 0;
+										if($date_lim_inscr<$datenow OR ($date_lim_inscr==$datenow AND $heure_lim_inscr<$heurenow))
+										{
+											$date_limi_passee = 1;
+										}
+										if($date_limi_passee == 1)		// Si la date lmite d'inscription est passée, on grise la case
+										{
+											?><button class="btn disabled">Trop tard !</button><?php
+										}	
+										else				// On autorise l'inscription
+										{?>
+											<input type='hidden' name='inscription' value='inscription'> 
+											<button class="btn waves-effect waves-light green darken-2" type="submit" name="submit">S'inscrire</button>
+										<?php 
+										}
+									} 
+								}
+								else
+								{
+									?>
+									<button class="btn disabled"><?php echo "<b style='color: red;'>N".$niv_min." min</b>";?></button>
+									<?php
+								}
+							}?>
+						</form>
+					</div>
+				</div>
+			</div>
 				<!-- Affichage des inscrits -->
 			<div class="row center">
 				<span class="flow-text" col s12"> Affichage des membres inscrits :</span>
@@ -327,16 +436,27 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 									?>
 						</td>
 						<?php
-						if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
+						if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On affiche une possibilité de supprimer quelqu'un pour les admins et le bureau et seulement pour les admins si la date est dépassée
 						{
 							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre 
 							?>
-							<td> <?php if($italic==1){echo "<i>";} if($comm_membre==''){echo "-";} else{echo $comm_membre;}?></td>
+							<td> <?php if($italic==1){echo "<i>";} if($comm_membre=='' OR empty($comm_membre)){echo "-";} else{echo $comm_membre;}?></td>
 							<td>
 							<form action="affichage_evt.php" method="post">
 								<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?>> 		
-								<input type='hidden' name='id_inscrit' value=<?php echo $id_membre?>>
-								<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>
+								<input type='hidden' name='id_inscrit' value=<?php echo $id_membre?>> <?php
+								// Test de voir si la date est dépassée
+								if($date_passee==1) 
+								{	// Si la date de l'événement est passée, seul un admin peut supprimer un participant
+									if($_SESSION['privilege']=="administrateur")
+									{?>
+										<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button><?php
+									}									
+								}
+								else	// Si la date n'est pas dépassée, Admin, et Bureau peuvent supprimer
+								{?>
+									<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button><?php
+								}?>
 							</form>					
 							</td> <?php
 						}
@@ -408,7 +528,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 						<!-- Case vide pour DP -->
 						<td>-</td>					
 						<?php
-						if($_SESSION['privilege']=="administrateur")		// On affiche une possibilité de supprimer quelqu'un pour les admins
+						if($_SESSION['privilege']=="administrateur" OR $_SESSION['privilege']=="bureau")		// On affiche une possibilité de supprimer quelqu'un pour les admins, même après l'événement
 						{
 							// Afficher le commentaire du memebre en 5 unités et un bouton pour supprimer un membre
 							?>
@@ -417,8 +537,20 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 								<form action="affichage_evt.php" method="post">
 									<input type='hidden' name='id_evt_local' value=<?php echo $id_evt?> > 		
 									<input type='hidden' name='prenom' value='<?php echo $prenom_invit?>' >
-									<input type='hidden' name='nom' value='<?php echo $nom_invit?>' >
-									<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button>
+									<input type='hidden' name='nom' value='<?php echo $nom_invit?>' > <?php
+							
+									// Test de voir si la date est dépassée
+									if($date_passee==1) 
+									{	// Si la date de l'événement est passée, seul un admin peut supprimer un participant
+										if($_SESSION['privilege']=="administrateur")
+										{?>
+											<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button><?php
+										}									
+									}
+									else	// Si la date n'est pas dépassée, Admin, et Bureau peuvent supprimer
+									{?>
+										<button class="btn waves-effect waves-light red darken-2" type="submit" name="submit"><i class="material-icons">cancel</i></button><?php
+									}?>
 								</form>	
 							</td>
 							<?php				
@@ -464,44 +596,57 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				<div class="row center">
 					<span class="flow-text" col s12"> Ajout d'un invité :</span>
 				</div>
-				<div class="row center">
-					<span col s12"><i>Licence et certificat médical de moins d'un an nécéssaire - Sera contrôlé par le DP</i></span>
-				</div>
-				<div class="row center">
-					<form class="col s12" action="affichage_evt.php" method="post">								
-						<input type="hidden" name="id_evt_local" value = '<?php echo($id_evt);?>'>	<!-- Renvoi de l'id de l'évènement pour l'afficher une fois l'inscription faite -->
-						<div class="input-field col s2">
-							<i class="material-icons prefix">add_circle</i>
-							<input id="nom_invit" type="text" class="validate" name='nom_invit'>
-							<label for="nom_invit">Nom *</label>		
-						</div>
-						<div class="input-field col s2">
-							<input id="prenom_invit" type="text" class="validate" name='prenom_invit'>
-							<label for="prenom_invit">Prénom *</label>		
-						</div>
-						<div class="input-field col s2">
-							<select name="niveau_invit">
-							  <option value = "N0">N0</option>
-							  <option value = "N1">N1</option>
-							  <option value = "N2">N2</option>
-							  <option value = "N3">N3</option>
-							  <option value = "N4">N4</option>
-							  <option value = "E1">E1</option>
-							  <option value = "E2">E2</option>
-							  <option value = "E3">E3</option>
-							  <option value = "E4">E4</option>
-							  <option value = "Autre">Autre</option>
-							</select>										
-						</div>	
-						<div class="input-field col s5">
-							<input id="comm_invit" type="text" class="validate" name='comm_invit'>
-							<label for="comm_invit">Commentaire</label>		
-						</div>
-					<div class="input-field col s1">
-						<button class="btn waves-effect waves-light green darken-2" type="submit" name="submit"><i class="material-icons">add_circle</i></button>
+				<?php
+				// On offre la possibilité d'inscrire un invité que si la date limite n'est pas dépassée
+				if($date_lim_inscr<$datenow OR ($date_lim_inscr==$datenow AND $heure_lim_inscr<$heurenow))
+				{?>
+					<div class="row center">
+					<span col s12"><i>La date limite d'inscription est dépassée, ajout d'un invité impossible</i></span>
 					</div>
-					</form>
-				</div>
+				<?php	
+				}
+				else
+				{?>
+					<div class="row center">
+						<span col s12"><i>Licence et certificat médical de moins d'un an nécéssaire - Sera contrôlé par le DP</i></span>
+					</div>
+					<div class="row center">
+						<form class="col s12" action="affichage_evt.php" method="post">								
+							<input type="hidden" name="id_evt_local" value = '<?php echo($id_evt);?>'>	<!-- Renvoi de l'id de l'évènement pour l'afficher une fois l'inscription faite -->
+							<div class="input-field col s2">
+								<i class="material-icons prefix">add_circle</i>
+								<input id="nom_invit" type="text" class="validate" name='nom_invit'>
+								<label for="nom_invit">Nom *</label>		
+							</div>
+							<div class="input-field col s2">
+								<input id="prenom_invit" type="text" class="validate" name='prenom_invit'>
+								<label for="prenom_invit">Prénom *</label>		
+							</div>
+							<div class="input-field col s2">
+								<select name="niveau_invit">
+								  <option value = "N0">N0</option>
+								  <option value = "N1">N1</option>
+								  <option value = "N2">N2</option>
+								  <option value = "N3">N3</option>
+								  <option value = "N4">N4</option>
+								  <option value = "E1">E1</option>
+								  <option value = "E2">E2</option>
+								  <option value = "E3">E3</option>
+								  <option value = "E4">E4</option>
+								  <option value = "Autre">Autre</option>
+								</select>										
+							</div>	
+							<div class="input-field col s5">
+								<input id="comm_invit" type="text" class="validate" name='comm_invit'>
+								<label for="comm_invit">Commentaire</label>		
+							</div>
+						<div class="input-field col s1">
+							<button class="btn waves-effect waves-light green darken-2" type="submit" name="submit"><i class="material-icons">add_circle</i></button>
+						</div>
+						</form>
+					</div>
+					<?php
+				}?>
 				<!--   Ligne vie pour démarquer la fin de l'affichage des inscrits   -->
 				<div class="row center">
 				</div>
@@ -510,7 +655,7 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 				if($personne_log_inscrite==1)
 				{ ?>
 				<div class="row center">
-					<span class="flow-text" col s12"> Un commentaire sur la plongée / l'inscription ?</span>
+					<span class="flow-text" col s12"> Modifier mon commentaire (Remplace le précédent)</span>
 				</div>
 				<div class="row center">
 					<form class="col s12" action="affichage_evt.php" method="post">								
@@ -539,7 +684,6 @@ if(isset($_SESSION['pseudo'])) // Si déjà connecté
 
 <?php
 }
-
 else	// Pas loggé
 {
 	?>

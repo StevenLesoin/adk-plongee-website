@@ -19,6 +19,7 @@ session_start()
 <body>
 
 	<?php 
+		include("tools/fonctions_unitaires.php");
 	    if(empty($_POST['pseudo']) AND empty($_POST['email'])) // La page est vierge
 	    {
 	      include("tools/navbar.php"); 
@@ -53,21 +54,13 @@ session_start()
 		  else
 		  {
 		  	$email = $resultat['email'];
-
+			$objet = 'ADK-Plongee - Nouveau mot de passe';
 		  	// Mot de passe aléatoire provisoir
-            $new_password = rand();
-
-            	include("tools/mail_adk.php");
-				// Rédacion du mail
-				$objet = 'Nouveau mot de passe ADK plongée website';
-                $to = $resultat['email'];
- 
-                        //===== Contenu de votre message
-                        $contenu =  "Salut ".$resultat['prenom']." ".$resultat['nom']." ! \nTu as fais une demande de réinitialisation de mot de passe sur le site ADK plongée. Nous te faisons parvenir un mot de passe provisoir. Une fois connecté avec celui-ci, tu dois suivre la procédure de réinitialisation pour en choisir un nouveau :). \nMot de passe provisoir: ".$new_password." .";
-                        //===== Envoi du mail
-            			$resMail = sendMailAdk($to,$objet,$contenu);
-
-
+            $new_password = rand();   
+			//===== Contenu de votre message
+			$contenu =  "Bonjour, votre nouveau mot de passe :".$new_password ;
+			// Envoi du mail	
+			envoi_mail_direct($email,$objet,$contenu);
 
 		    // Hachage du mot de passe
             $new_pass_hache = password_hash($new_password, PASSWORD_DEFAULT);

@@ -24,7 +24,8 @@ session_start()
     	if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
 		{
 			//header('location: edit_password.php');
-			?><meta http-equiv="Refresh" content="0; url=http://tramasearider.free.fr/Site_ADK/edit_password.php" /><?php
+			?><meta http-equiv="Refresh" content="0; url=http://www.adkplongee.ovh/edit_password.php" /><?php
+
 		}
 		else if($_SESSION['inscription_valide']==0) // Inscription non validé
 		{
@@ -38,22 +39,34 @@ session_start()
 	    	include("tools/account_info.php"); 
     	}
     }
-	else if(isset($_POST['login']) AND isset($_POST['password'])) // Si tentative de connexion
+	else if((isset($_POST['login'])OR (isset($_POST['mail']))) AND isset($_POST['password'])) // Si tentative de connexion
 	{
 		include("tools/data_base_connection.php");
-
-		$pseudo = htmlspecialchars($_POST['login']);
 		//  Récupération de l'utilisateur et de son pass hashé
-		$req = $bdd->prepare('SELECT id, mdp, email, nom, prenom, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE pseudo = :pseudo');
-		$req->execute(array(
+		
+		if(isset($_POST['mail']) AND ($_POST['mail']!=""))  // Login avec son mail
+		{
+			$mail = htmlspecialchars($_POST['mail']);
+			$req = $bdd->prepare('SELECT id, pseudo, mdp, email, nom, prenom, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE email = :mail');
+			$req->execute(array(
+		    'mail' => $mail));
+			$resultat = $req->fetch();
+			
+		}
+		else		// Login avec le pseudo
+		{
+			$pseudo = htmlspecialchars($_POST['login']);
+			$req = $bdd->prepare('SELECT id, pseudo, mdp, email, nom, prenom, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres WHERE pseudo = :pseudo');
+			$req->execute(array(
 		    'pseudo' => $pseudo));
-		$resultat = $req->fetch();
+			$resultat = $req->fetch();
+		}
 
 		if (!$resultat) // Pseudo inconnu 
 		{
 			include("tools/navbar.php"); 
 			include("tools/print_msg.php"); // Define printMsg function 
-  			printMsg('Pseudo inconnu','Réessayer','login.php'); 
+  			printMsg('Pseudo Ou Mail inconnu','Réessayer','login.php'); 
 		}
 		else
 		{
@@ -62,7 +75,7 @@ session_start()
 
 		    if ($isPasswordCorrect) {
 		        $_SESSION['id'] = $resultat['id'];
-		        $_SESSION['pseudo'] = $pseudo;
+		        $_SESSION['pseudo'] = $resultat['pseudo'];
 		        $_SESSION['email'] = $resultat['email'];
 		        $_SESSION['prenom'] = $resultat['prenom'];
 		        $_SESSION['nom'] = $resultat['nom'];
@@ -77,7 +90,7 @@ session_start()
 				if($_SESSION['oubli_mdp'] == 1) // Si connexion avec mot de passe temporaire
 				{
 					//header('location: edit_password.php');
-					?><meta http-equiv="Refresh" content="0; url=http://tramasearider.free.fr/Site_ADK/edit_password.php" /><?php
+					?><meta http-equiv="Refresh" content="0; url=http://www.adkplongee.ovh/edit_password.php" /><?php
 				}
 				else if($_SESSION['inscription_valide']==0) // Inscription non validé
 				{
@@ -89,7 +102,8 @@ session_start()
 				else
 				{
 					//header('location:index.php');
-					?><meta http-equiv="Refresh" content="0; url=http://tramasearider.free.fr/Site_ADK/index.php" /><?php
+					?><meta http-equiv="Refresh" content="0; url=http://www.adkplongee.ovh/index.php" /><?php
+
 				}
 		    }
 		    else { // Erreur de mot de passe
@@ -105,7 +119,8 @@ session_start()
 	else
 	{
 		//header('location: login.php');
-		?><meta http-equiv="Refresh" content="0; url=http://tramasearider.free.fr/Site_ADK/login.php" /><?php
+		?><meta http-equiv="Refresh" content="0; url=http://www.adkplongee.ovh/login.php" /><?php
+
 	}
 	?>
 

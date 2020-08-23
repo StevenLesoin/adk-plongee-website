@@ -62,13 +62,7 @@ session_start()
 	    	}
 	    	else if(!empty($_POST['validate_registration']) AND !empty($_POST['validate_registration_member_id'])) // Champ sélectionné pour validation inscription
 	    	{
-	    		include("tools/data_base_connection.php");
-	    		$req1 = $bdd->prepare('SELECT nom, prenom, email, privilege FROM membres WHERE id = :id');
-		        $req1->execute(array(
-		          'id' => $_POST['validate_registration_member_id']));
-		        $resultat = $req1->fetch();
-		        $req1->closeCursor(); //requête terminée
-
+				include("tools/fonctions_unitaires.php");
 	    		include("tools/data_base_connection.php");
 	    		// Valide l'inscription
 	    		$req2= $bdd->prepare('UPDATE membres SET inscription_valide = :inscription_valide WHERE id = :id');
@@ -76,6 +70,8 @@ session_start()
 		          'inscription_valide' => $_POST['validate_registration'],
 		          'id' => $_POST['validate_registration_member_id']));
 		        $req2->closeCursor(); //requête terminée
+				// Envoi d'un mail : 
+				envoi_mail($_POST['validate_registration_member_id'],'Inscription Validée', 'Votre inscription à bien été validée, vous pouvez maintenant profiter de la totalité du site');
 
 		        include("tools/navbar.php"); 
 
