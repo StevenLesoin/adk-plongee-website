@@ -39,9 +39,16 @@ session_start()
 			if(empty($_POST['search_name']) AND empty($_POST['search_surname']) AND empty($_POST['edit_member_id']) AND empty($_POST['validate_registration_member_id'])) // Page vierge
 			{
 		    	include("tools/navbar.php"); 
+
+				include("tools/data_base_connection.php");
+				// Résumé des membres 
+		    	$req = $bdd->prepare('SELECT id, actif_saison, certif_med, inscription_valide FROM membres ORDER BY nom');
+		        $req->execute(array());
+		        include("tools/members_resume.php");
+		        $req->closeCursor(); //requête terminée
+
 		    	include("tools/search_members_form.php");
 
-		    	include("tools/data_base_connection.php");
 		    	// Liste de l'ensemble des membres 
 		    	$req0 = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres ORDER BY nom');
 		        $req0->execute(array());
