@@ -50,7 +50,7 @@ session_start()
 		    	include("tools/search_members_form.php");
 
 		    	// Liste de l'ensemble des membres 
-		    	$req0 = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres ORDER BY nom');
+		    	$req0 = $bdd->prepare('SELECT id, pseudo, mdp, nom, prenom, email, privilege, oubli_mdp, niv_plongeur, niv_encadrant, actif_saison, certif_med, inscription_valide FROM membres ORDER BY inscription_valide, nom');
 		        $req0->execute(array());
 		        include("tools/all_members_resume_tab.php");
 		        $req0->closeCursor(); //requête terminée
